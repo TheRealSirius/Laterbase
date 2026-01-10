@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical } from 'lucide-react';
 import {
   DndContext,

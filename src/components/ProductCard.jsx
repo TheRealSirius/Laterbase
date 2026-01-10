@@ -1,3 +1,4 @@
+import React from 'react';
 import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
