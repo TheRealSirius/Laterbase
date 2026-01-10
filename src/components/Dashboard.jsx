@@ -1,7 +1,7 @@
 import React from 'react';
-import { CreditCard, ShoppingCart, TrendingUp, Calendar } from 'lucide-react';
+import { CreditCard, ShoppingCart, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 
-const Dashboard = ({ products, isDarkMode }) => {
+const Dashboard = ({ products, isDarkMode, onSpentClick }) => {
     const activeWishlist = products.filter(p => !p.isPurchased);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
 
@@ -23,7 +23,8 @@ const Dashboard = ({ products, isDarkMode }) => {
             icon: <ShoppingCart size={20} />,
             color: 'bg-indigo-500',
             bgClass: isDarkMode ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100',
-            iconColor: 'text-indigo-500'
+            iconColor: 'text-indigo-500',
+            clickable: false
         },
         {
             label: 'Speso questo Mese',
@@ -31,7 +32,9 @@ const Dashboard = ({ products, isDarkMode }) => {
             icon: <CreditCard size={20} />,
             color: 'bg-emerald-500',
             bgClass: isDarkMode ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-100',
-            iconColor: 'text-emerald-500'
+            iconColor: 'text-emerald-500',
+            clickable: true,
+            onClick: onSpentClick
         },
         {
             label: 'Oggetti in Lista',
@@ -39,7 +42,8 @@ const Dashboard = ({ products, isDarkMode }) => {
             icon: <TrendingUp size={20} />,
             color: 'bg-orange-500',
             bgClass: isDarkMode ? 'bg-orange-500/10 border-orange-500/20' : 'bg-orange-50 border-orange-100',
-            iconColor: 'text-orange-500'
+            iconColor: 'text-orange-500',
+            clickable: false
         },
     ];
 
@@ -48,9 +52,10 @@ const Dashboard = ({ products, isDarkMode }) => {
             {stats.map((stat, idx) => (
                 <div
                     key={idx}
-                    className={`p-6 rounded-3xl border transition-all ${isDarkMode
-                        ? 'bg-zinc-900 border-zinc-800'
-                        : 'bg-white border-slate-100 shadow-sm'
+                    onClick={stat.onClick}
+                    className={`p-6 rounded-3xl border transition-all ${stat.clickable ? 'cursor-pointer hover:-translate-y-1' : ''} ${isDarkMode
+                        ? `bg-zinc-900 border-zinc-800 ${stat.clickable ? 'hover:border-zinc-700 hover:bg-zinc-800/50' : ''}`
+                        : `bg-white border-slate-100 shadow-sm ${stat.clickable ? 'hover:shadow-lg hover:border-slate-200' : ''}`
                         }`}
                 >
                     <div className="flex items-center gap-4 mb-4">
@@ -61,8 +66,11 @@ const Dashboard = ({ products, isDarkMode }) => {
                             {stat.label}
                         </span>
                     </div>
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-baseline justify-between gap-2">
                         <span className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
+                        {stat.clickable && (
+                            <ChevronRight size={16} className={isDarkMode ? 'text-zinc-700' : 'text-slate-300'} />
+                        )}
                     </div>
                 </div>
             ))}

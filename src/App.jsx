@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
 import ProductForm from './components/ProductForm';
+import SpendAnalysisModal from './components/SpendAnalysisModal';
 
 const App = () => {
   const [products, setProducts] = useState(() => {
@@ -23,6 +24,9 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('recent');
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('wishlist_dark_mode') === 'true');
+  const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(() => localStorage.getItem('wishlist_history_collapsed') === 'true');
+  const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
+  const [showSpendAnalysis, setShowSpendAnalysis] = useState(false);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -33,6 +37,10 @@ const App = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('wishlist_history_collapsed', isHistoryCollapsed);
+  }, [isHistoryCollapsed]);
 
   const showToast = (message) => {
     setToast(message);
@@ -142,7 +150,22 @@ const App = () => {
     const matchesCategory = selectedCategory === 'Tutti' || p.category === selectedCategory;
     const matchesStatus = showHistory ? p.isPurchased : !p.isPurchased;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesStatus && matchesSearch;
+
+    let matchesTime = true;
+    if (showHistory && p.isPurchased && p.purchaseDate) {
+      const pDate = new Date(p.purchaseDate);
+      const now = new Date();
+
+      if (historyTimeFilter === 'month') {
+        matchesTime = pDate.getMonth() === now.getMonth() && pDate.getFullYear() === now.getFullYear();
+      } else if (historyTimeFilter === '3months') {
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(now.getMonth() - 3);
+        matchesTime = pDate >= threeMonthsAgo;
+      }
+    }
+
+    return matchesCategory && matchesStatus && matchesSearch && matchesTime;
   }).sort((a, b) => {
     if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
     if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
@@ -258,7 +281,11 @@ const App = () => {
           </div>
         </header>
 
-        <Dashboard products={products} isDarkMode={isDarkMode} />
+        <Dashboard
+          products={products}
+          isDarkMode={isDarkMode}
+          onSpentClick={() => setShowSpendAnalysis(true)}
+        />
 
         <div className="mt-12 space-y-8">
           <div className={`p-2 rounded-2xl border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors ${isDarkMode ? 'bg-zinc-900 border-zinc-800/50' : 'bg-white border-slate-100/50'
@@ -303,12 +330,23 @@ const App = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold group flex items-center gap-2">
-              {showHistory ? 'Storico Acquisti' : selectedCategory === 'Tutti' ? 'Wishlist Attiva' : `Categoria: ${selectedCategory}`}
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isDarkMode ? 'bg-zinc-900 text-zinc-500' : 'bg-slate-100 text-slate-500'}`}>{filteredProducts.length}</span>
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-bold group flex items-center gap-2">
+                {showHistory ? 'Storico Acquisti' : selectedCategory === 'Tutti' ? 'Wishlist Attiva' : `Categoria: ${selectedCategory}`}
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isDarkMode ? 'bg-zinc-900 text-zinc-500' : 'bg-slate-100 text-slate-500'}`}>{filteredProducts.length}</span>
+              </h2>
+              {showHistory && (
+                <button
+                  onClick={() => setIsHistoryCollapsed(!isHistoryCollapsed)}
+                  className={`p-1.5 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500' : 'hover:bg-slate-100 text-slate-400'}`}
+                  title={isHistoryCollapsed ? "Espandi" : "Collassa"}
+                >
+                  {isHistoryCollapsed ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
+                </button>
+              )}
+            </div>
 
-            {!showHistory && (
+            {!showHistory ? (
               <div className="flex items-center gap-4">
                 <button
                   onClick={copyWishlist}
@@ -324,33 +362,57 @@ const App = () => {
                   <span className="text-lg font-bold">€ {categoryRecapValue.toFixed(2)}</span>
                 </div>
               </div>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onTogglePurchase={togglePurchased}
-                  onDelete={deleteProduct}
-                  onEdit={(p) => setEditingProduct(p)}
-                  onShowToast={showToast}
-                  isDarkMode={isDarkMode}
-                />
-              ))
             ) : (
-              <div className="col-span-full py-20 text-center space-y-4">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${isDarkMode ? 'bg-zinc-900 text-zinc-700' : 'bg-slate-100 text-slate-400'}`}>
-                  <Search size={24} />
-                </div>
-                <div className="max-w-xs mx-auto">
-                  <h3 className="font-semibold">Nessun risultato</h3>
-                  <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} text-sm mt-1`}>Prova a cambiare filtri o cerca un termine diverso.</p>
+              <div className="flex items-center gap-2">
+                <span className={`text-[10px] font-bold uppercase tracking-widest mr-2 ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>Filtra Periodo:</span>
+                <div className={`flex p-1 rounded-xl border ${isDarkMode ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>
+                  {[
+                    { id: 'month', label: 'Mese' },
+                    { id: '3months', label: '3 Mesi' },
+                    { id: 'all', label: 'Tutto' }
+                  ].map(opt => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setHistoryTimeFilter(opt.id)}
+                      className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all ${historyTimeFilter === opt.id
+                        ? (isDarkMode ? 'bg-zinc-800 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm')
+                        : (isDarkMode ? 'text-zinc-600 hover:text-zinc-400' : 'text-slate-400 hover:text-slate-600')
+                        }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
+          </div>
+
+          <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHistory && isHistoryCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'}`}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onTogglePurchase={togglePurchased}
+                    onDelete={deleteProduct}
+                    onEdit={(p) => setEditingProduct(p)}
+                    onShowToast={showToast}
+                    isDarkMode={isDarkMode}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center space-y-4">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${isDarkMode ? 'bg-zinc-900 text-zinc-700' : 'bg-slate-100 text-slate-400'}`}>
+                    <Search size={24} />
+                  </div>
+                  <div className="max-w-xs mx-auto">
+                    <h3 className="font-semibold">Nessun risultato</h3>
+                    <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} text-sm mt-1`}>Prova a cambiare filtri o cerca un termine diverso.</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -372,13 +434,22 @@ const App = () => {
         />
       )}
 
+      {showSpendAnalysis && (
+        <SpendAnalysisModal
+          onClose={() => setShowSpendAnalysis(false)}
+          products={products}
+          categories={categories}
+          isDarkMode={isDarkMode}
+        />
+      )}
+
       {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-4 duration-300">
           <div className={`px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 backdrop-blur-md border ${isDarkMode ? 'bg-zinc-900/90 text-white border-zinc-800' : 'bg-white/90 text-slate-900 border-slate-100'
             }`}>
             <div className="bg-emerald-500 rounded-full p-1">
-              <Plus size={14} className="text-white rotate-45" />
+              <Check size={14} className="text-white" />
             </div>
             <span className="text-sm font-semibold">{toast}</span>
           </div>
