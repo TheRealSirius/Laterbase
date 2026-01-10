@@ -80,11 +80,11 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
                     <div className="mt-8 pt-6 border-t border-zinc-800/50">
                         <button
                             onClick={onClose}
-                            className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98] ${isDarkMode
+                            className={`w-full py-4 rounded-2xl font-bold transition-all active:scale-[0.98] flex items-center justify-center ${isDarkMode
                                 ? 'bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700'
                                 : 'bg-slate-100 text-slate-900 hover:bg-slate-200 border border-slate-200'}`}
                         >
-                            Chiudi Lista
+                            Ho capito
                         </button>
                     </div>
                 </div>

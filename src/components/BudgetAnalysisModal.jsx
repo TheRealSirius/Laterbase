@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, PieChart, TrendingUp, ShoppingBag, Target, ArrowRight, Wallet } from 'lucide-react';
+import { X, PieChart, TrendingUp, ShoppingBag, Target, Wallet } from 'lucide-react';
 
 const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initialMode = 'spent' }) => {
     const [mode, setMode] = useState(initialMode); // 'spent' or 'wishlist'
@@ -163,12 +163,11 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                     <div className="mt-8 pt-8 border-t border-zinc-800/50">
                         <button
                             onClick={onClose}
-                            className={`w-full py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isDarkMode
+                            className={`w-full py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-[0.98] flex items-center justify-center ${isDarkMode
                                 ? 'bg-white text-zinc-950 hover:bg-zinc-200 shadow-white/5'
                                 : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/10'}`}
                         >
                             <span>Ho capito</span>
-                            <ArrowRight size={18} />
                         </button>
                     </div>
                 </div>
