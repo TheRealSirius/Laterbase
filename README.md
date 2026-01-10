@@ -1,26 +1,33 @@
 🛍️ Smart Wishlist 2.0
-Una gestione intelligente e minimale dei tuoi desideri, progettata con un'estetica Apple/Notion style. Monitora il tuo budget, organizza i prodotti per categoria e tieni d'occhio i cali di prezzo in tempo reale.
+Una gestione dei desideri minimale ed elegante, ispirata al design di Apple e Notion.
 
-✨ Caratteristiche Principali
-Dashboard Intelligente: Visualizza istantaneamente il valore totale della tua lista e quanto hai speso nel mese corrente (Gennaio 2026).
+Vai alla versione Live →
 
-Gestione Categorie Pro: Organizza i prodotti con tag personalizzati, modificabili con un doppio click, e visualizza il recap economico per ogni singola categoria.
+🚀 Funzionalità principali
+Monitoraggio Budget: Dashboard in tempo reale con il totale dei desideri e il recap di quanto speso nel mese di Gennaio 2026.
 
-Monitoraggio Prezzi: Sistema automatico che evidenzia i risparmi con badge percentuali (es. -15%) quando il prezzo di un oggetto diminuisce.
+Categorie Dinamiche: Navigazione rapida tra categorie come Elettronica, Casa e Abbigliamento. Ogni categoria calcola il proprio totale automaticamente.
 
-Priorità & Note: Assegna urgenza ai tuoi desideri (🔥 Alta, ⏳ Media, ❄️ Bassa) e aggiungi note private visibili solo nel modal di modifica.
+Prezzi Intelligenti: Calcolo automatico dei badge di sconto (es. -15%) quando il prezzo di un oggetto viene abbassato nel tempo.
 
-Smart Link Cleaning: Pulizia automatica degli URL (specialmente Amazon) per rimuovere i parametri di tracciamento e mantenere un'interfaccia pulita.
+Focus sulla Privacy: Tutti i dati sono salvati esclusivamente nel tuo browser tramite localStorage. Nessun server, nessuna registrazione.
 
-Design Avanzato: Supporto nativo alla Dark Mode, ricerca testuale rapida e ordinamento dinamico per prezzo, data o priorità.
+Dettagli Nascosti: Note e approfondimenti sono salvati all'interno di un modal dedicato per mantenere la Home pulita e ordinata.
 
-Privacy First: Tutti i dati sono salvati localmente nel browser tramite localStorage.
+🎨 Design & UX
+Dark Mode: Supporto nativo per l'uso notturno con una palette colori riposante.
+
+Minimal UI: Card prodotto pulite con gestione intelligente delle immagini (object-contain) per evitare tagli sgradevoli.
+
+Zero Scrollbars: Navigazione orizzontale delle categorie pulita, senza barre di scorrimento visibili per un look premium.
 
 🛠️ Tech Stack
-React + Vite: Per un'esperienza utente veloce e reattiva.
+L'app è costruita con le tecnologie più moderne per garantire velocità e reattività:
 
-Tailwind CSS: Per un design moderno, pulito e responsive.
+Core: React + Vite
 
-Lucide React: Per un set di icone minimale ed elegante.
+Styling: Tailwind CSS
 
-Vercel: Per il deployment continuo e l'hosting.
+Icone: Lucide React
+
+Deployment: Vercel
