@@ -54,12 +54,14 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick }) => {
                 <div
                     key={idx}
                     onClick={stat.onClick}
-                    className={`p-6 rounded-3xl border transition-all duration-300 ${stat.clickable
-                        ? (isDarkMode
-                            ? 'cursor-pointer hover:border-zinc-700 hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/5'
-                            : 'cursor-pointer hover:border-slate-200 hover:shadow-xl hover:-translate-y-1')
-                        : (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100 shadow-sm')
-                        } ${isDarkMode && !stat.clickable ? 'bg-zinc-900 border-zinc-800' : ''} ${!isDarkMode && !stat.clickable ? 'bg-white border-slate-100 shadow-sm' : ''}`}
+                    tabIndex={stat.clickable ? 0 : -1}
+                    className={`p-6 rounded-3xl border transition-all duration-300 focus:outline-none focus:ring-0 ${stat.clickable
+                        ? 'cursor-pointer hover:shadow-md'
+                        : 'cursor-default'
+                        } ${isDarkMode
+                            ? `bg-zinc-900 border-zinc-800 ${stat.clickable ? 'hover:border-zinc-700 hover:bg-zinc-800/80' : ''}`
+                            : `bg-white border-slate-100 shadow-sm ${stat.clickable ? 'hover:border-slate-200' : ''}`
+                        }`}
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <div className={`p-3 rounded-2xl ${stat.bgClass} border`}>
