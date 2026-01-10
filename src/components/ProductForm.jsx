@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package } from 'lucide-react';
+import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target } from 'lucide-react';
 
 const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode }) => {
     const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
         category: initialData?.category || '',
         priority: initialData?.priority || '2', // Default to Medium (2)
         notes: initialData?.notes || '',
+        targetPrice: initialData?.targetPrice || '',
     });
 
     const handleSubmit = (e) => {
@@ -18,6 +19,7 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
         onSubmit({
             ...formData,
             price: parseFloat(formData.price),
+            targetPrice: formData.targetPrice ? parseFloat(formData.targetPrice) : null,
         });
     };
 
@@ -108,23 +110,41 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <label className={`text-xs font-bold uppercase tracking-widest pl-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Categoria</label>
+                                <label className={`text-xs font-bold uppercase tracking-widest pl-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Prezzo Target (€)</label>
                                 <div className="relative">
                                     <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
-                                        <Tag size={18} />
+                                        <Target size={18} />
                                     </div>
-                                    <select
-                                        required
-                                        className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium appearance-none ${isDarkMode
-                                            ? 'bg-zinc-950 text-white focus:bg-black focus:ring-zinc-700'
-                                            : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-slate-900'}`}
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
-                                        <option value="" disabled>Scegli...</option>
-                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Prezzo Desiderato"
+                                        className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium ${isDarkMode
+                                            ? 'bg-zinc-950 text-white focus:bg-black focus:ring-zinc-700 placeholder:text-zinc-800'
+                                            : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-slate-900 placeholder:text-slate-300'}`}
+                                        value={formData.targetPrice}
+                                        onChange={(e) => setFormData({ ...formData, targetPrice: e.target.value })}
+                                    />
                                 </div>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className={`text-xs font-bold uppercase tracking-widest pl-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Categoria</label>
+                            <div className="relative">
+                                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
+                                    <Tag size={18} />
+                                </div>
+                                <select
+                                    required
+                                    className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium appearance-none ${isDarkMode
+                                        ? 'bg-zinc-950 text-white focus:bg-black focus:ring-zinc-700'
+                                        : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-slate-900'}`}
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                >
+                                    <option value="" disabled>Scegli...</option>
+                                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
                             </div>
                         </div>
 
@@ -194,7 +214,7 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
                     </form>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

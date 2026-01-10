@@ -30,6 +30,8 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
         ? Math.round(((initialPrice - currentPrice) / initialPrice) * 100)
         : 0;
 
+    const isTargetReached = product.targetPrice && currentPrice <= product.targetPrice;
+
     const handleShare = (e) => {
         e.stopPropagation();
         const text = `Prodotto: ${product.name} - Prezzo: €${currentPrice.toFixed(2)} - Link: ${product.url || 'Non disponibile'}`;
@@ -46,7 +48,12 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
             className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                 : 'bg-white border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1'
-                } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''}`}
+                } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''} ${isTargetReached && !product.isPurchased
+                    ? (isDarkMode
+                        ? 'ring-1 ring-emerald-500/50 border-emerald-500/30 shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]'
+                        : 'ring-1 ring-emerald-500/30 border-emerald-200 shadow-[0_0_20px_-5px_rgba(16,185,129,0.2)] bg-emerald-50/10')
+                    : ''
+                }`}
         >
             <div className={`relative h-56 flex items-center justify-center p-4 overflow-hidden ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-50/50'}`}>
                 {product.imageUrl ? (
@@ -86,6 +93,12 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                             -{discount}% RISPARMIO
                         </span>
                     )}
+                    {isTargetReached && !product.isPurchased && (
+                        <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border w-fit ${isDarkMode ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-emerald-500 text-white border-emerald-400 shadow-emerald-200'
+                            }`}>
+                            🎯 TARGET RAGGIUNTO
+                        </span>
+                    )}
                 </div>
 
                 {/* Priority Badge */}
@@ -117,8 +130,14 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                     </div>
                     <div className="flex flex-col items-end">
                         <span className={`font-bold flex-shrink-0 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€{currentPrice.toFixed(2)}</span>
-                        {discount > 0 && (
-                            <span className={`text-[10px] line-through ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>€{initialPrice.toFixed(2)}</span>
+                        {product.targetPrice ? (
+                            <span className={`text-[10px] font-medium leading-tight ${isTargetReached ? 'text-emerald-500' : (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}`}>
+                                Target: €{Number(product.targetPrice).toFixed(2)}
+                            </span>
+                        ) : (
+                            discount > 0 && (
+                                <span className={`text-[10px] line-through ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>€{initialPrice.toFixed(2)}</span>
+                            )
                         )}
                     </div>
                 </div>

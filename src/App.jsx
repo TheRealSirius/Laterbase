@@ -223,6 +223,14 @@ const App = () => {
     if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
     if (sortBy === 'priority') return Number(b.priority || '2') - Number(a.priority || '2');
     if (sortBy === 'recent') return new Date(b.createdAt) - new Date(a.createdAt);
+    if (sortBy === 'best_deal') {
+      const getScore = (p) => {
+        if (!p.targetPrice) return -1000000;
+        // Difference (negative if above target, positive if below or at target)
+        return (Number(p.targetPrice) - Number(p.price));
+      };
+      return getScore(b) - getScore(a);
+    }
     return 0;
   });
 
@@ -363,6 +371,7 @@ const App = () => {
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
               >
                 <option value="recent">Ultimi Aggiunti</option>
+                <option value="best_deal">🎯 Miglior Affare</option>
                 <option value="priority">Ordina per Priorità</option>
                 <option value="price-asc">Prezzo (Crescente)</option>
                 <option value="price-desc">Prezzo (Decrescente)</option>

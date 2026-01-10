@@ -89,11 +89,23 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                     </div>
 
                     <div className={`p-6 rounded-2xl mb-8 flex items-center justify-between ${isDarkMode ? 'bg-indigo-500/5 border border-indigo-500/10' : 'bg-indigo-50 border border-indigo-100'}`}>
-                        <div>
+                        <div className="flex-1">
                             <span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
                                 {mode === 'spent' ? 'Totale Speso' : 'Valore Wishlist'}
                             </span>
                             <div className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-indigo-900'}`}>€ {totalAmount.toFixed(2)}</div>
+
+                            {mode === 'wishlist' && (
+                                <div className="mt-2 flex items-center gap-2">
+                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-emerald-500/80' : 'text-emerald-600'}`}>Risparmio Potenziale:</span>
+                                    <span className={`text-xs font-black ${isDarkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                                        € {products
+                                            .filter(p => !p.isPurchased && p.targetPrice && Number(p.price) > Number(p.targetPrice))
+                                            .reduce((sum, p) => sum + (Number(p.price) - Number(p.targetPrice)), 0)
+                                            .toFixed(2)}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                         <div className={`p-3 rounded-2xl ${isDarkMode ? 'bg-indigo-500/10 text-indigo-500' : 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'}`}>
                             {mode === 'spent' ? <TrendingUp size={24} /> : <ShoppingBag size={24} />}
