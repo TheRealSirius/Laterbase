@@ -1,16 +1,26 @@
-# React + Vite
+🛍️ Smart Wishlist 2.0
+Una gestione intelligente e minimale dei tuoi desideri, progettata con un'estetica Apple/Notion style. Monitora il tuo budget, organizza i prodotti per categoria e tieni d'occhio i cali di prezzo in tempo reale.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Caratteristiche Principali
+Dashboard Intelligente: Visualizza istantaneamente il valore totale della tua lista e quanto hai speso nel mese corrente (Gennaio 2026).
 
-Currently, two official plugins are available:
+Gestione Categorie Pro: Organizza i prodotti con tag personalizzati, modificabili con un doppio click, e visualizza il recap economico per ogni singola categoria.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Monitoraggio Prezzi: Sistema automatico che evidenzia i risparmi con badge percentuali (es. -15%) quando il prezzo di un oggetto diminuisce.
 
-## React Compiler
+Priorità & Note: Assegna urgenza ai tuoi desideri (🔥 Alta, ⏳ Media, ❄️ Bassa) e aggiungi note private visibili solo nel modal di modifica.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Smart Link Cleaning: Pulizia automatica degli URL (specialmente Amazon) per rimuovere i parametri di tracciamento e mantenere un'interfaccia pulita.
 
-## Expanding the ESLint configuration
+Design Avanzato: Supporto nativo alla Dark Mode, ricerca testuale rapida e ordinamento dinamico per prezzo, data o priorità.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Privacy First: Tutti i dati sono salvati localmente nel browser tramite localStorage.
+
+🛠️ Tech Stack
+React + Vite: Per un'esperienza utente veloce e reattiva.
+
+Tailwind CSS: Per un design moderno, pulito e responsive.
+
+Lucide React: Per un set di icone minimale ed elegante.
+
+Vercel: Per il deployment continuo e l'hosting.
