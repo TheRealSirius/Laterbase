@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2 } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
@@ -48,6 +48,52 @@ const App = () => {
     const text = `La mia Wishlist:\n\n${list || 'La lista è vuota.'}`;
     navigator.clipboard.writeText(text);
     showToast('Lista copiata negli appunti!');
+  };
+
+  const handleExport = () => {
+    const data = {
+      products,
+      categories,
+      version: '2.3',
+      exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const date = new Date().toISOString().split('T')[0];
+    link.href = url;
+    link.download = `wishlist-backup-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('Backup scaricato correttamente!');
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (window.confirm('Questa operazione sovrascriverà la tua lista attuale. Vuoi procedere?')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (data.products && data.categories) {
+            setProducts(data.products);
+            setCategories(data.categories);
+            showToast('Dati ripristinati con successo!');
+          } else {
+            alert('Formato file non valido.');
+          }
+        } catch (err) {
+          alert('Errore durante il caricamento del file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+    // Reset input
+    e.target.value = '';
   };
 
   useEffect(() => {
@@ -181,6 +227,19 @@ const App = () => {
                   : 'bg-white border-slate-200 focus:ring-slate-900 placeholder:text-slate-300'
                   }`}
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExport}
+                className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
+                title="Esporta Backup (JSON)"
+              >
+                <Download size={18} />
+              </button>
+              <label className={`p-2.5 rounded-full transition-all cursor-pointer ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`} title="Importa Backup (JSON)">
+                <Upload size={18} />
+                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+              </label>
             </div>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
