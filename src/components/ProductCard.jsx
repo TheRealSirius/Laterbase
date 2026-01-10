@@ -68,7 +68,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                     <img
                         src={product.imageUrl}
                         alt={product.name}
-                        className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-105"
+                        className="product-image w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=600&auto=format&fit=crop'; }}
                     />
                 ) : (
