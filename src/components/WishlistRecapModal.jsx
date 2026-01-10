@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Tag, ArrowRight, ShoppingBag, Search } from 'lucide-react';
 
 const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
     const activeItems = products.filter(p => !p.isPurchased);
 
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
+
     return (
-        <div className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-6 animate-in fade-in duration-300 ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-900/30'}`}>
-            <div className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col border ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-transparent'}`}>
+        <div
+            className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-6 animate-in fade-in duration-300 cursor-pointer ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-900/30'}`}
+            onClick={onClose}
+        >
+            <div
+                className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col border cursor-default ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-transparent'}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="p-8 flex flex-col h-full">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">

@@ -1,9 +1,9 @@
 import React from 'react';
-import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical } from 'lucide-react';
+import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical, RefreshCw, Eye } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, isDarkMode }) => {
+const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode }) => {
     const {
         attributes,
         listeners,
@@ -37,6 +37,14 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
         const text = `Prodotto: ${product.name} - Prezzo: €${currentPrice.toFixed(2)} - Link: ${product.url || 'Non disponibile'}`;
         navigator.clipboard.writeText(text);
         onShowToast('Dettagli copiati!');
+    };
+
+    const handleCheckPrice = (e) => {
+        e.stopPropagation();
+        if (product.url) {
+            window.open(product.url, '_blank');
+        }
+        onCheckPrice(product);
     };
 
     return (
@@ -129,7 +137,18 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className={`font-bold flex-shrink-0 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€{currentPrice.toFixed(2)}</span>
+                        <div className="flex items-center gap-2">
+                            {!product.isPurchased && (
+                                <button
+                                    onClick={handleCheckPrice}
+                                    className={`p-1 rounded-md transition-all ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-900'}`}
+                                    title="Verifica Prezzo"
+                                >
+                                    <RefreshCw size={14} />
+                                </button>
+                            )}
+                            <span className={`font-bold flex-shrink-0 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€{currentPrice.toFixed(2)}</span>
+                        </div>
                         {product.targetPrice ? (
                             <span className={`text-[10px] font-medium leading-tight ${isTargetReached ? 'text-emerald-500' : (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}`}>
                                 Target: €{Number(product.targetPrice).toFixed(2)}
@@ -138,6 +157,11 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                             discount > 0 && (
                                 <span className={`text-[10px] line-through ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>€{initialPrice.toFixed(2)}</span>
                             )
+                        )}
+                        {product.lastChecked && (
+                            <span className={`text-[9px] mt-1 ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
+                                Ultimo controllo: {new Date(product.lastChecked).toLocaleDateString()}
+                            </span>
                         )}
                     </div>
                 </div>

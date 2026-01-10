@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target } from 'lucide-react';
 
 const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode }) => {
@@ -23,6 +23,14 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
         });
     };
 
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
+
     const priorityOptions = [
         { value: '3', label: '🔥 Alta', color: 'text-orange-500' },
         { value: '2', label: '⏳ Media', color: 'text-blue-500' },
@@ -30,8 +38,14 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
     ];
 
     return (
-        <div className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-6 animate-in fade-in duration-300 ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-900/30'}`}>
-            <div className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col border ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-transparent'}`}>
+        <div
+            className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-6 animate-in fade-in duration-300 cursor-pointer ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-900/30'}`}
+            onClick={onClose}
+        >
+            <div
+                className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col border cursor-default ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-transparent'}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div className="p-8 overflow-y-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{initialData ? 'Modifica Prodotto' : 'Nuovo Desiderio'}</h2>

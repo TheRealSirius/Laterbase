@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import {
   DndContext,
   closestCenter,
@@ -18,6 +19,7 @@ import ProductCard from './components/ProductCard';
 import ProductForm from './components/ProductForm';
 import BudgetAnalysisModal from './components/BudgetAnalysisModal';
 import WishlistRecapModal from './components/WishlistRecapModal';
+import PriceUpdateModal from './components/PriceUpdateModal';
 
 const App = () => {
   const [products, setProducts] = useState(() => {
@@ -41,6 +43,7 @@ const App = () => {
   const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
   const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
   const [showWishlistRecap, setShowWishlistRecap] = useState(false);
+  const [activeProductForPriceUpdate, setActiveProductForPriceUpdate] = useState(null);
   const [toast, setToast] = useState(null);
 
   const sensors = useSensors(
@@ -196,6 +199,43 @@ const App = () => {
     if (window.confirm('Sei sicuro di voler eliminare questo prodotto?')) {
       setProducts(products.filter(p => p.id !== id));
     }
+  };
+
+  const updateProductPrice = (id, newPrice) => {
+    const numericPrice = parseFloat(newPrice);
+    const date = new Date().toISOString();
+
+    setProducts(prevProducts => {
+      const updatedProducts = prevProducts.map(p => {
+        if (p.id === id) {
+          const isTargetReachedBefore = p.targetPrice && Number(p.price) <= Number(p.targetPrice);
+          const isTargetReachedNow = p.targetPrice && numericPrice <= Number(p.targetPrice);
+
+          if (isTargetReachedNow && !isTargetReachedBefore) {
+            // Trigger confetti!
+            confetti({
+              particleCount: 150,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#10b981', '#34d399', '#6ee7b7', '#ffffff']
+            });
+            showToast('🎯 Target raggiunto! Ottimo affare!');
+          } else {
+            showToast('Prezzo aggiornato!');
+          }
+
+          return {
+            ...p,
+            price: numericPrice,
+            lastChecked: date
+          };
+        }
+        return p;
+      });
+      return updatedProducts;
+    });
+
+    setActiveProductForPriceUpdate(null);
   };
 
   const filteredProducts = products.filter(p => {
@@ -470,6 +510,7 @@ const App = () => {
                         onDelete={deleteProduct}
                         onEdit={(p) => setEditingProduct(p)}
                         onShowToast={showToast}
+                        onCheckPrice={(p) => setActiveProductForPriceUpdate(p)}
                         isDarkMode={isDarkMode}
                       />
                     ))}
@@ -487,6 +528,7 @@ const App = () => {
                       onDelete={deleteProduct}
                       onEdit={(p) => setEditingProduct(p)}
                       onShowToast={showToast}
+                      onCheckPrice={(p) => setActiveProductForPriceUpdate(p)}
                       isDarkMode={isDarkMode}
                     />
                   ))
@@ -542,6 +584,14 @@ const App = () => {
           onNavigate={handleScrollToProduct}
         />
       )}
+
+      <PriceUpdateModal
+        isOpen={!!activeProductForPriceUpdate}
+        onClose={() => setActiveProductForPriceUpdate(null)}
+        onSave={updateProductPrice}
+        product={activeProductForPriceUpdate}
+        isDarkMode={isDarkMode}
+      />
 
       {/* Toast Notification */}
       {toast && (
