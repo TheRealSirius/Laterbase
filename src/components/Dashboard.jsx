@@ -1,7 +1,7 @@
 import React from 'react';
 import { CreditCard, ShoppingCart, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 
-const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick }) => {
+const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick }) => {
     const activeWishlist = products.filter(p => !p.isPurchased);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
 
@@ -44,7 +44,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick }) => {
             color: 'bg-orange-500',
             bgClass: isDarkMode ? 'bg-orange-500/10 border-orange-500/20' : 'bg-orange-50 border-orange-100',
             iconColor: 'text-orange-500',
-            clickable: false
+            clickable: true,
+            onClick: onCountClick
         },
     ];
 

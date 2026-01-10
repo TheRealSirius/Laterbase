@@ -23,6 +23,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
 
     return (
         <div
+            id={product.id}
             onClick={() => onEdit(product)}
             className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'

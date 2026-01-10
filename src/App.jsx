@@ -5,6 +5,7 @@ import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
 import ProductForm from './components/ProductForm';
 import BudgetAnalysisModal from './components/BudgetAnalysisModal';
+import WishlistRecapModal from './components/WishlistRecapModal';
 
 const App = () => {
   const [products, setProducts] = useState(() => {
@@ -27,6 +28,7 @@ const App = () => {
   const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(() => localStorage.getItem('wishlist_history_collapsed') === 'true');
   const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
   const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
+  const [showWishlistRecap, setShowWishlistRecap] = useState(false);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -102,6 +104,24 @@ const App = () => {
     }
     // Reset input
     e.target.value = '';
+  };
+
+  const handleScrollToProduct = (id) => {
+    setShowWishlistRecap(false);
+    setShowHistory(false);
+    setSelectedCategory('Tutti');
+    setSearchQuery('');
+
+    // Tiny delay to allow state changes to render and filters to reset
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Optional: Highlight effect
+        element.classList.add('ring-2', 'ring-indigo-500');
+        setTimeout(() => element.classList.remove('ring-2', 'ring-indigo-500'), 2000);
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -286,6 +306,7 @@ const App = () => {
           isDarkMode={isDarkMode}
           onSpentClick={() => setAnalysisMode('spent')}
           onWishlistClick={() => setAnalysisMode('wishlist')}
+          onCountClick={() => setShowWishlistRecap(true)}
         />
 
         <div className="mt-12 space-y-8">
@@ -442,6 +463,15 @@ const App = () => {
           categories={categories}
           isDarkMode={isDarkMode}
           initialMode={analysisMode}
+        />
+      )}
+
+      {showWishlistRecap && (
+        <WishlistRecapModal
+          onClose={() => setShowWishlistRecap(false)}
+          products={products}
+          isDarkMode={isDarkMode}
+          onNavigate={handleScrollToProduct}
         />
       )}
 
