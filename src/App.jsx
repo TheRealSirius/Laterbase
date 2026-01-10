@@ -4,7 +4,7 @@ import Dashboard from './components/Dashboard';
 import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
 import ProductForm from './components/ProductForm';
-import SpendAnalysisModal from './components/SpendAnalysisModal';
+import BudgetAnalysisModal from './components/BudgetAnalysisModal';
 
 const App = () => {
   const [products, setProducts] = useState(() => {
@@ -26,7 +26,7 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('wishlist_dark_mode') === 'true');
   const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(() => localStorage.getItem('wishlist_history_collapsed') === 'true');
   const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
-  const [showSpendAnalysis, setShowSpendAnalysis] = useState(false);
+  const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
@@ -284,7 +284,8 @@ const App = () => {
         <Dashboard
           products={products}
           isDarkMode={isDarkMode}
-          onSpentClick={() => setShowSpendAnalysis(true)}
+          onSpentClick={() => setAnalysisMode('spent')}
+          onWishlistClick={() => setAnalysisMode('wishlist')}
         />
 
         <div className="mt-12 space-y-8">
@@ -434,12 +435,13 @@ const App = () => {
         />
       )}
 
-      {showSpendAnalysis && (
-        <SpendAnalysisModal
-          onClose={() => setShowSpendAnalysis(false)}
+      {analysisMode && (
+        <BudgetAnalysisModal
+          onClose={() => setAnalysisMode(null)}
           products={products}
           categories={categories}
           isDarkMode={isDarkMode}
+          initialMode={analysisMode}
         />
       )}
 

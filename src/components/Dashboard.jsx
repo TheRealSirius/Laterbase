@@ -1,7 +1,7 @@
 import React from 'react';
 import { CreditCard, ShoppingCart, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 
-const Dashboard = ({ products, isDarkMode, onSpentClick }) => {
+const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick }) => {
     const activeWishlist = products.filter(p => !p.isPurchased);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
 
@@ -24,7 +24,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick }) => {
             color: 'bg-indigo-500',
             bgClass: isDarkMode ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100',
             iconColor: 'text-indigo-500',
-            clickable: false
+            clickable: true,
+            onClick: onWishlistClick
         },
         {
             label: 'Speso questo Mese',
@@ -53,10 +54,12 @@ const Dashboard = ({ products, isDarkMode, onSpentClick }) => {
                 <div
                     key={idx}
                     onClick={stat.onClick}
-                    className={`p-6 rounded-3xl border transition-all ${stat.clickable ? 'cursor-pointer hover:-translate-y-1' : ''} ${isDarkMode
-                        ? `bg-zinc-900 border-zinc-800 ${stat.clickable ? 'hover:border-zinc-700 hover:bg-zinc-800/50' : ''}`
-                        : `bg-white border-slate-100 shadow-sm ${stat.clickable ? 'hover:shadow-lg hover:border-slate-200' : ''}`
-                        }`}
+                    className={`p-6 rounded-3xl border transition-all duration-300 ${stat.clickable
+                        ? (isDarkMode
+                            ? 'cursor-pointer hover:border-zinc-700 hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/5'
+                            : 'cursor-pointer hover:border-slate-200 hover:shadow-xl hover:-translate-y-1')
+                        : (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100 shadow-sm')
+                        } ${isDarkMode && !stat.clickable ? 'bg-zinc-900 border-zinc-800' : ''} ${!isDarkMode && !stat.clickable ? 'bg-white border-slate-100 shadow-sm' : ''}`}
                 >
                     <div className="flex items-center gap-4 mb-4">
                         <div className={`p-3 rounded-2xl ${stat.bgClass} border`}>
