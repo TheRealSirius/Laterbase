@@ -1,5 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
 import Dashboard from './components/Dashboard';
 import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
@@ -30,6 +41,14 @@ const App = () => {
   const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
   const [showWishlistRecap, setShowWishlistRecap] = useState(false);
   const [toast, setToast] = useState(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   useEffect(() => {
     localStorage.setItem('wishlist_dark_mode', isDarkMode);
@@ -122,6 +141,18 @@ const App = () => {
         setTimeout(() => element.classList.remove('ring-2', 'ring-indigo-500'), 2000);
       }
     }, 100);
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setProducts((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   useEffect(() => {
@@ -410,31 +441,58 @@ const App = () => {
           </div>
 
           <div className={`transition-all duration-500 ease-in-out overflow-hidden ${showHistory && isHistoryCollapsed ? 'max-h-0 opacity-0' : 'max-h-[5000px] opacity-100'}`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map(product => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onTogglePurchase={togglePurchased}
-                    onDelete={deleteProduct}
-                    onEdit={(p) => setEditingProduct(p)}
-                    onShowToast={showToast}
-                    isDarkMode={isDarkMode}
-                  />
-                ))
-              ) : (
-                <div className="col-span-full py-20 text-center space-y-4">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${isDarkMode ? 'bg-zinc-900 text-zinc-700' : 'bg-slate-100 text-slate-400'}`}>
-                    <Search size={24} />
+            {!showHistory ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={filteredProducts.map(p => p.id)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProducts.map(product => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onTogglePurchase={togglePurchased}
+                        onDelete={deleteProduct}
+                        onEdit={(p) => setEditingProduct(p)}
+                        onShowToast={showToast}
+                        isDarkMode={isDarkMode}
+                      />
+                    ))}
                   </div>
-                  <div className="max-w-xs mx-auto">
-                    <h3 className="font-semibold">Nessun risultato</h3>
-                    <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} text-sm mt-1`}>Prova a cambiare filtri o cerca un termine diverso.</p>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map(product => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onTogglePurchase={togglePurchased}
+                      onDelete={deleteProduct}
+                      onEdit={(p) => setEditingProduct(p)}
+                      onShowToast={showToast}
+                      isDarkMode={isDarkMode}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full py-20 text-center space-y-4">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${isDarkMode ? 'bg-zinc-900 border border-zinc-800 text-zinc-700' : 'bg-slate-100 text-slate-400'}`}>
+                      <Package size={24} />
+                    </div>
+                    <div className="max-w-xs mx-auto">
+                      <h3 className="font-semibold">Nessun acquisto trovato</h3>
+                      <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} text-sm mt-1`}>Prova a ricaricare o controlla i filtri.</p>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

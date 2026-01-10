@@ -1,7 +1,22 @@
-import React from 'react';
-import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2 } from 'lucide-react';
+import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical } from 'lucide-react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, isDarkMode }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: product.id, disabled: product.isPurchased });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     const priorityEmojis = {
         '3': '🔥',
         '2': '⏳',
@@ -23,12 +38,14 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
 
     return (
         <div
+            ref={setNodeRef}
+            style={style}
             id={product.id}
             onClick={() => onEdit(product)}
             className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                 : 'bg-white border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1'
-                } ${product.isPurchased ? 'opacity-75' : ''}`}
+                } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''}`}
         >
             <div className={`relative h-56 flex items-center justify-center p-4 overflow-hidden ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-50/50'}`}>
                 {product.imageUrl ? (
@@ -43,6 +60,20 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                         <ShoppingBag size={56} strokeWidth={1.5} />
                     </div>
                 )}
+
+                {!product.isPurchased && (
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`absolute top-3 right-3 p-1.5 rounded-lg backdrop-blur-md transition-opacity md:opacity-0 md:group-hover:opacity-100 cursor-grab active:cursor-grabbing z-10 ${isDarkMode ? 'bg-zinc-900/80 text-zinc-500 hover:text-white' : 'bg-white/80 text-slate-400 hover:text-slate-600 shadow-sm'
+                            }`}
+                        title="Trascina per riordinare"
+                    >
+                        <GripVertical size={18} />
+                    </div>
+                )}
+
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                     <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border w-fit ${isDarkMode ? 'bg-zinc-900/90 text-zinc-300 border-zinc-700' : 'bg-white/90 text-slate-900 border-slate-100'
                         }`}>
