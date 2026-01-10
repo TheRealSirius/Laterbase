@@ -13,7 +13,19 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                 inputRef.current?.select();
             }, 100);
         }
-    }, [isOpen, product]);
+
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+
+        if (isOpen) {
+            window.addEventListener('keydown', handleEsc);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, [isOpen, product, onClose]);
 
     if (!isOpen) return null;
 
@@ -25,7 +37,10 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={onClose}
+        >
             <div
                 className={`w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden border animate-in zoom-in duration-200 ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-200'
                     }`}
@@ -37,9 +52,11 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                     </h3>
                     <button
                         onClick={onClose}
-                        className={`p-1 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500' : 'hover:bg-slate-100 text-slate-400'
+                        className={`p-1 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-900'
                             }`}
-                        PalX size={16} />
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
@@ -55,8 +72,8 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                             onChange={(e) => setNewPrice(e.target.value)}
                             placeholder="0.00"
                             className={`w-full px-4 py-3 rounded-xl text-lg font-bold outline-none transition-all border ${isDarkMode
-                                    ? 'bg-zinc-950 border-zinc-800 text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20'
-                                    : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20'
+                                ? 'bg-zinc-950 border-zinc-800 text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20'
+                                : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20'
                                 }`}
                         />
                     </div>
@@ -66,7 +83,7 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                         className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
                         <Save size={18} />
-                        Salva Prezzo
+                        Salva prezzo
                     </button>
                 </form>
             </div>
