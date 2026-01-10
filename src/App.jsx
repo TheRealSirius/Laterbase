@@ -150,11 +150,16 @@ const App = () => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (active && over && active.id !== over.id) {
+      setSortBy('manual'); // Switch to manual sorting on drag
       setProducts((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+
+        // Immediate persistence
+        localStorage.setItem('wishlist_products', JSON.stringify(newOrder));
+        return newOrder;
       });
     }
   };
@@ -259,6 +264,7 @@ const App = () => {
 
     return matchesCategory && matchesStatus && matchesSearch && matchesTime;
   }).sort((a, b) => {
+    if (sortBy === 'manual') return 0; // Keep current array order
     if (sortBy === 'price-asc') return Number(a.price) - Number(b.price);
     if (sortBy === 'price-desc') return Number(b.price) - Number(a.price);
     if (sortBy === 'priority') return Number(b.priority || '2') - Number(a.priority || '2');
@@ -411,6 +417,7 @@ const App = () => {
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
               >
                 <option value="recent">Ultimi Aggiunti</option>
+                <option value="manual">✋ Ordinamento Manuale</option>
                 <option value="best_deal">🎯 Miglior Affare</option>
                 <option value="priority">Ordina per Priorità</option>
                 <option value="price-asc">Prezzo (Crescente)</option>
