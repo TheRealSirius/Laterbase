@@ -96,7 +96,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                         {product.category}
                     </span>
                     {discount > 0 && !product.isPurchased && (
-                        <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border w-fit animate-pulse ${isDarkMode ? 'bg-emerald-950/50 text-emerald-400 border-emerald-900/50' : 'bg-emerald-50/90 text-emerald-600 border-emerald-100'
+                        <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border w-fit ${isDarkMode ? 'bg-emerald-950/50 text-emerald-400 border-emerald-900/50' : 'bg-emerald-50/90 text-emerald-600 border-emerald-100'
                             }`}>
                             -{discount}% RISPARMIO
                         </span>
