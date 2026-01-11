@@ -1,7 +1,7 @@
 import React from 'react';
 import { CreditCard, ShoppingCart, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 
-const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick }) => {
+const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick, isPublicView }) => {
     const activeWishlist = products.filter(p => !p.isPurchased);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
 
@@ -24,10 +24,10 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
             color: 'bg-indigo-500',
             bgClass: isDarkMode ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100',
             iconColor: 'text-indigo-500',
-            clickable: true,
+            clickable: !isPublicView,
             onClick: onWishlistClick
         },
-        {
+        ...(!isPublicView ? [{
             label: 'Speso questo Mese',
             value: `€ ${monthlySpent.toFixed(2)}`,
             icon: <CreditCard size={20} />,
@@ -36,7 +36,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
             iconColor: 'text-emerald-500',
             clickable: true,
             onClick: onSpentClick
-        },
+        }] : []),
         {
             label: 'Oggetti in Lista',
             value: activeWishlist.length,
@@ -44,7 +44,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
             color: 'bg-orange-500',
             bgClass: isDarkMode ? 'bg-orange-500/10 border-orange-500/20' : 'bg-orange-50 border-orange-100',
             iconColor: 'text-orange-500',
-            clickable: true,
+            clickable: !isPublicView,
             onClick: onCountClick
         },
     ];

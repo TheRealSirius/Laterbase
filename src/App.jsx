@@ -45,6 +45,24 @@ const App = () => {
   const [showWishlistRecap, setShowWishlistRecap] = useState(false);
   const [activeProductForPriceUpdate, setActiveProductForPriceUpdate] = useState(null);
   const [toast, setToast] = useState(null);
+  const [isPublicView, setIsPublicView] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedData = params.get('data');
+    if (sharedData) {
+      try {
+        const decoded = JSON.parse(atob(sharedData));
+        if (Array.isArray(decoded)) {
+          setProducts(decoded);
+          setIsPublicView(true);
+          showToast('Visualizzando wishlist condivisa');
+        }
+      } catch (e) {
+        console.error('Errore decodifica dati condivisi', e);
+      }
+    }
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -73,14 +91,12 @@ const App = () => {
   };
 
   const copyWishlist = () => {
-    const list = products
-      .filter(p => !p.isPurchased)
-      .map(p => `- ${p.name}: €${Number(p.price).toFixed(2)}`)
-      .join('\n');
+    const listData = products.filter(p => !p.isPurchased);
+    const encodedData = btoa(JSON.stringify(listData));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
 
-    const text = `La mia Wishlist:\n\n${list || 'La lista è vuota.'}`;
-    navigator.clipboard.writeText(text);
-    showToast('Lista copiata negli appunti!');
+    navigator.clipboard.writeText(shareUrl);
+    showToast('Link live copiato negli appunti!');
   };
 
   const handleExport = () => {
@@ -165,8 +181,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    localStorage.setItem('wishlist_products', JSON.stringify(products));
-  }, [products]);
+    if (!isPublicView) {
+      localStorage.setItem('wishlist_products', JSON.stringify(products));
+    }
+  }, [products, isPublicView]);
 
   useEffect(() => {
     localStorage.setItem('wishlist_categories', JSON.stringify(categories));
@@ -332,8 +350,12 @@ const App = () => {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="flex items-center justify-between w-full md:w-auto">
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight">Wishlist & Shopping</h1>
-              <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} mt-1`}>Gestisci i tuoi desideri e acquisti in modo smart.</p>
+              <h1 className="text-3xl font-semibold tracking-tight">
+                {isPublicView ? 'Ecco la tua Wishlist!' : 'Wishlist & Shopping'}
+              </h1>
+              <p className={`${isDarkMode ? 'text-zinc-500' : 'text-slate-500'} mt-1`}>
+                {isPublicView ? 'Visualizzazione pubblica di sola lettura.' : 'Gestisci i tuoi desideri e acquisti in modo smart.'}
+              </p>
             </div>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
@@ -343,48 +365,66 @@ const App = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative group flex-1 md:flex-none">
-              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isDarkMode ? 'text-zinc-600 group-focus-within:text-white' : 'text-slate-400 group-focus-within:text-slate-900'}`} size={18} />
-              <input
-                type="text"
-                placeholder="Cerca prodotti..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 pr-4 py-2.5 rounded-full text-sm font-medium focus:ring-2 focus:outline-none transition-all w-full md:w-64 ${isDarkMode
-                  ? 'bg-zinc-900 border-zinc-800 focus:ring-zinc-700 placeholder:text-zinc-600'
-                  : 'bg-white border-slate-200 focus:ring-slate-900 placeholder:text-slate-300'
-                  }`}
-              />
-            </div>
-            <div className="flex items-center gap-2">
+          {!isPublicView ? (
+            <div className="flex items-center gap-3">
+              <div className="relative group flex-1 md:flex-none">
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isDarkMode ? 'text-zinc-600 group-focus-within:text-white' : 'text-slate-400 group-focus-within:text-slate-900'}`} size={18} />
+                <input
+                  type="text"
+                  placeholder="Cerca prodotti..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`pl-10 pr-4 py-2.5 rounded-full text-sm font-medium focus:ring-2 focus:outline-none transition-all w-full md:w-64 ${isDarkMode
+                    ? 'bg-zinc-900 border-zinc-800 focus:ring-zinc-700 placeholder:text-zinc-600'
+                    : 'bg-white border-slate-200 focus:ring-slate-900 placeholder:text-slate-300'
+                    }`}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleExport}
+                  className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
+                  title="Esporta Backup (JSON)"
+                >
+                  <Download size={18} />
+                </button>
+                <label className={`p-2.5 rounded-full transition-all cursor-pointer ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`} title="Importa Backup (JSON)">
+                  <Upload size={18} />
+                  <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                </label>
+              </div>
               <button
-                onClick={handleExport}
-                className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
-                title="Esporta Backup (JSON)"
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`hidden md:flex p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-yellow-400 hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
               >
-                <Download size={18} />
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-              <label className={`p-2.5 rounded-full transition-all cursor-pointer ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`} title="Importa Backup (JSON)">
-                <Upload size={18} />
-                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
-              </label>
+              <button
+                onClick={() => setShowForm(true)}
+                className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800'
+                  }`}
+              >
+                <Plus size={18} />
+                <span className="hidden sm:inline">Nuovo Prodotto</span>
+              </button>
             </div>
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`hidden md:flex p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-yellow-400 hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <button
-              onClick={() => setShowForm(true)}
-              className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800'
-                }`}
-            >
-              <Plus size={18} />
-              <span className="hidden sm:inline">Nuovo Prodotto</span>
-            </button>
-          </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => window.location.href = window.location.pathname}
+                className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 text-slate-900 hover:bg-slate-50'
+                  }`}
+              >
+                Crea la tua Wishlist
+              </button>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-yellow-400 hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-slate-600'}`}
+              >
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            </div>
+          )}
         </header>
 
         <Dashboard
@@ -393,6 +433,7 @@ const App = () => {
           onSpentClick={() => setAnalysisMode('spent')}
           onWishlistClick={() => setAnalysisMode('wishlist')}
           onCountClick={() => setShowWishlistRecap(true)}
+          isPublicView={isPublicView}
         />
 
         <div className="mt-12 space-y-8">
@@ -409,33 +450,37 @@ const App = () => {
             />
 
             <div className="flex items-center gap-2 px-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={`border-none text-xs font-bold uppercase tracking-wider py-2 pl-3 pr-8 rounded-lg focus:ring-0 cursor-pointer transition-colors appearance-none ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                  }`}
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
-              >
-                <option value="recent">Ultimi Aggiunti</option>
-                <option value="manual">✋ Ordinamento Manuale</option>
-                <option value="best_deal">🎯 Miglior Affare</option>
-                <option value="priority">Ordina per Priorità</option>
-                <option value="price-asc">Prezzo (Crescente)</option>
-                <option value="price-desc">Prezzo (Decrescente)</option>
-              </select>
+              {!isPublicView && (
+                <>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className={`border-none text-xs font-bold uppercase tracking-wider py-2 pl-3 pr-8 rounded-lg focus:ring-0 cursor-pointer transition-colors appearance-none ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                      }`}
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
+                  >
+                    <option value="recent">Ultimi Aggiunti</option>
+                    <option value="manual">✋ Ordinamento Manuale</option>
+                    <option value="best_deal">🎯 Miglior Affare</option>
+                    <option value="priority">Ordina per Priorità</option>
+                    <option value="price-asc">Prezzo (Crescente)</option>
+                    <option value="price-desc">Prezzo (Decrescente)</option>
+                  </select>
 
-              <div className={`w-px h-6 mx-2 hidden md:block ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
+                  <div className={`w-px h-6 mx-2 hidden md:block ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
 
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
-                  ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
-                  : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
-                  } whitespace-nowrap`}
-              >
-                {showHistory ? <Package size={16} /> : <History size={16} />}
-                {showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}
-              </button>
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
+                      ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
+                      : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
+                      } whitespace-nowrap`}
+                  >
+                    {showHistory ? <Package size={16} /> : <History size={16} />}
+                    {showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -519,6 +564,7 @@ const App = () => {
                         onShowToast={showToast}
                         onCheckPrice={(p) => setActiveProductForPriceUpdate(p)}
                         isDarkMode={isDarkMode}
+                        isPublicView={isPublicView}
                       />
                     ))}
                   </div>

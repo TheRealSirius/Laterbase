@@ -3,7 +3,7 @@ import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripV
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode }) => {
+const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView }) => {
     const {
         attributes,
         listeners,
@@ -52,8 +52,8 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
             ref={setNodeRef}
             style={style}
             id={product.id}
-            onClick={() => onEdit(product)}
-            className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer flex flex-col ${isDarkMode
+            onClick={() => !isPublicView && onEdit(product)}
+            className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${!isPublicView ? 'cursor-pointer' : 'cursor-default'} flex flex-col ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                 : 'bg-white border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1'
                 } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''} ${isTargetReached && !product.isPurchased
@@ -77,7 +77,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                     </div>
                 )}
 
-                {!product.isPurchased && (
+                {!product.isPurchased && !isPublicView && (
                     <div
                         {...attributes}
                         {...listeners}
@@ -138,7 +138,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                     </div>
                     <div className="flex flex-col items-end">
                         <div className="flex items-center gap-2">
-                            {!product.isPurchased && (
+                            {!product.isPurchased && !isPublicView && (
                                 <button
                                     onClick={handleCheckPrice}
                                     className={`p-1 rounded-md transition-all ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-900'}`}
@@ -202,27 +202,31 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                             onClick={handleShare}
                             className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-slate-100 text-slate-400 hover:text-slate-900 hover:bg-slate-200'
                                 }`}
-                            title="Condividi"
+                            title="Copia link singolo"
                         >
                             <Share2 size={16} />
                         </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onTogglePurchase(product.id); }}
-                            className={`p-2.5 rounded-xl transition-all ${product.isPurchased
-                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                                : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-emerald-400' : 'bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-slate-200')
-                                }`}
-                            title={product.isPurchased ? "Rimuovi dallo storico" : "Segna come Acquistato"}
-                        >
-                            <CheckCircle size={16} />
-                        </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
-                            className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-rose-400' : 'bg-slate-100 text-slate-400 hover:text-rose-500 hover:bg-slate-200'
-                                }`}
-                        >
-                            <Trash2 size={16} />
-                        </button>
+                        {!isPublicView && (
+                            <>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onTogglePurchase(product.id); }}
+                                    className={`p-2.5 rounded-xl transition-all ${product.isPurchased
+                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                                        : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-emerald-400' : 'bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-slate-200')
+                                        }`}
+                                    title={product.isPurchased ? "Rimuovi dallo storico" : "Segna come Acquistato"}
+                                >
+                                    <CheckCircle size={16} />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
+                                    className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-rose-400' : 'bg-slate-100 text-slate-400 hover:text-rose-500 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
