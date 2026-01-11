@@ -22,6 +22,49 @@ import BudgetAnalysisModal from './components/BudgetAnalysisModal';
 import WishlistRecapModal from './components/WishlistRecapModal';
 import PriceUpdateModal from './components/PriceUpdateModal';
 
+const STORAGE_KEY = 'wishlist_products';
+const CATEGORIES_KEY = 'wishlist_categories';
+
+const KEY_MAP = {
+  name: 'n',
+  price: 'p',
+  category: 'c',
+  url: 'u',
+  imageUrl: 'i',
+  targetPrice: 't',
+  priority: 'r',
+  isPurchased: 's'
+};
+
+const REVERSE_KEY_MAP = Object.fromEntries(
+  Object.entries(KEY_MAP).map(([key, value]) => [value, key])
+);
+
+const shrinkWishlistData = (products) => {
+  return products.map(p => {
+    const shrunk = {};
+    Object.entries(KEY_MAP).forEach(([longKey, shortKey]) => {
+      if (p[longKey] !== undefined && p[longKey] !== null && p[longKey] !== '') {
+        shrunk[shortKey] = p[longKey];
+      }
+    });
+    return shrunk;
+  });
+};
+
+const expandWishlistData = (shrunkArray) => {
+  return shrunkArray.map((shrunk, index) => {
+    const expanded = { id: `pub-${index}-${Date.now()}` };
+    Object.entries(shrunk).forEach(([shortKey, value]) => {
+      const longKey = REVERSE_KEY_MAP[shortKey];
+      if (longKey) {
+        expanded[longKey] = value;
+      }
+    });
+    return expanded;
+  });
+};
+
 const App = () => {
   const [products, setProducts] = useState(() => {
     const saved = localStorage.getItem('wishlist_products');
@@ -60,12 +103,17 @@ const App = () => {
         if (decompressed) {
           decodedData = JSON.parse(decompressed);
         } else {
-          // Fallback to Base64 if lz-string fails
+          // Fallback to Base64 (legacy Phase 4)
           decodedData = JSON.parse(atob(sharedData));
         }
 
         if (Array.isArray(decodedData)) {
-          setProducts(decodedData);
+          // Check if data is shrunk (Phase 8) or full-key (Phase 4/7)
+          // We check if the first item has a 'name' key. If not, and it has 'n', it's shrunk.
+          const isShrunk = decodedData.length > 0 && !decodedData[0].name && decodedData[0].n;
+          const finalData = isShrunk ? expandWishlistData(decodedData) : decodedData;
+
+          setProducts(finalData);
           setIsPublicView(true);
           showToast('Visualizzando wishlist condivisa');
         }
@@ -102,12 +150,13 @@ const App = () => {
   };
 
   const copyWishlist = () => {
-    const listData = products.filter(p => !p.isPurchased);
-    const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(listData));
+    const activeProducts = products.filter(p => !p.isPurchased);
+    const shrunkData = shrinkWishlistData(activeProducts);
+    const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(shrunkData));
     const shareUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
 
     navigator.clipboard.writeText(shareUrl);
-    showToast('Link live copiato negli appunti!');
+    showToast('Link live ottimizzato copiato!');
   };
 
   const handleExport = () => {
