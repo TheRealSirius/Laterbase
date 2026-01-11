@@ -54,14 +54,14 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
             {stats.map((stat, idx) => (
                 <div
                     key={idx}
-                    onClick={stat.onClick}
-                    tabIndex={stat.clickable ? 0 : -1}
-                    className={`p-6 rounded-3xl border transition-all duration-300 focus:outline-none focus:ring-0 ${stat.clickable
+                    onClick={!isPublicView ? stat.onClick : undefined}
+                    tabIndex={stat.clickable && !isPublicView ? 0 : -1}
+                    className={`p-6 rounded-3xl border transition-all duration-300 focus:outline-none focus:ring-0 ${stat.clickable && !isPublicView
                         ? 'cursor-pointer hover:shadow-md'
                         : 'cursor-default'
                         } ${isDarkMode
-                            ? `bg-zinc-900 border-zinc-800 ${stat.clickable ? 'hover:border-zinc-700 hover:bg-zinc-800/80' : ''}`
-                            : `bg-white border-slate-100 shadow-sm ${stat.clickable ? 'hover:border-slate-200' : ''}`
+                            ? `bg-zinc-900 border-zinc-800 ${stat.clickable && !isPublicView ? 'hover:border-zinc-700 hover:bg-zinc-800/80' : ''}`
+                            : `bg-white border-slate-100 shadow-sm ${stat.clickable && !isPublicView ? 'hover:border-slate-200' : ''}`
                         }`}
                 >
                     <div className="flex items-center gap-4 mb-4">
@@ -74,7 +74,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                     </div>
                     <div className="flex items-baseline justify-between gap-2">
                         <span className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stat.value}</span>
-                        {stat.clickable && (
+                        {stat.clickable && !isPublicView && (
                             <ChevronRight size={16} className={isDarkMode ? 'text-zinc-700' : 'text-slate-300'} />
                         )}
                     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import LZString from 'lz-string';
 import {
   DndContext,
   closestCenter,
@@ -52,9 +53,19 @@ const App = () => {
     const sharedData = params.get('data');
     if (sharedData) {
       try {
-        const decoded = JSON.parse(atob(sharedData));
-        if (Array.isArray(decoded)) {
-          setProducts(decoded);
+        let decodedData;
+
+        // Try LZ-String decompression first
+        const decompressed = LZString.decompressFromEncodedURIComponent(sharedData);
+        if (decompressed) {
+          decodedData = JSON.parse(decompressed);
+        } else {
+          // Fallback to Base64 if lz-string fails
+          decodedData = JSON.parse(atob(sharedData));
+        }
+
+        if (Array.isArray(decodedData)) {
+          setProducts(decodedData);
           setIsPublicView(true);
           showToast('Visualizzando wishlist condivisa');
         }
@@ -92,8 +103,8 @@ const App = () => {
 
   const copyWishlist = () => {
     const listData = products.filter(p => !p.isPurchased);
-    const encodedData = btoa(JSON.stringify(listData));
-    const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
+    const compressedData = LZString.compressToEncodedURIComponent(JSON.stringify(listData));
+    const shareUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
 
     navigator.clipboard.writeText(shareUrl);
     showToast('Link live copiato negli appunti!');
