@@ -53,7 +53,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
             style={style}
             id={product.id}
             onClick={() => onEdit(product)}
-            className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer ${isDarkMode
+            className={`group rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer flex flex-col ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                 : 'bg-white border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1'
                 } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''} ${isTargetReached && !product.isPurchased
@@ -126,7 +126,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                 )}
             </div>
 
-            <div className="p-5">
+            <div className="p-5 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-2">
                     <div className="flex flex-col gap-1 min-w-0 pr-4">
                         <div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                                 <button
                                     onClick={handleCheckPrice}
                                     className={`p-1 rounded-md transition-all ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-900'}`}
-                                    title="Verifica Prezzo"
+                                    title={product.lastChecked ? `Ultimo controllo: ${new Date(product.lastChecked).toLocaleDateString()}` : "Verifica Prezzo"}
                                 >
                                     <RefreshCw size={14} />
                                 </button>
@@ -158,15 +158,10 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                                 <span className={`text-[10px] line-through ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>€{initialPrice.toFixed(2)}</span>
                             )
                         )}
-                        {product.lastChecked && (
-                            <span className={`text-[9px] mt-1 ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
-                                Ultimo controllo: {new Date(product.lastChecked).toLocaleDateString()}
-                            </span>
-                        )}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 mt-6">
+                <div className="flex items-center gap-3 mt-auto">
                     {(() => {
                         const url = product.url || '';
                         let domain = 'Vai allo Store';

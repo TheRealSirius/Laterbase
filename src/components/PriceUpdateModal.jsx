@@ -46,10 +46,17 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                     }`}
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="p-4 border-b border-zinc-800/50 flex justify-between items-center">
-                    <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                        Aggiorna Prezzo
-                    </h3>
+                <div className="p-4 border-b border-zinc-800/50 flex justify-between items-start">
+                    <div>
+                        <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                            Aggiorna Prezzo
+                        </h3>
+                        {product?.lastChecked && (
+                            <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+                                Controllo: {new Date(product.lastChecked).toLocaleDateString()}
+                            </p>
+                        )}
+                    </div>
                     <button
                         onClick={onClose}
                         className={`p-1 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500 hover:text-white' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-900'

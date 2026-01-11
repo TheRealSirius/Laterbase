@@ -47,8 +47,15 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="p-8 overflow-y-auto">
-                    <div className="flex justify-between items-center mb-8">
-                        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{initialData ? 'Modifica Prodotto' : 'Nuovo Desiderio'}</h2>
+                    <div className="flex justify-between items-start mb-8">
+                        <div>
+                            <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{initialData ? 'Modifica Prodotto' : 'Nuovo Desiderio'}</h2>
+                            {initialData?.lastChecked && (
+                                <p className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+                                    Ultimo controllo: <span className={isDarkMode ? 'text-zinc-400' : 'text-slate-500'}>{new Date(initialData.lastChecked).toLocaleDateString()} {new Date(initialData.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                </p>
+                            )}
+                        </div>
                         <button
                             onClick={onClose}
                             className={`p-2 rounded-full transition-all ${isDarkMode ? 'hover:bg-zinc-800 text-zinc-500' : 'hover:bg-slate-100 text-slate-400'}`}
