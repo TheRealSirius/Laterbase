@@ -503,15 +503,17 @@ const App = () => {
 
             {!showHistory ? (
               <div className="flex items-center gap-4">
-                <button
-                  onClick={copyWishlist}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${isDarkMode ? 'text-zinc-500 hover:text-white hover:bg-zinc-900' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'
-                    }`}
-                  title="Copia l'intera lista"
-                >
-                  <Share2 size={14} />
-                  <span>Copia Lista</span>
-                </button>
+                {!isPublicView && (
+                  <button
+                    onClick={copyWishlist}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${isDarkMode ? 'text-zinc-500 hover:text-white hover:bg-zinc-900' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    title="Copia l'intera lista"
+                  >
+                    <Share2 size={14} />
+                    <span>Copia Lista</span>
+                  </button>
+                )}
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-500' : 'text-slate-500'}`}>Totale {selectedCategory === 'Tutti' ? 'Wishlist' : selectedCategory}</span>
                   <span className="text-lg font-bold">€ {categoryRecapValue.toFixed(2)}</span>
