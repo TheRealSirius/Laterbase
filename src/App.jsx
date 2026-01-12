@@ -550,6 +550,7 @@ const App = () => {
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
                       } whitespace-nowrap`}
                   >
+                    <History size={16} />
                     {showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}
                   </button>
 
