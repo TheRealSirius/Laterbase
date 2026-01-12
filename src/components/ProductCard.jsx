@@ -161,10 +161,10 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 mt-auto">
+                <div className="flex items-center gap-2 mt-auto">
                     {(() => {
                         const url = product.url || '';
-                        let domain = 'Vai allo Store';
+                        let domain = 'Store';
                         let Icon = ExternalLink;
 
                         try {
@@ -175,11 +175,11 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                                 if (domain.includes('amazon')) {
                                     Icon = ShoppingBag;
                                 } else if (domain.includes('apple')) {
-                                    Icon = Package; // Placeholder for Apple-specific icon logic if needed
+                                    Icon = ExternalLink; // Avoiding Package which might be undefined
                                 }
                             }
                         } catch (e) {
-                            // Invalid URL, fallback to default
+                            // Invalid URL
                         }
 
                         return (
@@ -188,56 +188,54 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all ${isDarkMode ? 'bg-zinc-800 text-white hover:bg-zinc-700' : 'bg-slate-900 text-white hover:bg-slate-800'
+                                className={`p-2.5 rounded-xl transition-all shadow-sm ${isDarkMode ? 'bg-zinc-950 text-white hover:bg-black border border-zinc-800' : 'bg-slate-900 text-white hover:bg-black'
                                     }`}
+                                title={`Vai a ${domain}`}
                             >
-                                <Icon size={14} />
-                                <span className="capitalize">{domain}</span>
+                                <Icon size={16} />
                             </a>
                         );
                     })()}
 
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleShare}
-                            className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-slate-100 text-slate-400 hover:text-slate-900 hover:bg-slate-200'
-                                }`}
-                            title="Copia link singolo"
-                        >
-                            <Share2 size={16} />
-                        </button>
-                        {!isPublicView && (
-                            <>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onTogglePurchase(product.id); }}
-                                    className={`p-2.5 rounded-xl transition-all ${product.isPurchased
-                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
-                                        : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-emerald-400' : 'bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-slate-200')
-                                        }`}
-                                    title={product.isPurchased ? "Rimuovi dallo storico" : "Segna come Acquistato"}
-                                >
-                                    <CheckCircle size={16} />
-                                </button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onToggleArchive(product.id); }}
-                                    className={`p-2.5 rounded-xl transition-all ${product.isArchived
-                                        ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
-                                        : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-amber-400' : 'bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-slate-200')
-                                        }`}
-                                    title={product.isArchived ? "Riporta in lista" : "Sposta nei Sogni nel Cassetto"}
-                                >
-                                    <Archive size={16} />
-                                </button>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
-                                    className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-rose-400' : 'bg-slate-100 text-slate-400 hover:text-rose-500 hover:bg-slate-200'
-                                        }`}
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </>
-                        )}
-                    </div>
+                    <button
+                        onClick={handleShare}
+                        className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700' : 'bg-slate-100 text-slate-400 hover:text-slate-900 hover:bg-slate-200'
+                            }`}
+                        title="Copia link singolo"
+                    >
+                        <Share2 size={16} />
+                    </button>
+                    {!isPublicView && (
+                        <>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onTogglePurchase(product.id); }}
+                                className={`p-2.5 rounded-xl transition-all ${product.isPurchased
+                                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+                                    : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-emerald-400' : 'bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-slate-200')
+                                    }`}
+                                title={product.isPurchased ? "Rimuovi dallo storico" : "Segna come Acquistato"}
+                            >
+                                <CheckCircle size={16} />
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onToggleArchive(product.id); }}
+                                className={`p-2.5 rounded-xl transition-all ${product.isArchived
+                                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
+                                    : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-amber-400' : 'bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-slate-200')
+                                    }`}
+                                title={product.isArchived ? "Riporta in lista" : "Sposta nei Sogni nel Cassetto"}
+                            >
+                                <Archive size={16} />
+                            </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
+                                className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-rose-400' : 'bg-slate-100 text-slate-400 hover:text-rose-500 hover:bg-slate-200'
+                                    }`}
+                            >
+                                <Trash2 size={16} />
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
