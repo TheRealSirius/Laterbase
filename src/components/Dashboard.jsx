@@ -2,7 +2,7 @@ import React from 'react';
 import { CreditCard, ShoppingCart, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 
 const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick, isPublicView }) => {
-    const activeWishlist = products.filter(p => !p.isPurchased);
+    const activeWishlist = products.filter(p => !p.isPurchased && !p.isArchived);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
 
     const currentMonth = new Date().getMonth();

@@ -21,6 +21,7 @@ import ProductForm from './components/ProductForm';
 import BudgetAnalysisModal from './components/BudgetAnalysisModal';
 import WishlistRecapModal from './components/WishlistRecapModal';
 import PriceUpdateModal from './components/PriceUpdateModal';
+import ArchiveModal from './components/ArchiveModal';
 
 const STORAGE_KEY = 'wishlist_products';
 const CATEGORIES_KEY = 'wishlist_categories';
@@ -33,7 +34,8 @@ const KEY_MAP = {
   imageUrl: 'i',
   targetPrice: 't',
   priority: 'r',
-  isPurchased: 's'
+  isPurchased: 's',
+  isArchived: 'a'
 };
 
 const REVERSE_KEY_MAP = Object.fromEntries(
@@ -87,6 +89,7 @@ const App = () => {
   const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
   const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
   const [showWishlistRecap, setShowWishlistRecap] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
   const [activeProductForPriceUpdate, setActiveProductForPriceUpdate] = useState(null);
   const [toast, setToast] = useState(null);
   const [isPublicView, setIsPublicView] = useState(false);
@@ -256,6 +259,7 @@ const App = () => {
       id: crypto.randomUUID(),
       initialPrice: parseFloat(product.price),
       isPurchased: false,
+      isArchived: false,
       createdAt: new Date().toISOString(),
     };
     setProducts([newProduct, ...products]);
@@ -276,6 +280,16 @@ const App = () => {
     setProducts(products.map(p =>
       p.id === id ? { ...p, isPurchased: !p.isPurchased, purchaseDate: !p.isPurchased ? new Date().toISOString() : null } : p
     ));
+  };
+
+  const toggleArchive = (id) => {
+    setProducts(products.map(p =>
+      p.id === id ? { ...p, isArchived: !p.isArchived } : p
+    ));
+    const p = products.find(prod => prod.id === id);
+    if (p) {
+      showToast(!p.isArchived ? 'Spostato ne "I Sogni nel Cassetto"' : 'Riportato nella Wishlist');
+    }
   };
 
   const deleteProduct = (id) => {
@@ -323,7 +337,7 @@ const App = () => {
 
   const filteredProducts = products.filter(p => {
     const matchesCategory = selectedCategory === 'Tutti' || p.category === selectedCategory;
-    const matchesStatus = showHistory ? p.isPurchased : !p.isPurchased;
+    const matchesStatus = showHistory ? p.isPurchased : (!p.isPurchased && !p.isArchived);
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     let matchesTime = true;
@@ -359,7 +373,7 @@ const App = () => {
   });
 
   const categoryRecapValue = products
-    .filter(p => (selectedCategory === 'Tutti' || p.category === selectedCategory) && !p.isPurchased)
+    .filter(p => (selectedCategory === 'Tutti' || p.category === selectedCategory) && !p.isPurchased && !p.isArchived)
     .reduce((sum, p) => sum + Number(p.price), 0);
 
   const addCategory = (name) => {
@@ -536,8 +550,18 @@ const App = () => {
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
                       } whitespace-nowrap`}
                   >
-                    {showHistory ? <Package size={16} /> : <History size={16} />}
                     {showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}
+                  </button>
+
+                  <button
+                    onClick={() => setShowArchive(true)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showArchive
+                      ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
+                      : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
+                      } whitespace-nowrap`}
+                  >
+                    <Package size={16} />
+                    Vedi Archivio
                   </button>
                 </>
               )}
@@ -621,6 +645,7 @@ const App = () => {
                         key={product.id}
                         product={product}
                         onTogglePurchase={togglePurchased}
+                        onToggleArchive={toggleArchive}
                         onDelete={deleteProduct}
                         onEdit={(p) => setEditingProduct(p)}
                         onShowToast={showToast}
@@ -697,6 +722,15 @@ const App = () => {
           products={products}
           isDarkMode={isDarkMode}
           onNavigate={handleScrollToProduct}
+        />
+      )}
+
+      {showArchive && (
+        <ArchiveModal
+          onClose={() => setShowArchive(false)}
+          products={products}
+          isDarkMode={isDarkMode}
+          onToggleArchive={toggleArchive}
         />
       )}
 

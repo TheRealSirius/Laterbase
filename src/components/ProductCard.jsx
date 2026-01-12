@@ -1,9 +1,9 @@
 import React from 'react';
-import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical, RefreshCw, Eye } from 'lucide-react';
+import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical, RefreshCw, Eye, Archive } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView }) => {
+const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView }) => {
     const {
         attributes,
         listeners,
@@ -217,6 +217,16 @@ const ProductCard = ({ product, onTogglePurchase, onDelete, onEdit, onShowToast,
                                     title={product.isPurchased ? "Rimuovi dallo storico" : "Segna come Acquistato"}
                                 >
                                     <CheckCircle size={16} />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); onToggleArchive(product.id); }}
+                                    className={`p-2.5 rounded-xl transition-all ${product.isArchived
+                                        ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
+                                        : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-amber-400' : 'bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-slate-200')
+                                        }`}
+                                    title={product.isArchived ? "Riporta in lista" : "Sposta nei Sogni nel Cassetto"}
+                                >
+                                    <Archive size={16} />
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}

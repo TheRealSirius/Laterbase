@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target } from 'lucide-react';
+import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target, Archive } from 'lucide-react';
 
 const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode }) => {
     const [formData, setFormData] = useState({
@@ -11,6 +11,7 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
         priority: initialData?.priority || '2', // Default to Medium (2)
         notes: initialData?.notes || '',
         targetPrice: initialData?.targetPrice || '',
+        isArchived: initialData?.isArchived || false,
     });
 
     const handleSubmit = (e) => {
@@ -149,6 +150,30 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
                                 </div>
                             </div>
                         </div>
+
+                        {initialData && (
+                            <div className="flex items-center justify-between p-4 rounded-2xl border transition-all bg-amber-500/5 border-amber-500/10">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-2 rounded-xl bg-amber-500/10 text-amber-500`}>
+                                        <Archive size={18} />
+                                    </div>
+                                    <div>
+                                        <p className={`text-sm font-bold ${isDarkMode ? 'text-zinc-200' : 'text-slate-700'}`}>Sogno nel Cassetto</p>
+                                        <p className={`text-[10px] font-medium ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Archivia per non influenzare il budget</p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, isArchived: !formData.isArchived })}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.isArchived ? 'bg-amber-500' : (isDarkMode ? 'bg-zinc-800' : 'bg-slate-200')}`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isArchived ? 'translate-x-6' : 'translate-x-1'}`}
+                                    />
+                                </button>
+                            </div>
+                        )}
+
                         <div className="space-y-2">
                             <label className={`text-xs font-bold uppercase tracking-widest pl-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Categoria</label>
                             <div className="relative">
