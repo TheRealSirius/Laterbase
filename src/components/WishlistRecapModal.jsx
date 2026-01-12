@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { X, Tag, ArrowRight, ShoppingBag, Search } from 'lucide-react';
 
 const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
-    const activeItems = products.filter(p => !p.isPurchased);
+    const activeItems = products.filter(p => !p.isPurchased && !p.isArchived);
 
     useEffect(() => {
         const handleEsc = (e) => {

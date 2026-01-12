@@ -21,7 +21,7 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
             const pDate = new Date(p.purchaseDate);
             return pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear;
         } else {
-            return !p.isPurchased;
+            return !p.isPurchased && !p.isArchived;
         }
     });
 
@@ -114,7 +114,7 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                     <span className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-emerald-500/80' : 'text-emerald-600'}`}>Risparmio Potenziale:</span>
                                     <span className={`text-xs font-black ${isDarkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
                                         € {products
-                                            .filter(p => !p.isPurchased && p.targetPrice && Number(p.price) > Number(p.targetPrice))
+                                            .filter(p => !p.isPurchased && !p.isArchived && p.targetPrice && Number(p.price) > Number(p.targetPrice))
                                             .reduce((sum, p) => sum + (Number(p.price) - Number(p.targetPrice)), 0)
                                             .toFixed(2)}
                                     </span>
