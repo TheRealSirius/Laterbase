@@ -26,6 +26,7 @@ import LoginModal from './components/LoginModal';
 import MigrationModal from './components/MigrationModal';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
+import { supabase } from './lib/supabase';
 
 const STORAGE_KEY = 'wishlist_products';
 const CATEGORIES_KEY = 'wishlist_categories';
@@ -149,23 +150,67 @@ const App = () => {
 
   // Handler for migrating localStorage to cloud
   const handleMigrateToCloud = async () => {
-    if (!user) return;
+    // First verify we have a valid session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
+    if (sessionError || !session || !session.user) {
+      console.error('Session error:', sessionError);
+      showToast('Errore: sessione non valida. Riprova il login.');
+      return;
+    }
+
+    const userId = session.user.id;
     const localData = localStorage.getItem('wishlist_products');
-    const localProducts = localData ? JSON.parse(localData) : [];
+
+    if (!localData) {
+      showToast('Nessun dato locale da migrare.');
+      return;
+    }
+
+    let localProducts;
+    try {
+      localProducts = JSON.parse(localData);
+    } catch (parseError) {
+      console.error('Error parsing localStorage:', parseError);
+      showToast('Errore: dati locali corrotti.');
+      return;
+    }
+
+    if (!Array.isArray(localProducts) || localProducts.length === 0) {
+      showToast('Nessun prodotto da migrare.');
+      return;
+    }
 
     try {
-      const uploadedProducts = await productService.uploadLocalProducts(localProducts, user.id);
-      setProducts(uploadedProducts);
-      showToast('Dati migrati nel cloud con successo!');
+      // Upload to Supabase
+      await productService.uploadLocalProducts(localProducts, userId);
+
+      // Fetch from database to get the server-assigned data
+      const cloudProducts = await productService.fetchProducts(userId);
+      setProducts(cloudProducts);
+
+      showToast('Dati migrati nel cloud con successo! (' + localProducts.length + ' prodotti)');
     } catch (err) {
+      // DO NOT clear localStorage on error - preserve local data
       console.error('Migration error:', err);
-      showToast('Errore durante la migrazione');
+      const errorMessage = err.message || 'Errore sconosciuto';
+      showToast('Errore durante il caricamento: ' + errorMessage);
+
+      // Keep showing local products so user doesn't lose their data
+      setProducts(localProducts);
     }
   };
 
-  const handleSkipMigration = () => {
-    // User chose to start fresh - products already loaded from cloud (empty)
+  const handleSkipMigration = async () => {
+    // User chose to start fresh - reload from cloud (empty)
+    if (user) {
+      try {
+        const cloudProducts = await productService.fetchProducts(user.id);
+        setProducts(cloudProducts);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    }
     showToast('Ok, iniziamo da zero!');
   };
 
