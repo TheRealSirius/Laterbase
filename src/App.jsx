@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw, LogIn, LogOut, User } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import LZString from 'lz-string';
 import {
@@ -22,6 +22,10 @@ import BudgetAnalysisModal from './components/BudgetAnalysisModal';
 import WishlistRecapModal from './components/WishlistRecapModal';
 import PriceUpdateModal from './components/PriceUpdateModal';
 import ArchiveModal from './components/ArchiveModal';
+import LoginModal from './components/LoginModal';
+import MigrationModal from './components/MigrationModal';
+import { useAuth } from './context/AuthContext';
+import * as productService from './lib/productService';
 
 const STORAGE_KEY = 'wishlist_products';
 const CATEGORIES_KEY = 'wishlist_categories';
@@ -68,10 +72,9 @@ const expandWishlistData = (shrunkArray) => {
 };
 
 const App = () => {
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('wishlist_products');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user, loading: authLoading, signOut } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   const [categories, setCategories] = useState(() => {
     const saved = localStorage.getItem('wishlist_categories');
@@ -93,7 +96,80 @@ const App = () => {
   const [activeProductForPriceUpdate, setActiveProductForPriceUpdate] = useState(null);
   const [toast, setToast] = useState(null);
   const [isPublicView, setIsPublicView] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showMigrationModal, setShowMigrationModal] = useState(false);
+  const [hasCheckedMigration, setHasCheckedMigration] = useState(false);
 
+  // Load products based on auth state
+  useEffect(() => {
+    const loadProducts = async () => {
+      // Skip if it's a public view (shared link)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('data')) {
+        setIsLoadingProducts(false);
+        return;
+      }
+
+      if (authLoading) return;
+
+      if (user) {
+        // User is logged in - load from Supabase
+        try {
+          const cloudProducts = await productService.fetchProducts(user.id);
+          setProducts(cloudProducts);
+
+          // Check for migration: first login with localStorage data
+          if (!hasCheckedMigration) {
+            const localData = localStorage.getItem('wishlist_products');
+            const localProducts = localData ? JSON.parse(localData) : [];
+
+            // If cloud is empty but localStorage has data, offer migration
+            if (cloudProducts.length === 0 && localProducts.length > 0) {
+              setShowMigrationModal(true);
+            }
+            setHasCheckedMigration(true);
+          }
+        } catch (err) {
+          console.error('Error loading products from cloud:', err);
+          showToast('Errore nel caricamento dal cloud');
+          // Fallback to localStorage
+          const saved = localStorage.getItem('wishlist_products');
+          setProducts(saved ? JSON.parse(saved) : []);
+        }
+      } else {
+        // User is not logged in - load from localStorage
+        const saved = localStorage.getItem('wishlist_products');
+        setProducts(saved ? JSON.parse(saved) : []);
+      }
+      setIsLoadingProducts(false);
+    };
+
+    loadProducts();
+  }, [user, authLoading]);
+
+  // Handler for migrating localStorage to cloud
+  const handleMigrateToCloud = async () => {
+    if (!user) return;
+
+    const localData = localStorage.getItem('wishlist_products');
+    const localProducts = localData ? JSON.parse(localData) : [];
+
+    try {
+      const uploadedProducts = await productService.uploadLocalProducts(localProducts, user.id);
+      setProducts(uploadedProducts);
+      showToast('Dati migrati nel cloud con successo!');
+    } catch (err) {
+      console.error('Migration error:', err);
+      showToast('Errore durante la migrazione');
+    }
+  };
+
+  const handleSkipMigration = () => {
+    // User chose to start fresh - products already loaded from cloud (empty)
+    showToast('Ok, iniziamo da zero!');
+  };
+
+  // Handle shared wishlist data from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sharedData = params.get('data');
@@ -118,6 +194,7 @@ const App = () => {
 
           setProducts(finalData);
           setIsPublicView(true);
+          setIsLoadingProducts(false);
           showToast('Visualizzando wishlist condivisa');
         }
       } catch (e) {
@@ -244,16 +321,17 @@ const App = () => {
   };
 
   useEffect(() => {
-    if (!isPublicView) {
+    // Only persist to localStorage if not logged in and not public view
+    if (!isPublicView && !user && products.length > 0) {
       localStorage.setItem('wishlist_products', JSON.stringify(products));
     }
-  }, [products, isPublicView]);
+  }, [products, isPublicView, user]);
 
   useEffect(() => {
     localStorage.setItem('wishlist_categories', JSON.stringify(categories));
   }, [categories]);
 
-  const addProduct = (product) => {
+  const addProduct = async (product) => {
     const newProduct = {
       ...product,
       id: crypto.randomUUID(),
@@ -262,45 +340,118 @@ const App = () => {
       isArchived: false,
       createdAt: new Date().toISOString(),
     };
+
+    // Optimistic update
     setProducts([newProduct, ...products]);
+
     if (!categories.includes(product.category)) {
       setCategories([...categories, product.category]);
     }
+
+    // Sync to cloud if logged in
+    if (user) {
+      try {
+        const cloudProduct = await productService.createProduct(newProduct, user.id);
+        // Update with server-assigned ID if different
+        setProducts(prev => prev.map(p => p.id === newProduct.id ? cloudProduct : p));
+      } catch (err) {
+        console.error('Error saving to cloud:', err);
+        showToast('Errore nel salvataggio cloud');
+      }
+    }
   };
 
-  const updateProduct = (updatedProduct) => {
+  const updateProduct = async (updatedProduct) => {
+    // Optimistic update
     setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+
     if (!categories.includes(updatedProduct.category)) {
       setCategories([...categories, updatedProduct.category]);
     }
     setEditingProduct(null);
-  };
 
-  const togglePurchased = (id) => {
-    setProducts(products.map(p =>
-      p.id === id ? { ...p, isPurchased: !p.isPurchased, purchaseDate: !p.isPurchased ? new Date().toISOString() : null } : p
-    ));
-  };
-
-  const toggleArchive = (id) => {
-    setProducts(products.map(p =>
-      p.id === id ? { ...p, isArchived: !p.isArchived } : p
-    ));
-    const p = products.find(prod => prod.id === id);
-    if (p) {
-      showToast(!p.isArchived ? 'Spostato ne "I Sogni nel Cassetto"' : 'Riportato nella Wishlist');
+    // Sync to cloud if logged in
+    if (user) {
+      try {
+        await productService.updateProduct(updatedProduct);
+      } catch (err) {
+        console.error('Error updating in cloud:', err);
+        showToast('Errore nell\'aggiornamento cloud');
+      }
     }
   };
 
-  const deleteProduct = (id) => {
-    if (window.confirm('Sei sicuro di voler eliminare questo prodotto?')) {
-      setProducts(products.filter(p => p.id !== id));
+  const togglePurchased = async (id) => {
+    const targetProduct = products.find(p => p.id === id);
+    if (!targetProduct) return;
+
+    const newPurchasedState = !targetProduct.isPurchased;
+    const updatedProduct = {
+      ...targetProduct,
+      isPurchased: newPurchasedState,
+      purchaseDate: newPurchasedState ? new Date().toISOString() : null
+    };
+
+    // Optimistic update
+    setProducts(products.map(p => p.id === id ? updatedProduct : p));
+
+    // Sync to cloud if logged in
+    if (user) {
+      try {
+        await productService.updateProduct(updatedProduct);
+      } catch (err) {
+        console.error('Error updating purchase status in cloud:', err);
+        showToast('Errore nell\'aggiornamento cloud');
+      }
     }
   };
 
-  const updateProductPrice = (id, newPrice) => {
+  const toggleArchive = async (id) => {
+    const targetProduct = products.find(p => p.id === id);
+    if (!targetProduct) return;
+
+    const newArchivedState = !targetProduct.isArchived;
+    const updatedProduct = {
+      ...targetProduct,
+      isArchived: newArchivedState
+    };
+
+    // Optimistic update
+    setProducts(products.map(p => p.id === id ? updatedProduct : p));
+    showToast(newArchivedState ? 'Spostato ne "I Sogni nel Cassetto"' : 'Riportato nella Wishlist');
+
+    // Sync to cloud if logged in
+    if (user) {
+      try {
+        await productService.updateProduct(updatedProduct);
+      } catch (err) {
+        console.error('Error updating archive status in cloud:', err);
+        showToast('Errore nell\'aggiornamento cloud');
+      }
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    if (!window.confirm('Sei sicuro di voler eliminare questo prodotto?')) return;
+
+    // Optimistic update
+    setProducts(products.filter(p => p.id !== id));
+
+    // Sync to cloud if logged in
+    if (user) {
+      try {
+        await productService.deleteProduct(id);
+      } catch (err) {
+        console.error('Error deleting from cloud:', err);
+        showToast('Errore nell\'eliminazione dal cloud');
+      }
+    }
+  };
+
+  const updateProductPrice = async (id, newPrice) => {
     const numericPrice = parseFloat(newPrice);
     const date = new Date().toISOString();
+    let updatedProductData = null;
 
     setProducts(prevProducts => {
       const updatedProducts = prevProducts.map(p => {
@@ -321,11 +472,12 @@ const App = () => {
             showToast('Prezzo aggiornato!');
           }
 
-          return {
+          updatedProductData = {
             ...p,
             price: numericPrice,
             lastChecked: date
           };
+          return updatedProductData;
         }
         return p;
       });
@@ -333,6 +485,16 @@ const App = () => {
     });
 
     setActiveProductForPriceUpdate(null);
+
+    // Sync to cloud if logged in
+    if (user && updatedProductData) {
+      try {
+        await productService.updateProduct(updatedProductData);
+      } catch (err) {
+        console.error('Error updating price in cloud:', err);
+        showToast('Errore nell\'aggiornamento cloud');
+      }
+    }
   };
 
   const filteredProducts = products.filter(p => {
@@ -473,6 +635,32 @@ const App = () => {
               >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
+
+              {/* Auth Button */}
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <div className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-full text-sm ${isDarkMode ? 'bg-zinc-900 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}>
+                    <User size={16} />
+                    <span className="max-w-[120px] truncate">{user.email}</span>
+                  </div>
+                  <button
+                    onClick={() => signOut()}
+                    className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-red-400 hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-red-500'}`}
+                    title="Esci"
+                  >
+                    <LogOut size={18} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className={`px-4 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 ${isDarkMode ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-700 hover:bg-slate-50'}`}
+                >
+                  <LogIn size={18} />
+                  <span className="hidden sm:inline">Accedi</span>
+                </button>
+              )}
+
               <button
                 onClick={() => setShowForm(true)}
                 className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800'
@@ -740,6 +928,24 @@ const App = () => {
         onClose={() => setActiveProductForPriceUpdate(null)}
         onSave={updateProductPrice}
         product={activeProductForPriceUpdate}
+        isDarkMode={isDarkMode}
+      />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        isDarkMode={isDarkMode}
+      />
+
+      <MigrationModal
+        isOpen={showMigrationModal}
+        onClose={() => setShowMigrationModal(false)}
+        onMigrate={handleMigrateToCloud}
+        onSkip={handleSkipMigration}
+        localProductCount={(() => {
+          const data = localStorage.getItem('wishlist_products');
+          return data ? JSON.parse(data).length : 0;
+        })()}
         isDarkMode={isDarkMode}
       />
 
