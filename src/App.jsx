@@ -26,6 +26,7 @@ import LoginModal from './components/LoginModal';
 import MigrationModal from './components/MigrationModal';
 import LogoutConfirmModal from './components/LogoutConfirmModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
+import ProfileModal from './components/ProfileModal';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
 import { supabase } from './lib/supabase';
@@ -102,6 +103,7 @@ const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showMigrationModal, setShowMigrationModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [purchasingProductId, setPurchasingProductId] = useState(null);
   const [hasCheckedMigration, setHasCheckedMigration] = useState(false);
@@ -717,9 +719,9 @@ const App = () => {
               {/* Auth Button */}
               {user ? (
                 <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="p-2 rounded-full transition-all text-green-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
-                  title="Logout"
+                  onClick={() => setShowProfileModal(true)}
+                  className="p-2 rounded-full transition-all text-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10"
+                  title="Profilo"
                 >
                   <UserCircle size={24} />
                 </button>
@@ -1015,7 +1017,15 @@ const App = () => {
       <LogoutConfirmModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
-        onConfirm={() => { signOut(); setShowLogoutModal(false); }}
+        onConfirm={() => { signOut(); setShowLogoutModal(false); setShowProfileModal(false); }}
+        isDarkMode={isDarkMode}
+      />
+
+      <ProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        user={user}
+        onLogout={() => { setShowProfileModal(false); setShowLogoutModal(true); }}
         isDarkMode={isDarkMode}
       />
 
