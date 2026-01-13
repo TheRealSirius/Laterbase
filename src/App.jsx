@@ -756,7 +756,7 @@ const App = () => {
               isDarkMode={isDarkMode}
             />
 
-            <div className="flex items-center gap-2 px-2">
+            <div className="flex flex-wrap items-center gap-2 px-2">
               {!isPublicView && (
                 <>
                   <select
@@ -778,34 +778,36 @@ const App = () => {
 
                   <button
                     onClick={() => setShowHistory(!showHistory)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
+                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
                       ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
-                      } whitespace-nowrap`}
+                      }`}
                   >
                     <History size={16} />
-                    {showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}
+                    <span className="hidden sm:inline">{showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}</span>
+                    <span className="sm:hidden">{showHistory ? 'Esci' : 'Storico'}</span>
                   </button>
 
                   <button
                     onClick={() => setShowArchive(true)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showArchive
+                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showArchive
                       ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
-                      } whitespace-nowrap`}
+                      }`}
                   >
                     <Package size={16} />
-                    Vedi Archivio
+                    <span className="hidden sm:inline">Vedi Archivio</span>
+                    <span className="sm:hidden">Archivio</span>
                   </button>
                 </>
               )}
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-bold group flex items-center gap-2">
-                {showHistory ? 'Storico Acquisti' : selectedCategory === 'Tutti' ? 'Wishlist Attiva' : `Categoria: ${selectedCategory}`}
+                {showHistory ? 'Storico Acquisti' : selectedCategory === 'Tutti' ? 'Wishlist Attiva' : 'Categoria: ' + selectedCategory}
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isDarkMode ? 'bg-zinc-900 text-zinc-500' : 'bg-slate-100 text-slate-500'}`}>{filteredProducts.length}</span>
               </h2>
               {showHistory && (
@@ -820,7 +822,7 @@ const App = () => {
             </div>
 
             {!showHistory ? (
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                 {!isPublicView && (
                   <button
                     onClick={copyWishlist}
