@@ -346,9 +346,19 @@ const App = () => {
       const element = document.getElementById(id);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Optional: Highlight effect
-        element.classList.add('ring-2', 'ring-indigo-500');
-        setTimeout(() => element.classList.remove('ring-2', 'ring-indigo-500'), 2000);
+        // Highlight effect: green left border + subtle background
+        element.style.borderLeft = '4px solid #22c55e';
+        element.style.borderTopLeftRadius = '4px';
+        element.style.borderBottomLeftRadius = '4px';
+        element.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
+        element.style.transition = 'all 0.5s ease-out';
+
+        setTimeout(() => {
+          element.style.borderLeft = '';
+          element.style.borderTopLeftRadius = '';
+          element.style.borderBottomLeftRadius = '';
+          element.style.backgroundColor = '';
+        }, 2000);
       }
     }, 100);
   };
