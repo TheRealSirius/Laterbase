@@ -26,15 +26,21 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
 
     const currentPrice = Number(product.price);
     const initialPrice = Number(product.initialPrice || product.price);
-    const discount = initialPrice > currentPrice
-        ? Math.round(((initialPrice - currentPrice) / initialPrice) * 100)
-        : 0;
+
+    // Calculate price change percentage
+    let priceChangePercent = 0;
+    let priceChangeType = null; // 'discount' | 'increase' | null
+
+    if (initialPrice > 0 && currentPrice !== initialPrice) {
+        priceChangePercent = Math.round(Math.abs((currentPrice - initialPrice) / initialPrice) * 100);
+        priceChangeType = currentPrice < initialPrice ? 'discount' : 'increase';
+    }
 
     const isTargetReached = product.targetPrice && currentPrice <= product.targetPrice;
 
     const handleShare = (e) => {
         e.stopPropagation();
-        const text = `Prodotto: ${product.name} - Prezzo: €${currentPrice.toFixed(2)} - Link: ${product.url || 'Non disponibile'}`;
+        const text = 'Prodotto: ' + product.name + ' - Prezzo: €' + currentPrice.toFixed(2) + ' - Link: ' + (product.url || 'Non disponibile');
         navigator.clipboard.writeText(text);
         onShowToast('Dettagli copiati!');
     };
@@ -95,10 +101,16 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                         }`}>
                         {product.category}
                     </span>
-                    {discount > 0 && !product.isPurchased && (
+                    {priceChangeType === 'discount' && priceChangePercent > 0 && !product.isPurchased && (
                         <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border w-fit ${isDarkMode ? 'bg-emerald-950/50 text-emerald-400 border-emerald-900/50' : 'bg-emerald-50/90 text-emerald-600 border-emerald-100'
                             }`}>
-                            -{discount}% RISPARMIO
+                            -{priceChangePercent}% RISPARMIO
+                        </span>
+                    )}
+                    {priceChangeType === 'increase' && priceChangePercent > 0 && !product.isPurchased && (
+                        <span className={`backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border w-fit ${isDarkMode ? 'bg-red-950/50 text-red-400 border-red-900/50' : 'bg-red-50/90 text-red-600 border-red-100'
+                            }`}>
+                            +{priceChangePercent}% RINCARO
                         </span>
                     )}
                     {isTargetReached && !product.isPurchased && (
@@ -154,7 +166,7 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                                 Target: €{Number(product.targetPrice).toFixed(2)}
                             </span>
                         ) : (
-                            discount > 0 && (
+                            priceChangeType && priceChangePercent > 0 && (
                                 <span className={`text-[10px] line-through ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'}`}>€{initialPrice.toFixed(2)}</span>
                             )
                         )}
