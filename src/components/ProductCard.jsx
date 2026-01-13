@@ -240,7 +240,7 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                                     ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20'
                                     : (isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-amber-400' : 'bg-slate-100 text-slate-400 hover:text-amber-500 hover:bg-slate-200')
                                     }`}
-                                title={product.isArchived ? "Riporta in lista" : "Sposta nei Sogni nel Cassetto"}
+                                title={product.isArchived ? 'Riporta in lista' : 'Sposta in "Sogni nel cassetto"'}
                             >
                                 <Archive size={16} />
                             </button>
@@ -248,6 +248,7 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                                 onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
                                 className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:text-rose-400' : 'bg-slate-100 text-slate-400 hover:text-rose-500 hover:bg-slate-200'
                                     }`}
+                                title="Elimina"
                             >
                                 <Trash2 size={16} />
                             </button>

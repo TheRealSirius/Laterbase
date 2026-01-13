@@ -79,24 +79,36 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
             onMouseLeave={onMouseLeave}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
-            className="flex items-center gap-3 overflow-x-auto pb-2 select-none active:cursor-grabbing cursor-grab no-scrollbar max-w-full relative"
+            className={'flex items-center gap-3 overflow-x-auto flex-nowrap pb-2 select-none active:cursor-grabbing cursor-grab max-w-full relative ' + (isDarkMode ? 'bg-zinc-900' : 'bg-white')}
             style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch'
             }}
         >
-            <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; }` }} />
+            <style dangerouslySetInnerHTML={{ __html: '.no-scrollbar::-webkit-scrollbar { display: none; }' }} />
 
-            <button
-                onClick={() => onSelect('Tutti')}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selected === 'Tutti'
-                    ? (isDarkMode ? 'bg-white text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
-                    : (isDarkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300')
-                    }`}
-            >
-                Tutti
-            </button>
+            {/* Sticky "Tutti" button with gradient fade */}
+            <div className={'sticky left-0 z-10 flex items-center shrink-0 ' + (isDarkMode ? 'bg-zinc-900' : 'bg-white')}>
+                <button
+                    onClick={() => onSelect('Tutti')}
+                    className={'whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ' + (selected === 'Tutti'
+                        ? (isDarkMode ? 'bg-white text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
+                        : (isDarkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300')
+                    )}
+                >
+                    Tutti
+                </button>
+                {/* Gradient fade effect */}
+                <div
+                    className="w-6 h-full pointer-events-none"
+                    style={{
+                        background: isDarkMode
+                            ? 'linear-gradient(to right, rgb(24, 24, 27) 0%, transparent 100%)'
+                            : 'linear-gradient(to right, rgb(255, 255, 255) 0%, transparent 100%)'
+                    }}
+                />
+            </div>
 
             {categories.map(cat => (
                 <div key={cat} className="relative flex items-center group animate-in fade-in zoom-in-95 duration-300">
