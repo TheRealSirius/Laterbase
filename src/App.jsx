@@ -24,6 +24,7 @@ import PriceUpdateModal from './components/PriceUpdateModal';
 import ArchiveModal from './components/ArchiveModal';
 import LoginModal from './components/LoginModal';
 import MigrationModal from './components/MigrationModal';
+import LogoutConfirmModal from './components/LogoutConfirmModal';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
 import { supabase } from './lib/supabase';
@@ -98,6 +99,7 @@ const App = () => {
   const [toast, setToast] = useState(null);
   const [isPublicView, setIsPublicView] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showMigrationModal, setShowMigrationModal] = useState(false);
   const [hasCheckedMigration, setHasCheckedMigration] = useState(false);
 
@@ -684,7 +686,7 @@ const App = () => {
               {/* Auth Button */}
               {user ? (
                 <button
-                  onClick={() => signOut()}
+                  onClick={() => setShowLogoutModal(true)}
                   className="p-2 rounded-full transition-all text-green-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                   title="Logout"
                 >
@@ -750,13 +752,13 @@ const App = () => {
               isDarkMode={isDarkMode}
             />
 
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-2">
+            <div className="flex flex-wrap md:flex-row md:flex-nowrap items-center gap-2 md:gap-4 px-2 shrink-0">
               {!isPublicView && (
                 <>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className={`border-none text-xs font-bold uppercase tracking-wider py-2 pl-3 pr-8 rounded-lg focus:ring-0 cursor-pointer transition-colors appearance-none ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    className={`border-none text-xs font-bold uppercase tracking-wider py-2 pl-3 pr-8 rounded-lg focus:ring-0 cursor-pointer transition-colors appearance-none shrink-0 ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                       }`}
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
                   >
@@ -768,11 +770,11 @@ const App = () => {
                     <option value="price-desc">Prezzo (Decrescente)</option>
                   </select>
 
-                  <div className={`w-px h-6 mx-2 hidden md:block ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
+                  <div className={`w-px h-6 hidden md:block shrink-0 ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
 
                   <button
                     onClick={() => setShowHistory(!showHistory)}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${showHistory
                       ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
                       }`}
@@ -784,7 +786,7 @@ const App = () => {
 
                   <button
                     onClick={() => setShowArchive(true)}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showArchive
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${showArchive
                       ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
                       : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
                       }`}
@@ -975,6 +977,13 @@ const App = () => {
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+        isDarkMode={isDarkMode}
+      />
+
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={() => { signOut(); setShowLogoutModal(false); }}
         isDarkMode={isDarkMode}
       />
 
