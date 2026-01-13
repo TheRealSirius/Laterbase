@@ -103,6 +103,7 @@ const App = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showMigrationModal, setShowMigrationModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [purchasingProductId, setPurchasingProductId] = useState(null);
   const [hasCheckedMigration, setHasCheckedMigration] = useState(false);
 
   // Load products based on auth state
@@ -435,6 +436,16 @@ const App = () => {
     if (!targetProduct) return;
 
     const newPurchasedState = !targetProduct.isPurchased;
+
+    // If marking as purchased, animate first
+    if (newPurchasedState) {
+      setPurchasingProductId(id);
+
+      // Wait for animation to complete
+      await new Promise(resolve => setTimeout(resolve, 400));
+      setPurchasingProductId(null);
+    }
+
     const updatedProduct = {
       ...targetProduct,
       isPurchased: newPurchasedState,
@@ -894,6 +905,7 @@ const App = () => {
                         onCheckPrice={(p) => setActiveProductForPriceUpdate(p)}
                         isDarkMode={isDarkMode}
                         isPublicView={isPublicView}
+                        isPurchasing={purchasingProductId === product.id}
                       />
                     ))}
                   </div>

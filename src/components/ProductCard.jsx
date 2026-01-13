@@ -3,7 +3,7 @@ import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripV
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView }) => {
+const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView, isPurchasing }) => {
     const {
         attributes,
         listeners,
@@ -13,9 +13,14 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
         isDragging
     } = useSortable({ id: product.id, disabled: product.isPurchased });
 
+    // Combine drag transform with purchase animation
+    const baseTransform = CSS.Transform.toString(transform);
+    const purchaseTransform = isPurchasing ? 'scale(0.85) translateX(50px) translateY(-30px)' : '';
+
     const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
+        transform: isPurchasing ? purchaseTransform : baseTransform,
+        transition: isPurchasing ? 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)' : transition,
+        opacity: isPurchasing ? 0 : 1,
     };
 
     const priorityEmojis = {
@@ -59,7 +64,7 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
             style={style}
             id={product.id}
             onClick={() => !isPublicView && onEdit(product)}
-            className={`group rounded-2xl border transition-all duration-300 overflow-hidden ${!isPublicView ? 'cursor-pointer' : 'cursor-default'} flex flex-col ${isDarkMode
+            className={`group rounded-2xl border overflow-hidden ${!isPublicView ? 'cursor-pointer' : 'cursor-default'} flex flex-col ${isDarkMode
                 ? 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                 : 'bg-white border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1'
                 } ${product.isPurchased ? 'opacity-75' : ''} ${isDragging ? 'z-50 shadow-2xl scale-[1.02] opacity-80' : ''} ${isTargetReached && !product.isPurchased
@@ -67,7 +72,7 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                         ? 'ring-1 ring-emerald-500/50 border-emerald-500/30 shadow-[0_0_20px_-5px_rgba(16,185,129,0.3)]'
                         : 'ring-1 ring-emerald-500/30 border-emerald-200 shadow-[0_0_20px_-5px_rgba(16,185,129,0.2)] bg-emerald-50/10')
                     : ''
-                }`}
+                } ${!isPurchasing ? 'transition-all duration-300' : ''}`}
         >
             <div className={`relative h-56 flex items-center justify-center p-4 overflow-hidden ${isDarkMode ? 'bg-zinc-950/50' : 'bg-slate-50/50'}`}>
                 {product.imageUrl ? (
