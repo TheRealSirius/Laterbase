@@ -25,6 +25,7 @@ import ArchiveModal from './components/ArchiveModal';
 import LoginModal from './components/LoginModal';
 import MigrationModal from './components/MigrationModal';
 import LogoutConfirmModal from './components/LogoutConfirmModal';
+import DeleteConfirmModal from './components/DeleteConfirmModal';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
 import { supabase } from './lib/supabase';
@@ -101,6 +102,7 @@ const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showMigrationModal, setShowMigrationModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [hasCheckedMigration, setHasCheckedMigration] = useState(false);
 
   // Load products based on auth state
@@ -478,8 +480,16 @@ const App = () => {
     }
   };
 
-  const deleteProduct = async (id) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questo prodotto?')) return;
+  const deleteProduct = (id) => {
+    const product = products.find(p => p.id === id);
+    setProductToDelete(product);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (!productToDelete) return;
+
+    const id = productToDelete.id;
+    setProductToDelete(null);
 
     // Optimistic update
     setProducts(products.filter(p => p.id !== id));
@@ -984,6 +994,14 @@ const App = () => {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={() => { signOut(); setShowLogoutModal(false); }}
+        isDarkMode={isDarkMode}
+      />
+
+      <DeleteConfirmModal
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={confirmDeleteProduct}
+        productName={productToDelete?.name}
         isDarkMode={isDarkMode}
       />
 
