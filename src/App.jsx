@@ -627,7 +627,7 @@ const App = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 'bg-zinc-950 text-white' : 'bg-[#F9FAFB] text-slate-900'} font-sans selection:bg-slate-200 dark:selection:bg-zinc-800`}>
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="flex items-center justify-between w-full md:w-auto">
             <div>
@@ -647,7 +647,7 @@ const App = () => {
           </div>
 
           {!isPublicView ? (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
               <div className="relative group flex-1 md:flex-none">
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isDarkMode ? 'text-zinc-600 group-focus-within:text-white' : 'text-slate-400 group-focus-within:text-slate-900'}`} size={18} />
                 <input
@@ -756,7 +756,7 @@ const App = () => {
               isDarkMode={isDarkMode}
             />
 
-            <div className="flex flex-wrap items-center gap-2 px-2">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-2">
               {!isPublicView && (
                 <>
                   <select
