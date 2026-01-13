@@ -1,30 +1,39 @@
 import React, { useState } from 'react';
-import { X, Mail, Loader2 } from 'lucide-react';
+import { X, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
-    const { signInWithEmail, signInWithGoogle } = useAuth();
+    const { signUp, signInWithPassword, signInWithGoogle } = useAuth();
+    const [isRegister, setIsRegister] = useState(false);
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
     if (!isOpen) return null;
 
-    const handleEmailLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email) return;
+        if (!email || !password) return;
 
         setLoading(true);
         setError('');
         setMessage('');
 
         try {
-            const result = await signInWithEmail(email);
-            setMessage(result.message);
-            setEmail('');
+            if (isRegister) {
+                const result = await signUp(email, password);
+                setMessage(result.message);
+                setEmail('');
+                setPassword('');
+            } else {
+                await signInWithPassword(email, password);
+                onClose();
+            }
         } catch (err) {
-            setError(err.message || 'Errore durante il login');
+            setError(err.message || 'Errore durante l\'operazione');
         } finally {
             setLoading(false);
         }
@@ -40,6 +49,12 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
             setError(err.message || 'Errore durante il login con Google');
             setLoading(false);
         }
+    };
+
+    const switchMode = () => {
+        setIsRegister(!isRegister);
+        setError('');
+        setMessage('');
     };
 
     return (
@@ -64,11 +79,37 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                     <X size={20} />
                 </button>
 
-                <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold mb-2">Accedi</h2>
+                <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold mb-2">
+                        {isRegister ? 'Crea Account' : 'Accedi'}
+                    </h2>
                     <p className={'text-sm ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-500')}>
                         Sincronizza la tua wishlist su tutti i dispositivi
                     </p>
+                </div>
+
+                {/* Toggle Login/Register */}
+                <div className={'flex p-1 rounded-xl mb-6 ' + (isDarkMode ? 'bg-zinc-800' : 'bg-slate-100')}>
+                    <button
+                        type="button"
+                        onClick={() => { setIsRegister(false); setError(''); setMessage(''); }}
+                        className={'flex-1 py-2 rounded-lg text-sm font-semibold transition-all ' +
+                            (!isRegister
+                                ? (isDarkMode ? 'bg-zinc-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm')
+                                : (isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-700'))}
+                    >
+                        Accedi
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => { setIsRegister(true); setError(''); setMessage(''); }}
+                        className={'flex-1 py-2 rounded-lg text-sm font-semibold transition-all ' +
+                            (isRegister
+                                ? (isDarkMode ? 'bg-zinc-700 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm')
+                                : (isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-700'))}
+                    >
+                        Registrati
+                    </button>
                 </div>
 
                 {message && (
@@ -83,7 +124,7 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                     </div>
                 )}
 
-                <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
+                <form onSubmit={handleSubmit} className="space-y-4 mb-6">
                     <div>
                         <label className={'block text-xs font-bold uppercase tracking-wider mb-2 ' +
                             (isDarkMode ? 'text-zinc-400' : 'text-slate-500')}>
@@ -104,9 +145,39 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                         />
                     </div>
 
+                    <div>
+                        <label className={'block text-xs font-bold uppercase tracking-wider mb-2 ' +
+                            (isDarkMode ? 'text-zinc-400' : 'text-slate-500')}>
+                            Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                disabled={loading}
+                                className={'w-full px-4 py-3 pr-12 rounded-xl border transition-all ' +
+                                    (isDarkMode
+                                        ? 'bg-zinc-800 border-zinc-700 focus:border-zinc-500 placeholder:text-zinc-600'
+                                        : 'bg-slate-50 border-slate-200 focus:border-slate-400 placeholder:text-slate-400') +
+                                    ' focus:outline-none focus:ring-2 ' +
+                                    (isDarkMode ? 'focus:ring-zinc-700' : 'focus:ring-slate-200')}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className={'absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded ' +
+                                    (isDarkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                    </div>
+
                     <button
                         type="submit"
-                        disabled={loading || !email}
+                        disabled={loading || !email || !password}
                         className={'w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ' +
                             (isDarkMode
                                 ? 'bg-white text-zinc-900 hover:bg-zinc-100'
@@ -117,7 +188,7 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                         ) : (
                             <>
                                 <Mail size={18} />
-                                Invia Magic Link
+                                {isRegister ? 'Crea Account' : 'Accedi'}
                             </>
                         )}
                     </button>
@@ -153,7 +224,9 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                 </button>
 
                 <p className={'text-center text-xs mt-6 ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                    Accedendo, i tuoi dati saranno sincronizzati nel cloud
+                    {isRegister
+                        ? 'Creando un account, accetti i termini di servizio'
+                        : 'Accedendo, i tuoi dati saranno sincronizzati nel cloud'}
                 </p>
             </div>
         </div>

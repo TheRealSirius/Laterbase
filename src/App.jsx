@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw, LogIn, LogOut, User } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Share2, Download, Upload, ChevronDown, ChevronUp, Eye, EyeOff, Check, GripVertical, RefreshCw, LogIn, LogOut, User, UserCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import LZString from 'lz-string';
 import {
@@ -647,7 +647,7 @@ const App = () => {
           </div>
 
           {!isPublicView ? (
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-4">
               <div className="relative group flex-1 md:flex-none">
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isDarkMode ? 'text-zinc-600 group-focus-within:text-white' : 'text-slate-400 group-focus-within:text-slate-900'}`} size={18} />
                 <input
@@ -683,19 +683,13 @@ const App = () => {
 
               {/* Auth Button */}
               {user ? (
-                <div className="flex items-center gap-2">
-                  <div className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-full text-sm ${isDarkMode ? 'bg-zinc-900 text-zinc-400' : 'bg-slate-100 text-slate-600'}`}>
-                    <User size={16} />
-                    <span className="max-w-[120px] truncate">{user.email}</span>
-                  </div>
-                  <button
-                    onClick={() => signOut()}
-                    className={`p-2.5 rounded-full transition-all ${isDarkMode ? 'bg-zinc-900 text-zinc-400 hover:text-red-400 hover:bg-zinc-800' : 'bg-white border border-slate-100 shadow-sm text-slate-400 hover:text-red-500'}`}
-                    title="Esci"
-                  >
-                    <LogOut size={18} />
-                  </button>
-                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="p-2 rounded-full transition-all text-green-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                  title="Logout"
+                >
+                  <UserCircle size={24} />
+                </button>
               ) : (
                 <button
                   onClick={() => setShowLoginModal(true)}

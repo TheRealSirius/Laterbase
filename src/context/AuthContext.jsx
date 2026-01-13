@@ -51,6 +51,42 @@ export const AuthProvider = ({ children }) => {
         return { success: true, message: 'Controlla la tua email per il link di accesso!' };
     };
 
+    const signUp = async (email, password) => {
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo: window.location.origin
+            }
+        });
+
+        if (error) {
+            console.error('Error signing up:', error);
+            throw error;
+        }
+
+        // Check if email confirmation is required
+        if (data?.user?.identities?.length === 0) {
+            throw new Error('Questa email è già registrata. Prova ad accedere.');
+        }
+
+        return { success: true, message: 'Controlla la tua email per confermare l\'account prima di accedere.' };
+    };
+
+    const signInWithPassword = async (email, password) => {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            console.error('Error signing in:', error);
+            throw error;
+        }
+
+        return { success: true };
+    };
+
     const signInWithGoogle = async () => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -77,6 +113,8 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         signInWithEmail,
+        signUp,
+        signInWithPassword,
         signInWithGoogle,
         signOut,
         showLoginModal,
