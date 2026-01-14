@@ -83,8 +83,8 @@ const LandingPage = ({ isDarkMode }) => {
     // Forgot Password View
     if (isForgotPassword) {
         return (
-            <div className={'min-h-screen flex items-center justify-center p-6 ' + (isDarkMode ? 'bg-zinc-950' : 'bg-gradient-to-br from-slate-50 to-slate-100')}>
-                <div className={'w-full max-w-md rounded-3xl p-8 shadow-2xl border ' + (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}>
+            <div className={'min-h-screen flex flex-col items-center justify-center p-6 pb-20 ' + (isDarkMode ? 'bg-zinc-950' : 'bg-gradient-to-br from-slate-50 to-slate-100')}>
+                <div className={'w-full max-w-md rounded-3xl p-8 shadow-2xl border my-auto ' + (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}>
 
                     <button
                         onClick={() => { setIsForgotPassword(false); setError(''); setMessage(''); }}
@@ -144,7 +144,7 @@ const LandingPage = ({ isDarkMode }) => {
                 </div>
 
                 {/* Footer */}
-                <footer className={'absolute bottom-0 left-0 right-0 text-center py-6 text-xs ' + (isDarkMode ? 'text-zinc-600' : 'text-gray-500')}>
+                <footer className={'w-full text-center pt-8 pb-4 text-xs ' + (isDarkMode ? 'text-zinc-600' : 'text-gray-500')}>
                     © 2026 Progetto idealizzato da{' '}
                     <a
                         href="https://t.me/PortfolioSirius"
@@ -160,8 +160,8 @@ const LandingPage = ({ isDarkMode }) => {
     }
 
     return (
-        <div className={'min-h-screen flex flex-col items-center justify-center p-6 relative ' + (isDarkMode ? 'bg-zinc-950' : 'bg-gradient-to-br from-slate-50 to-slate-100')}>
-            <div className={'w-full max-w-md rounded-3xl p-8 shadow-2xl border ' + (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}>
+        <div className={'min-h-screen flex flex-col items-center justify-center p-6 pb-20 relative ' + (isDarkMode ? 'bg-zinc-950' : 'bg-gradient-to-br from-slate-50 to-slate-100')}>
+            <div className={'w-full max-w-md rounded-3xl p-8 shadow-2xl border my-auto ' + (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}>
 
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -369,7 +369,7 @@ const LandingPage = ({ isDarkMode }) => {
             )}
 
             {/* Footer */}
-            <footer className={'absolute bottom-0 left-0 right-0 text-center py-6 text-xs ' + (isDarkMode ? 'text-zinc-600' : 'text-gray-500')}>
+            <footer className={'w-full text-center pt-8 pb-10 text-xs ' + (isDarkMode ? 'text-zinc-600' : 'text-gray-500')}>
                 © 2026 Progetto idealizzato da{' '}
                 <a
                     href="https://t.me/PortfolioSirius"
