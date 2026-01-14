@@ -74,6 +74,8 @@ const LandingPage = ({ isDarkMode }) => {
             await signInWithGoogle();
         } catch (err) {
             setError(err.message || 'Errore durante il login con Google');
+        } finally {
+            // Always reset loading state, even if cancelled or redirected
             setLoading(false);
         }
     };
