@@ -732,13 +732,13 @@ const App = () => {
               isDarkMode={isDarkMode}
             />
 
-            <div className="flex flex-wrap md:flex-row md:flex-nowrap items-center gap-2 md:gap-4 px-2 shrink-0">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4 px-2 shrink-0">
               {!isPublicView && (
                 <>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className={`border-none text-xs font-bold uppercase tracking-wider py-2 pl-3 pr-8 rounded-lg focus:ring-0 cursor-pointer transition-colors appearance-none shrink-0 ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    className={`border-none text-xs font-bold uppercase tracking-wider py-2.5 pl-3 pr-8 rounded-xl focus:ring-0 cursor-pointer transition-colors appearance-none w-full md:w-auto ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                       }`}
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='${isDarkMode ? 'white' : 'black'}'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7' /%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1rem' }}
                   >
@@ -752,29 +752,31 @@ const App = () => {
 
                   <div className={`w-px h-6 hidden md:block shrink-0 ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}`}></div>
 
-                  <button
-                    onClick={() => setShowHistory(!showHistory)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${showHistory
-                      ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
-                      : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
-                      }`}
-                  >
-                    <History size={16} />
-                    <span className="hidden sm:inline">{showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}</span>
-                    <span className="sm:hidden">{showHistory ? 'Esci' : 'Storico'}</span>
-                  </button>
+                  <div className="flex flex-row items-center gap-2 w-full md:w-auto">
+                    <button
+                      onClick={() => setShowHistory(!showHistory)}
+                      className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${showHistory
+                        ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
+                        : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
+                        }`}
+                    >
+                      <History size={16} />
+                      <span className="hidden sm:inline">{showHistory ? 'Esci dallo Storico' : 'Vedi Storico'}</span>
+                      <span className="sm:hidden">{showHistory ? 'Esci' : 'Storico'}</span>
+                    </button>
 
-                  <button
-                    onClick={() => setShowArchive(true)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${showArchive
-                      ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
-                      : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
-                      }`}
-                  >
-                    <Package size={16} />
-                    <span className="hidden sm:inline">Vedi Archivio</span>
-                    <span className="sm:hidden">Archivio</span>
-                  </button>
+                    <button
+                      onClick={() => setShowArchive(true)}
+                      className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${showArchive
+                        ? (isDarkMode ? 'bg-zinc-100 text-zinc-950 shadow-sm' : 'bg-slate-900 text-white shadow-sm')
+                        : (isDarkMode ? 'text-zinc-400 hover:bg-zinc-800' : 'text-slate-500 hover:bg-slate-100')
+                        }`}
+                    >
+                      <Package size={16} />
+                      <span className="hidden sm:inline">Vedi Archivio</span>
+                      <span className="sm:hidden">Archivio</span>
+                    </button>
+                  </div>
                 </>
               )}
             </div>
