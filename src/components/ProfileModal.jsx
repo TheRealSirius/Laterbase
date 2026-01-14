@@ -1,8 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Camera, KeyRound, BarChart3, LogOut, Check, Loader2, Eye, EyeOff } from 'lucide-react';
+import { X, User, Camera, KeyRound, BarChart3, LogOut, Check, Loader2, Eye, EyeOff, Package, Crown, Target, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
+// Animated counter hook
+const useAnimatedCounter = (targetValue, duration = 1000) => {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        if (targetValue === 0) {
+            setCount(0);
+            return;
+        }
+
+        let startTime;
+        let animationFrame;
+
+        const animate = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+
+            setCount(Math.floor(progress * targetValue));
+
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(animate);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
+
+        return () => cancelAnimationFrame(animationFrame);
+    }, [targetValue, duration]);
+
+    return count;
+};
+
+const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode, products = [] }) => {
     const [avatarUrl, setAvatarUrl] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [displayName, setDisplayName] = useState('');
@@ -11,15 +43,68 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
     const [savingName, setSavingName] = useState(false);
     const [message, setMessage] = useState('');
     const fileInputRef = useRef(null);
+    const [showStats, setShowStats] = useState(false);
 
     // Password change state
     const [isChangingPassword, setIsChangingPassword] = useState(false);
-    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [savingPassword, setSavingPassword] = useState(false);
+
+    // Calculate statistics
+    const totalProducts = products.length;
+    const purchasedProducts = products.filter(p => p.isPurchased);
+    const activeWishlist = products.filter(p => !p.isPurchased && !p.isArchived);
+    const archivedProducts = products.filter(p => p.isArchived);
+
+    const wishlistValue = [...activeWishlist, ...archivedProducts].reduce((sum, p) => sum + Number(p.price || 0), 0);
+    const completionRate = totalProducts > 0 ? Math.round((purchasedProducts.length / (purchasedProducts.length + activeWishlist.length)) * 100) : 0;
+
+    // Golden Month - month with most spending this year
+    const currentYear = new Date().getFullYear();
+    const monthlySpending = {};
+    const monthNames = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+
+    purchasedProducts.forEach(p => {
+        if (p.purchaseDate) {
+            const date = new Date(p.purchaseDate);
+            if (date.getFullYear() === currentYear) {
+                const month = date.getMonth();
+                monthlySpending[month] = (monthlySpending[month] || 0) + Number(p.price || 0);
+            }
+        }
+    });
+
+    let goldenMonth = null;
+    let maxSpending = 0;
+    Object.entries(monthlySpending).forEach(([month, spending]) => {
+        if (spending > maxSpending) {
+            maxSpending = spending;
+            goldenMonth = monthNames[parseInt(month)];
+        }
+    });
+
+    // Top Category - category with most purchased products
+    const categoryCount = {};
+    purchasedProducts.forEach(p => {
+        const cat = p.category || 'Altro';
+        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+    });
+
+    let topCategory = null;
+    let maxCount = 0;
+    Object.entries(categoryCount).forEach(([cat, count]) => {
+        if (count > maxCount) {
+            maxCount = count;
+            topCategory = cat;
+        }
+    });
+
+    // Animated values
+    const animatedTotal = useAnimatedCounter(showStats ? totalProducts : 0, 800);
+    const animatedValue = useAnimatedCounter(showStats ? Math.round(wishlistValue) : 0, 1000);
+    const animatedCompletion = useAnimatedCounter(showStats ? completionRate : 0, 1000);
 
     useEffect(() => {
         if (user) {
@@ -28,13 +113,12 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
         }
     }, [user]);
 
-    // Reset password form when modal closes
     useEffect(() => {
         if (!isOpen) {
             setIsChangingPassword(false);
-            setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
+            setShowStats(false);
         }
     }, [isOpen]);
 
@@ -111,7 +195,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
     };
 
     const handlePasswordChange = async () => {
-        // Validation
         if (!newPassword || !confirmPassword) {
             setMessage('Errore: Compila tutti i campi');
             setTimeout(() => setMessage(''), 3000);
@@ -140,7 +223,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
 
             setMessage('Password aggiornata con successo!');
             setIsChangingPassword(false);
-            setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
             setTimeout(() => setMessage(''), 3000);
@@ -272,7 +354,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                                 Modifica Password
                             </label>
 
-                            {/* New Password */}
                             <div className="relative">
                                 <input
                                     type={showNewPassword ? 'text' : 'password'}
@@ -294,7 +375,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                                 </button>
                             </div>
 
-                            {/* Confirm Password */}
                             <div className="relative">
                                 <input
                                     type={showNewPassword ? 'text' : 'password'}
@@ -308,12 +388,10 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                                 />
                             </div>
 
-                            {/* Buttons */}
                             <div className="flex gap-2 pt-1">
                                 <button
                                     onClick={() => {
                                         setIsChangingPassword(false);
-                                        setOldPassword('');
                                         setNewPassword('');
                                         setConfirmPassword('');
                                     }}
@@ -345,20 +423,116 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                         </button>
                     )}
 
-                    {/* Statistics (placeholder) */}
-                    <button
-                        className={'w-full flex items-center gap-3 p-4 rounded-2xl transition-all ' +
-                            (isDarkMode
-                                ? 'hover:bg-zinc-800 text-zinc-300'
-                                : 'hover:bg-slate-50 text-slate-700')}
-                    >
-                        <BarChart3 size={20} className="text-indigo-500" />
-                        <span className="font-medium">Statistiche</span>
-                        <span className={'ml-auto text-xs px-2 py-0.5 rounded-full ' +
-                            (isDarkMode ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-100 text-slate-400')}>
-                            Presto
-                        </span>
-                    </button>
+                    {/* Statistics Section */}
+                    <div>
+                        <button
+                            onClick={() => setShowStats(!showStats)}
+                            className={'w-full flex items-center gap-3 p-4 rounded-2xl transition-all ' +
+                                (isDarkMode
+                                    ? 'hover:bg-zinc-800 text-zinc-300'
+                                    : 'hover:bg-slate-50 text-slate-700')}
+                        >
+                            <BarChart3 size={20} className="text-indigo-500" />
+                            <span className="font-medium">Statistiche</span>
+                            <span className="ml-auto">
+                                {showStats ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </span>
+                        </button>
+
+                        {showStats && (
+                            <div className={'mt-2 p-4 rounded-2xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 ' +
+                                (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* Total Products */}
+                                    <div className={'p-3 rounded-xl ' + (isDarkMode ? 'bg-zinc-900/50' : 'bg-white')}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Package size={14} className="text-blue-500" />
+                                            <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                                Totale
+                                            </span>
+                                        </div>
+                                        <p className={'text-xl font-bold ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                                            {animatedTotal}
+                                        </p>
+                                        <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            prodotti
+                                        </p>
+                                    </div>
+
+                                    {/* Wishlist Value */}
+                                    <div className={'p-3 rounded-xl ' + (isDarkMode ? 'bg-zinc-900/50' : 'bg-white')}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <TrendingUp size={14} className="text-emerald-500" />
+                                            <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                                Valore
+                                            </span>
+                                        </div>
+                                        <p className={'text-xl font-bold ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                                            €{animatedValue}
+                                        </p>
+                                        <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            wishlist
+                                        </p>
+                                    </div>
+
+                                    {/* Golden Month */}
+                                    <div className={'p-3 rounded-xl ' + (isDarkMode ? 'bg-zinc-900/50' : 'bg-white')}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Crown size={14} className="text-amber-500" />
+                                            <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                                Mese d'oro
+                                            </span>
+                                        </div>
+                                        <p className={'text-xl font-bold ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                                            {goldenMonth || '—'}
+                                        </p>
+                                        <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            {goldenMonth ? '€' + maxSpending.toFixed(0) : 'nessun acquisto'}
+                                        </p>
+                                    </div>
+
+                                    {/* Top Category */}
+                                    <div className={'p-3 rounded-xl ' + (isDarkMode ? 'bg-zinc-900/50' : 'bg-white')}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <Target size={14} className="text-purple-500" />
+                                            <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                                Top Cat.
+                                            </span>
+                                        </div>
+                                        <p className={'text-xl font-bold truncate ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                                            {topCategory || '—'}
+                                        </p>
+                                        <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            {topCategory ? maxCount + ' acquisti' : 'nessun acquisto'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Completion Bar */}
+                                <div className={'p-3 rounded-xl ' + (isDarkMode ? 'bg-zinc-900/50' : 'bg-white')}>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                            Wishlist Completion
+                                        </span>
+                                        <span className={'text-sm font-bold ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                                            {animatedCompletion}%
+                                        </span>
+                                    </div>
+                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800' : 'bg-slate-100')}>
+                                        <div
+                                            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000 ease-out"
+                                            style={{ width: completionRate + '%' }}
+                                        />
+                                    </div>
+                                    <p className={'text-[10px] mt-1 ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                        {purchasedProducts.length} acquistati su {purchasedProducts.length + activeWishlist.length} desiderati
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Divider */}
                     <div className={'my-2 border-t ' + (isDarkMode ? 'border-zinc-800' : 'border-slate-100')} />

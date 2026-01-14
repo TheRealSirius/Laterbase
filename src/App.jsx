@@ -974,6 +974,7 @@ const App = () => {
         user={user}
         onLogout={() => { setShowProfileModal(false); setShowLogoutModal(true); }}
         isDarkMode={isDarkMode}
+        products={products}
       />
 
       <DeleteConfirmModal
