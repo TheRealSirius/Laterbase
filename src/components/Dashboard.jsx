@@ -123,7 +123,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                             )}
                         </div>
 
-                        {/* Section 3: Footer (Budget or Placeholder) */}
+                        {/* Section 3: Footer (Budget, Info, or Decorative) */}
                         <div className="min-h-[52px] flex flex-col justify-end">
                             {stat.hasBudget && monthlyBudget > 0 ? (
                                 <div>
@@ -147,8 +147,29 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                         </p>
                                     )}
                                 </div>
+                            ) : stat.label === 'Totale Desideri' ? (
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            Media: €{activeWishlist.length > 0 ? (totalWishlistValue / activeWishlist.length).toFixed(2) : '0.00'} per oggetto
+                                        </span>
+                                    </div>
+                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                                        <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
+                                    </div>
+                                </div>
+                            ) : stat.label === 'Oggetti in Lista' ? (
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            {activeWishlist.length} attivi • {products.filter(p => p.isPurchased).length} completati
+                                        </span>
+                                    </div>
+                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                                        <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
+                                    </div>
+                                </div>
                             ) : (
-                                // Ghost box to maintain alignment
                                 <div className="h-10 invisible" aria-hidden="true" />
                             )}
                         </div>
