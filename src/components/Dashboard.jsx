@@ -12,6 +12,11 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
     });
     const [editingCard, setEditingCard] = useState(null); // 'total', 'spent', or 'count'
     const [tempBudget, setTempBudget] = useState('');
+    const [savingsFund, setSavingsFund] = useState(() => {
+        const saved = localStorage.getItem('wishlist_savings_fund');
+        return saved ? parseFloat(saved) : 0;
+    });
+    const [tempSavings, setTempSavings] = useState('');
 
     const activeWishlist = products.filter(p => !p.isPurchased && !p.isArchived);
     const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
@@ -45,6 +50,10 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
             const value = parseFloat(tempBudget) || 0;
             setMonthlyBudget(value);
             localStorage.setItem('wishlist_monthly_budget', value.toString());
+        } else if (editingCard === 'total') {
+            const value = parseFloat(tempSavings) || 0;
+            setSavingsFund(value);
+            localStorage.setItem('wishlist_savings_fund', value.toString());
         }
         setEditingCard(null);
     };
@@ -59,6 +68,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         e.stopPropagation();
         if (cardId === 'spent') {
             setTempBudget(monthlyBudget > 0 ? monthlyBudget.toString() : '');
+        } else if (cardId === 'total') {
+            setTempSavings(savingsFund > 0 ? savingsFund.toString() : '');
         }
         setEditingCard(cardId);
     };
@@ -169,16 +180,37 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                                 </p>
                                             )}
                                         </div>
-                                    ) : stat.label === 'Totale Desideri' ? (
+                                    ) : stat.id === 'total' ? (
                                         <div>
-                                            <div className="flex justify-between items-center mb-1.5">
-                                                <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                    Media: €{activeWishlist.length > 0 ? (totalWishlistValue / activeWishlist.length).toFixed(2) : '0.00'} per oggetto
-                                                </span>
-                                            </div>
-                                            <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
-                                                <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
-                                            </div>
+                                            {savingsFund > 0 ? (
+                                                <>
+                                                    <div className="flex justify-between items-center mb-1.5">
+                                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                                            Puoi permetterti il {(savingsFund / totalWishlistValue * 100).toFixed(0)}% della lista
+                                                        </span>
+                                                        <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
+                                                            €{savingsFund.toFixed(0)}
+                                                        </span>
+                                                    </div>
+                                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                                                        <div
+                                                            className={'h-full rounded-full transition-all duration-700 ease-out ' + (savingsFund >= totalWishlistValue ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500')}
+                                                            style={{ width: Math.min((savingsFund / totalWishlistValue) * 100, 100) + '%' }}
+                                                        />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex justify-between items-center mb-1.5">
+                                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                                            Media: €{activeWishlist.length > 0 ? (totalWishlistValue / activeWishlist.length).toFixed(2) : '0.00'} per oggetto
+                                                        </span>
+                                                    </div>
+                                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                                                        <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     ) : stat.label === 'Oggetti in Lista' ? (
                                         <div>
@@ -246,6 +278,31 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                             autoFocus
                                         />
                                     </div>
+                                </div>
+                            )}
+
+                            {/* Savings Fund Setting (only for total card) */}
+                            {editingCard === 'total' && (
+                                <div>
+                                    <label className={'block text-[10px] font-bold uppercase tracking-wider mb-2 ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                        Fondo Risparmi
+                                    </label>
+                                    <div className="relative">
+                                        <span className={'absolute left-4 top-1/2 -translate-y-1/2 font-bold ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>€</span>
+                                        <input
+                                            type="number"
+                                            value={tempSavings}
+                                            onChange={(e) => setTempSavings(e.target.value)}
+                                            placeholder="Inserisci i tuoi risparmi..."
+                                            className={'w-full pl-10 pr-4 py-3 rounded-xl border transition-all text-lg font-bold ' + (isDarkMode
+                                                ? 'bg-zinc-800 border-zinc-700 focus:border-indigo-500'
+                                                : 'bg-slate-50 border-slate-200 focus:border-indigo-500') + ' focus:outline-none focus:ring-2 focus:ring-indigo-500/20'}
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <p className={'text-[10px] mt-2 ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                        Impulsa i tuoi risparmi per vedere quanta parte della tua wishlist puoi acquistare.
+                                    </p>
                                 </div>
                             )}
 
