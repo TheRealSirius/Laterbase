@@ -35,6 +35,11 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         return 'bg-emerald-500';
     };
 
+    // Calculate Wishlist Completion Percentage
+    const purchasedCount = products.filter(p => p.isPurchased).length;
+    const totalCount = products.filter(p => !p.isArchived).length;
+    const completionPercentage = totalCount > 0 ? Math.min((purchasedCount / totalCount) * 100, 100) : 0;
+
     const handleSaveSettings = () => {
         if (editingCard === 'spent') {
             const value = parseFloat(tempBudget) || 0;
@@ -179,11 +184,17 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                         <div>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                    {activeWishlist.length} attivi • {products.filter(p => p.isPurchased).length} completati
+                                                    {activeWishlist.length} attivi • {purchasedCount} acquistati
+                                                </span>
+                                                <span className={'text-[10px] font-bold ' + (isDarkMode ? 'text-orange-500/80' : 'text-orange-600')}>
+                                                    {completionPercentage.toFixed(0)}%
                                                 </span>
                                             </div>
                                             <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
-                                                <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
+                                                <div
+                                                    className={'h-full rounded-full transition-all duration-700 ease-out ' + (isDarkMode ? 'bg-orange-500/40' : 'bg-orange-500/60')}
+                                                    style={{ width: completionPercentage + '%' }}
+                                                />
                                             </div>
                                         </div>
                                     ) : (

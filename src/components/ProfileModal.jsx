@@ -59,7 +59,8 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode, products = 
     const archivedProducts = products.filter(p => p.isArchived);
 
     const wishlistValue = [...activeWishlist, ...archivedProducts].reduce((sum, p) => sum + Number(p.price || 0), 0);
-    const completionRate = totalProducts > 0 ? Math.round((purchasedProducts.length / (purchasedProducts.length + activeWishlist.length)) * 100) : 0;
+    const totalForCompletion = purchasedProducts.length + activeWishlist.length;
+    const completionRate = totalForCompletion > 0 ? Math.round((purchasedProducts.length / totalForCompletion) * 100) : 0;
 
     // Golden Month - month with most spending this year
     const currentYear = new Date().getFullYear();
