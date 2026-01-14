@@ -155,7 +155,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                         </div>
 
                         {/* Section 3: Footer (Budget, Info, or Decorative) */}
-                        <div className="min-h-[52px] flex flex-col justify-end">
+                        <div className={(extraInfoEnabled[stat.id] ? "mt-4 " : "") + "flex flex-col justify-end"}>
                             {extraInfoEnabled[stat.id] ? (
                                 <>
                                     {stat.hasBudget && monthlyBudget > 0 ? (
@@ -181,37 +181,24 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                             )}
                                         </div>
                                     ) : stat.id === 'total' ? (
-                                        <div>
-                                            {savingsFund > 0 ? (
-                                                <>
-                                                    <div className="flex justify-between items-center mb-1.5">
-                                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                            Puoi permetterti il {(savingsFund / totalWishlistValue * 100).toFixed(0)}% della lista
-                                                        </span>
-                                                        <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
-                                                            €{savingsFund.toFixed(0)}
-                                                        </span>
-                                                    </div>
-                                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
-                                                        <div
-                                                            className={'h-full rounded-full transition-all duration-700 ease-out ' + (savingsFund >= totalWishlistValue ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500')}
-                                                            style={{ width: Math.min((savingsFund / totalWishlistValue) * 100, 100) + '%' }}
-                                                        />
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <div className="flex justify-between items-center mb-1.5">
-                                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                            Media: €{activeWishlist.length > 0 ? (totalWishlistValue / activeWishlist.length).toFixed(2) : '0.00'} per oggetto
-                                                        </span>
-                                                    </div>
-                                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
-                                                        <div className={'h-full rounded-full w-0 ' + (isDarkMode ? 'bg-zinc-700' : 'bg-slate-200')} />
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
+                                        savingsFund > 0 ? (
+                                            <div>
+                                                <div className="flex justify-between items-center mb-1.5">
+                                                    <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                                        Puoi permetterti il {(savingsFund / totalWishlistValue * 100).toFixed(0)}% della lista
+                                                    </span>
+                                                    <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
+                                                        €{savingsFund.toFixed(0)}
+                                                    </span>
+                                                </div>
+                                                <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                                                    <div
+                                                        className={'h-full rounded-full transition-all duration-700 ease-out ' + (savingsFund >= totalWishlistValue ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500')}
+                                                        style={{ width: Math.min((savingsFund / totalWishlistValue) * 100, 100) + '%' }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : null
                                     ) : stat.label === 'Oggetti in Lista' ? (
                                         <div>
                                             <div className="flex justify-between items-center mb-1.5">
@@ -229,14 +216,9 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                                 />
                                             </div>
                                         </div>
-                                    ) : (
-                                        <div className="h-1 invisible" aria-hidden="true" />
-                                    )}
+                                    ) : null}
                                 </>
-                            ) : (
-                                // Ghost box to maintain alignment even when info is disabled
-                                <div className="h-10 invisible" aria-hidden="true" />
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 ))}
