@@ -662,7 +662,7 @@ const App = () => {
   };
 
   // Show landing page if not logged in (unless public view)
-  if (!user && !loading && !isPublicView) {
+  if (!user && !authLoading && !isPublicView) {
     return <LandingPage isDarkMode={isDarkMode} />;
   }
 
