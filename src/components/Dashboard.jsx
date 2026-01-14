@@ -94,6 +94,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                 : 'bg-white border-slate-100 shadow-sm ' + (stat.clickable && !isPublicView ? 'hover:border-slate-200' : '')
                             }`}
                     >
+                        {/* Section 1: Header */}
                         <div className="flex items-center justify-between gap-4 mb-4">
                             <div className="flex items-center gap-4">
                                 <div className={'p-3 rounded-2xl border ' + stat.bgClass}>
@@ -113,37 +114,44 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                 </button>
                             )}
                         </div>
-                        <div className="flex items-baseline justify-between gap-2 mt-auto">
+
+                        {/* Section 2: Value (Centered vertically in the remaining space) */}
+                        <div className="flex-1 flex items-center justify-between gap-2 mb-2">
                             <span className={'text-2xl font-bold tracking-tight ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>{stat.value}</span>
                             {stat.clickable && !isPublicView && (
                                 <ChevronRight size={16} className={isDarkMode ? 'text-zinc-700' : 'text-slate-300'} />
                             )}
                         </div>
 
-                        {/* Budget Progress Bar */}
-                        {stat.hasBudget && monthlyBudget > 0 && (
-                            <div className="mt-4">
-                                <div className="flex justify-between items-center mb-1.5">
-                                    <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                        Budget: €{monthlyBudget.toFixed(0)}
-                                    </span>
-                                    <span className={'text-[10px] font-bold ' + (budgetPercentage >= 100 ? 'text-red-500' : budgetPercentage >= 75 ? 'text-amber-500' : 'text-emerald-500')}>
-                                        {budgetPercentage.toFixed(0)}%
-                                    </span>
+                        {/* Section 3: Footer (Budget or Placeholder) */}
+                        <div className="min-h-[52px] flex flex-col justify-end">
+                            {stat.hasBudget && monthlyBudget > 0 ? (
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
+                                            Budget: €{monthlyBudget.toFixed(0)}
+                                        </span>
+                                        <span className={'text-[10px] font-bold ' + (budgetPercentage >= 100 ? 'text-red-500' : budgetPercentage >= 75 ? 'text-amber-500' : 'text-emerald-500')}>
+                                            {budgetPercentage.toFixed(0)}%
+                                        </span>
+                                    </div>
+                                    <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800' : 'bg-slate-100')}>
+                                        <div
+                                            className={'h-full rounded-full transition-all duration-700 ease-out ' + getBudgetColor()}
+                                            style={{ width: budgetPercentage + '%' }}
+                                        />
+                                    </div>
+                                    {budgetPercentage >= 100 && (
+                                        <p className="text-[10px] text-red-500 mt-1.5 font-medium">
+                                            ⚠️ Budget superato di €{(monthlySpent - monthlyBudget).toFixed(2)}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800' : 'bg-slate-100')}>
-                                    <div
-                                        className={'h-full rounded-full transition-all duration-700 ease-out ' + getBudgetColor()}
-                                        style={{ width: budgetPercentage + '%' }}
-                                    />
-                                </div>
-                                {budgetPercentage >= 100 && (
-                                    <p className="text-[10px] text-red-500 mt-1.5 font-medium">
-                                        ⚠️ Budget superato di €{(monthlySpent - monthlyBudget).toFixed(2)}
-                                    </p>
-                                )}
-                            </div>
-                        )}
+                            ) : (
+                                // Ghost box to maintain alignment
+                                <div className="h-10 invisible" aria-hidden="true" />
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
