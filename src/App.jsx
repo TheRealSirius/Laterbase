@@ -27,6 +27,7 @@ import MigrationModal from './components/MigrationModal';
 import LogoutConfirmModal from './components/LogoutConfirmModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import ProfileModal from './components/ProfileModal';
+import LandingPage from './components/LandingPage';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
 import { supabase } from './lib/supabase';
@@ -659,6 +660,11 @@ const App = () => {
       }
     }
   };
+
+  // Show landing page if not logged in (unless public view)
+  if (!user && !loading && !isPublicView) {
+    return <LandingPage isDarkMode={isDarkMode} />;
+  }
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDarkMode ? 'bg-zinc-950 text-white' : 'bg-[#F9FAFB] text-slate-900'} font-sans selection:bg-slate-200 dark:selection:bg-zinc-800`}>
