@@ -499,7 +499,7 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode, products = 
                                         <div className="flex items-center gap-2 mb-1">
                                             <Target size={14} className="text-purple-500" />
                                             <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                                                Top Cat.
+                                                Top categoria
                                             </span>
                                         </div>
                                         <p className={'text-xl font-bold truncate ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
