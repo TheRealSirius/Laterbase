@@ -243,7 +243,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                 <div>
                                     <p className="font-bold text-sm">Informazioni aggiuntive</p>
                                     <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                                        Mostra dettagli extra e simmetria
+                                        Mostra dettagli extra
                                     </p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
