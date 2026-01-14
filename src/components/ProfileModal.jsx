@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, User, Camera, KeyRound, BarChart3, LogOut, Check, Loader2 } from 'lucide-react';
+import { X, User, Camera, KeyRound, BarChart3, LogOut, Check, Loader2, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
@@ -9,18 +9,34 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
     const [isEditingName, setIsEditingName] = useState(false);
     const [tempName, setTempName] = useState('');
     const [savingName, setSavingName] = useState(false);
-    const [sendingReset, setSendingReset] = useState(false);
     const [message, setMessage] = useState('');
     const fileInputRef = useRef(null);
 
+    // Password change state
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [savingPassword, setSavingPassword] = useState(false);
+
     useEffect(() => {
         if (user) {
-            // Get display name from user metadata
             setDisplayName(user.user_metadata?.display_name || user.email?.split('@')[0] || 'Utente');
-            // Load avatar
             loadAvatar();
         }
     }, [user]);
+
+    // Reset password form when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setIsChangingPassword(false);
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        }
+    }, [isOpen]);
 
     const loadAvatar = async () => {
         if (!user) return;
@@ -30,7 +46,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                 .from('avatars')
                 .getPublicUrl(user.id + '/profile_pic');
 
-            // Check if image actually exists by trying to load it
             const img = new Image();
             img.onload = () => setAvatarUrl(data.publicUrl + '?t=' + Date.now());
             img.onerror = () => setAvatarUrl(null);
@@ -48,14 +63,12 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
         try {
             const filePath = user.id + '/profile_pic';
 
-            // Upload with upsert to replace existing
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
                 .upload(filePath, file, { upsert: true });
 
             if (uploadError) throw uploadError;
 
-            // Reload avatar
             await loadAvatar();
             setMessage('Foto profilo aggiornata!');
             setTimeout(() => setMessage(''), 3000);
@@ -97,25 +110,46 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
         }
     };
 
-    const handlePasswordReset = async () => {
-        if (!user?.email) return;
+    const handlePasswordChange = async () => {
+        // Validation
+        if (!newPassword || !confirmPassword) {
+            setMessage('Errore: Compila tutti i campi');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
 
-        setSendingReset(true);
+        if (newPassword !== confirmPassword) {
+            setMessage('Errore: Le password non coincidono');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setMessage('Errore: La password deve avere almeno 6 caratteri');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+        }
+
+        setSavingPassword(true);
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-                redirectTo: window.location.origin
+            const { error } = await supabase.auth.updateUser({
+                password: newPassword
             });
 
             if (error) throw error;
 
-            setMessage('Email di reset inviata!');
-            setTimeout(() => setMessage(''), 5000);
+            setMessage('Password aggiornata con successo!');
+            setIsChangingPassword(false);
+            setOldPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => setMessage(''), 3000);
         } catch (error) {
-            console.error('Error sending reset:', error);
-            setMessage('Errore nell\'invio');
+            console.error('Error updating password:', error);
+            setMessage('Errore: ' + (error.message || 'Impossibile aggiornare la password'));
             setTimeout(() => setMessage(''), 3000);
         } finally {
-            setSendingReset(false);
+            setSavingPassword(false);
         }
     };
 
@@ -123,21 +157,18 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop with blur */}
             <div
                 className="absolute inset-0 bg-black/50"
                 style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
                 onClick={onClose}
             />
 
-            {/* Modal Card */}
             <div
-                className={'relative w-full max-w-sm rounded-3xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-300 ' +
+                className={'relative w-full max-w-sm rounded-3xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto ' +
                     (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}
             >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-6">
-                    {/* Avatar */}
                     <div className="relative">
                         <button
                             onClick={() => fileInputRef.current?.click()}
@@ -166,7 +197,6 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                         />
                     </div>
 
-                    {/* Close Button */}
                     <button
                         onClick={onClose}
                         className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
@@ -234,22 +264,86 @@ const ProfileModal = ({ isOpen, onClose, user, onLogout, isDarkMode }) => {
                         </p>
                     </div>
 
-                    {/* Password Reset */}
-                    <button
-                        onClick={handlePasswordReset}
-                        disabled={sendingReset}
-                        className={'w-full flex items-center gap-3 p-4 rounded-2xl transition-all ' +
-                            (isDarkMode
-                                ? 'hover:bg-zinc-800 text-zinc-300'
-                                : 'hover:bg-slate-50 text-slate-700')}
-                    >
-                        {sendingReset ? (
-                            <Loader2 size={20} className="animate-spin text-amber-500" />
-                        ) : (
+                    {/* Password Change Section */}
+                    {isChangingPassword ? (
+                        <div className={'rounded-2xl p-4 space-y-3 ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
+                            <label className={'block text-[10px] font-bold uppercase tracking-wider ' +
+                                (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
+                                Modifica Password
+                            </label>
+
+                            {/* New Password */}
+                            <div className="relative">
+                                <input
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Nuova password"
+                                    className={'w-full px-3 py-2 pr-10 rounded-xl border text-sm focus:outline-none ' +
+                                        (isDarkMode
+                                            ? 'bg-zinc-900 border-zinc-700 focus:border-amber-500 placeholder:text-zinc-600'
+                                            : 'bg-white border-slate-200 focus:border-amber-500 placeholder:text-slate-400')}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className={'absolute right-2 top-1/2 -translate-y-1/2 p-1 ' +
+                                        (isDarkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-400 hover:text-slate-600')}
+                                >
+                                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+
+                            {/* Confirm Password */}
+                            <div className="relative">
+                                <input
+                                    type={showNewPassword ? 'text' : 'password'}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Ripeti nuova password"
+                                    className={'w-full px-3 py-2 pr-10 rounded-xl border text-sm focus:outline-none ' +
+                                        (isDarkMode
+                                            ? 'bg-zinc-900 border-zinc-700 focus:border-amber-500 placeholder:text-zinc-600'
+                                            : 'bg-white border-slate-200 focus:border-amber-500 placeholder:text-slate-400')}
+                                />
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-2 pt-1">
+                                <button
+                                    onClick={() => {
+                                        setIsChangingPassword(false);
+                                        setOldPassword('');
+                                        setNewPassword('');
+                                        setConfirmPassword('');
+                                    }}
+                                    className={'flex-1 py-2 rounded-xl font-medium transition-colors ' +
+                                        (isDarkMode ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-slate-200 text-slate-600 hover:bg-slate-300')}
+                                >
+                                    Annulla
+                                </button>
+                                <button
+                                    onClick={handlePasswordChange}
+                                    disabled={savingPassword}
+                                    className="flex-1 py-2 rounded-xl font-medium bg-green-500 text-white hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    {savingPassword ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                                    Conferma
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setIsChangingPassword(true)}
+                            className={'w-full flex items-center gap-3 p-4 rounded-2xl transition-all ' +
+                                (isDarkMode
+                                    ? 'hover:bg-zinc-800 text-zinc-300'
+                                    : 'hover:bg-slate-50 text-slate-700')}
+                        >
                             <KeyRound size={20} className="text-amber-500" />
-                        )}
-                        <span className="font-medium">Modifica Password</span>
-                    </button>
+                            <span className="font-medium">Modifica Password</span>
+                        </button>
+                    )}
 
                     {/* Statistics (placeholder) */}
                     <button

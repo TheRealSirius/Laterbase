@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { X, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
     const { signUp, signInWithPassword, signInWithGoogle } = useAuth();
     const [isRegister, setIsRegister] = useState(false);
+    const [isForgotPassword, setIsForgotPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +41,33 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
         }
     };
 
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        if (!email) {
+            setError('Inserisci la tua email');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setMessage('');
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin
+            });
+
+            if (error) throw error;
+
+            setMessage('Email di reset inviata! Controlla la tua posta.');
+            setEmail('');
+        } catch (err) {
+            setError(err.message || 'Errore nell\'invio dell\'email');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleGoogleLogin = async () => {
         setLoading(true);
         setError('');
@@ -53,9 +82,119 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
 
     const switchMode = () => {
         setIsRegister(!isRegister);
+        setIsForgotPassword(false);
         setError('');
         setMessage('');
     };
+
+    const goToForgotPassword = () => {
+        setIsForgotPassword(true);
+        setError('');
+        setMessage('');
+    };
+
+    const backToLogin = () => {
+        setIsForgotPassword(false);
+        setError('');
+        setMessage('');
+    };
+
+    // Forgot Password View
+    if (isForgotPassword) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    onClick={onClose}
+                />
+
+                <div className={'relative w-full max-w-md rounded-3xl p-8 shadow-2xl border ' +
+                    (isDarkMode
+                        ? 'bg-zinc-900 border-zinc-800'
+                        : 'bg-white border-slate-100')}>
+
+                    <button
+                        onClick={onClose}
+                        className={'absolute top-4 right-4 p-2 rounded-xl transition-colors ' +
+                            (isDarkMode
+                                ? 'text-zinc-500 hover:bg-zinc-800 hover:text-white'
+                                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600')}
+                    >
+                        <X size={20} />
+                    </button>
+
+                    <button
+                        onClick={backToLogin}
+                        className={'flex items-center gap-2 mb-6 transition-colors ' +
+                            (isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900')}
+                    >
+                        <ArrowLeft size={18} />
+                        <span className="text-sm font-medium">Torna al login</span>
+                    </button>
+
+                    <div className="text-center mb-6">
+                        <h2 className="text-2xl font-bold mb-2">Password dimenticata?</h2>
+                        <p className={'text-sm ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-500')}>
+                            Inserisci la tua email per ricevere il link di reset
+                        </p>
+                    </div>
+
+                    {message && (
+                        <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm text-center">
+                            {message}
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                        <div>
+                            <label className={'block text-xs font-bold uppercase tracking-wider mb-2 ' +
+                                (isDarkMode ? 'text-zinc-400' : 'text-slate-500')}>
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="la-tua@email.com"
+                                disabled={loading}
+                                autoFocus
+                                className={'w-full px-4 py-3 rounded-xl border transition-all ' +
+                                    (isDarkMode
+                                        ? 'bg-zinc-800 border-zinc-700 focus:border-zinc-500 placeholder:text-zinc-600'
+                                        : 'bg-slate-50 border-slate-200 focus:border-slate-400 placeholder:text-slate-400') +
+                                    ' focus:outline-none focus:ring-2 ' +
+                                    (isDarkMode ? 'focus:ring-zinc-700' : 'focus:ring-slate-200')}
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading || !email}
+                            className={'w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ' +
+                                (isDarkMode
+                                    ? 'bg-white text-zinc-900 hover:bg-zinc-100'
+                                    : 'bg-slate-900 text-white hover:bg-slate-800')}
+                        >
+                            {loading ? (
+                                <Loader2 size={18} className="animate-spin" />
+                            ) : (
+                                <>
+                                    <Mail size={18} />
+                                    Invia email di reset
+                                </>
+                            )}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -173,6 +312,18 @@ const LoginModal = ({ isOpen, onClose, isDarkMode }) => {
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
+
+                        {/* Forgot Password Link */}
+                        {!isRegister && (
+                            <button
+                                type="button"
+                                onClick={goToForgotPassword}
+                                className={'mt-2 text-sm font-medium transition-colors ' +
+                                    (isDarkMode ? 'text-zinc-500 hover:text-zinc-300' : 'text-slate-500 hover:text-slate-700')}
+                            >
+                                Password dimenticata?
+                            </button>
+                        )}
                     </div>
 
                     <button
