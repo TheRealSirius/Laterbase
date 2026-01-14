@@ -13,6 +13,7 @@ const LandingPage = ({ isDarkMode }) => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [showTerms, setShowTerms] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -309,10 +310,61 @@ const LandingPage = ({ isDarkMode }) => {
 
                 <p className={'text-center text-xs mt-6 ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
                     {isRegister
-                        ? 'Creando un account, accetti i termini di servizio'
+                        ? (
+                            <>
+                                Creando un account, accetti i{' '}
+                                <button
+                                    type="button"
+                                    onClick={() => setShowTerms(true)}
+                                    className={'underline transition-colors ' + (isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-700')}
+                                >
+                                    termini di servizio
+                                </button>
+                            </>
+                        )
                         : 'I tuoi dati saranno sincronizzati in modo sicuro'}
                 </p>
             </div>
+
+            {/* Terms of Service Modal */}
+            {showTerms && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-black/50"
+                        style={{ backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                        onClick={() => setShowTerms(false)}
+                    />
+                    <div className={'relative w-full max-w-md rounded-3xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-300 ' + (isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-slate-100')}>
+                        <h3 className={'text-xl font-bold mb-4 ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>
+                            Termini di Servizio
+                        </h3>
+
+                        <div className={'space-y-4 text-sm ' + (isDarkMode ? 'text-zinc-400' : 'text-slate-600')}>
+                            <p>
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Progetto Portfolio</strong><br />
+                                Wishlist & Shopping è un progetto portfolio sviluppato da Sirius. L'applicazione è fornita "così com'è" a scopo dimostrativo e personale.
+                            </p>
+
+                            <p>
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Gestione dei Dati</strong><br />
+                                I tuoi dati sono archiviati in modo sicuro tramite Supabase e non vengono ceduti a terzi. Le informazioni raccolte (email, wishlist) sono utilizzate esclusivamente per il funzionamento dell'app.
+                            </p>
+
+                            <p>
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Uso Gratuito</strong><br />
+                                L'utilizzo dell'app è completamente gratuito e inteso per scopi personali. Non sono previsti abbonamenti o costi nascosti.
+                            </p>
+                        </div>
+
+                        <button
+                            onClick={() => setShowTerms(false)}
+                            className={'w-full mt-6 py-3 rounded-xl font-semibold transition-all ' + (isDarkMode ? 'bg-white text-zinc-900 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800')}
+                        >
+                            Ho capito
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Footer */}
             <footer className={'absolute bottom-0 left-0 right-0 text-center py-6 text-xs ' + (isDarkMode ? 'text-zinc-600' : 'text-gray-500')}>
