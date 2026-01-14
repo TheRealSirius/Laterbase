@@ -185,7 +185,9 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                             <div>
                                                 <div className="flex justify-between items-center mb-1.5">
                                                     <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                        Puoi permetterti il {(savingsFund / totalWishlistValue * 100).toFixed(0)}% della lista
+                                                        {savingsFund >= totalWishlistValue
+                                                            ? "Puoi permetterti l'intera lista! 🎉"
+                                                            : `Puoi permetterti il ${Math.floor((savingsFund / totalWishlistValue) * 100)}% della lista`}
                                                     </span>
                                                     <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
                                                         €{savingsFund.toFixed(0)}
