@@ -86,7 +86,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                         key={idx}
                         onClick={!isPublicView ? stat.onClick : undefined}
                         tabIndex={stat.clickable && !isPublicView ? 0 : -1}
-                        className={`p-6 rounded-3xl border transition-all duration-300 focus:outline-none focus:ring-0 ${stat.clickable && !isPublicView
+                        className={`p-6 rounded-3xl border transition-all duration-300 focus:outline-none focus:ring-0 flex flex-col h-full ${stat.clickable && !isPublicView
                             ? 'cursor-pointer hover:shadow-md'
                             : 'cursor-default'
                             } ${isDarkMode
@@ -113,7 +113,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                 </button>
                             )}
                         </div>
-                        <div className="flex items-baseline justify-between gap-2">
+                        <div className="flex items-baseline justify-between gap-2 mt-auto">
                             <span className={'text-2xl font-bold tracking-tight ' + (isDarkMode ? 'text-white' : 'text-slate-900')}>{stat.value}</span>
                             {stat.clickable && !isPublicView && (
                                 <ChevronRight size={16} className={isDarkMode ? 'text-zinc-700' : 'text-slate-300'} />
