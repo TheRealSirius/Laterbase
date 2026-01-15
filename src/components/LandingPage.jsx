@@ -341,20 +341,25 @@ const LandingPage = ({ isDarkMode }) => {
                             Termini di Servizio
                         </h3>
 
-                        <div className={'space-y-4 text-sm ' + (isDarkMode ? 'text-zinc-400' : 'text-slate-600')}>
+                        <div className={'space-y-4 text-sm max-h-[60vh] overflow-y-auto pr-2 ' + (isDarkMode ? 'text-zinc-400' : 'text-slate-600') + ' custom-scrollbar'}>
                             <p>
                                 <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Progetto Portfolio</strong><br />
                                 Wishlist & Shopping è un progetto portfolio sviluppato da Sirius. L'applicazione è fornita "così com'è" a scopo dimostrativo e personale.
                             </p>
 
                             <p>
-                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Gestione dei Dati</strong><br />
-                                I tuoi dati sono archiviati in modo sicuro tramite Supabase e non vengono ceduti a terzi. Le informazioni raccolte (email, wishlist) sono utilizzate esclusivamente per il funzionamento dell'app.
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Conservazione dei Dati</strong><br />
+                                I tuoi dati (email, password criptata, prodotti e avatar) sono archiviati in modo sicuro su server Supabase. Le informazioni sono private e utilizzate esclusivamente per il corretto funzionamento dell'app.
                             </p>
 
                             <p>
-                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Uso Gratuito</strong><br />
-                                L'utilizzo dell'app è completamente gratuito e inteso per scopi personali. Non sono previsti abbonamenti o costi nascosti.
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Gestione delle Immagini</strong><br />
+                                Le immagini caricate o recuperate tramite URL sono utilizzate solo all'interno dell'applicazione per permetterti di visualizzare i prodotti della tua wishlist in modo personalizzato.
+                            </p>
+
+                            <p>
+                                <strong className={isDarkMode ? 'text-white' : 'text-slate-900'}>Cancellazione per Inattività</strong><br />
+                                Per garantire l'efficienza del database, gli account che non effettuano l'accesso per oltre **90 giorni** verranno eliminati automaticamente, includendo tutti i dati e i media associati.
                             </p>
                         </div>
 
