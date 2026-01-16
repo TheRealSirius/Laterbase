@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target, Archive } from 'lucide-react';
+import { X, Tag, Link as LinkIcon, Image as ImageIcon, Euro, Package, Target, Archive, Plus } from 'lucide-react';
 
-const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode }) => {
+const ProductForm = ({ onClose, onSubmit, categories, onAddCategory, initialData, isDarkMode }) => {
+    const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
         price: initialData?.price || '',
@@ -176,22 +178,89 @@ const ProductForm = ({ onClose, onSubmit, categories, initialData, isDarkMode })
 
                         <div className="space-y-2">
                             <label className={`text-xs font-bold uppercase tracking-widest pl-1 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Categoria</label>
-                            <div className="relative">
-                                <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
-                                    <Tag size={18} />
+
+                            {!showNewCategoryInput ? (
+                                <div className="relative">
+                                    <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
+                                        <Tag size={18} />
+                                    </div>
+                                    <select
+                                        required
+                                        className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium appearance-none ${isDarkMode
+                                            ? 'bg-zinc-950 text-white focus:bg-black focus:ring-zinc-700'
+                                            : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-slate-900'}`}
+                                        value={formData.category}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__NEW__') {
+                                                setShowNewCategoryInput(true);
+                                            } else {
+                                                setFormData({ ...formData, category: e.target.value });
+                                            }
+                                        }}
+                                    >
+                                        <option value="" disabled>Scegli...</option>
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                        <option disabled className={isDarkMode ? 'bg-zinc-800' : 'bg-slate-200'}>──────────</option>
+                                        <option value="__NEW__" className={isDarkMode ? 'text-violet-400' : 'text-violet-600'}>+ Nuova Categoria</option>
+                                    </select>
                                 </div>
-                                <select
-                                    required
-                                    className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium appearance-none ${isDarkMode
-                                        ? 'bg-zinc-950 text-white focus:bg-black focus:ring-zinc-700'
-                                        : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-slate-900'}`}
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                >
-                                    <option value="" disabled>Scegli...</option>
-                                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <div className="relative flex-1">
+                                        <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`}>
+                                            <Plus size={18} />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            autoFocus
+                                            placeholder="Nome nuova categoria..."
+                                            className={`w-full pl-11 pr-4 py-3.5 border-transparent rounded-2xl focus:ring-2 focus:outline-none transition-all font-medium ${isDarkMode
+                                                ? 'bg-zinc-950 text-white focus:bg-black focus:ring-violet-500 placeholder:text-zinc-700'
+                                                : 'bg-slate-50 text-slate-900 focus:bg-white focus:ring-violet-500 placeholder:text-slate-400'}`}
+                                            value={newCategoryName}
+                                            onChange={(e) => setNewCategoryName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && newCategoryName.trim()) {
+                                                    e.preventDefault();
+                                                    if (onAddCategory) onAddCategory(newCategoryName.trim());
+                                                    setFormData({ ...formData, category: newCategoryName.trim() });
+                                                    setNewCategoryName('');
+                                                    setShowNewCategoryInput(false);
+                                                } else if (e.key === 'Escape') {
+                                                    setShowNewCategoryInput(false);
+                                                    setNewCategoryName('');
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (newCategoryName.trim()) {
+                                                if (onAddCategory) onAddCategory(newCategoryName.trim());
+                                                setFormData({ ...formData, category: newCategoryName.trim() });
+                                                setNewCategoryName('');
+                                                setShowNewCategoryInput(false);
+                                            }
+                                        }}
+                                        className={`px-4 py-3.5 rounded-2xl font-bold transition-all ${newCategoryName.trim()
+                                            ? 'bg-violet-500 text-white hover:bg-violet-600'
+                                            : (isDarkMode ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed')}`}
+                                    >
+                                        <Plus size={18} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowNewCategoryInput(false);
+                                            setNewCategoryName('');
+                                        }}
+                                        className={`px-4 py-3.5 rounded-2xl transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-2">

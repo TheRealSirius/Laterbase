@@ -919,6 +919,7 @@ const App = () => {
             }
           }}
           categories={categories}
+          onAddCategory={addCategory}
           isDarkMode={isDarkMode}
         />
       )}
