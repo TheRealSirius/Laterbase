@@ -6,21 +6,30 @@ const AIAssistant = ({ isDarkMode, products = [] }) => {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isTypingWelcome, setIsTypingWelcome] = useState(false);
+    const [hasShownWelcome, setHasShownWelcome] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
-    // Welcome message on first open
+    // Welcome message with typing effect on first open
     useEffect(() => {
-        if (isOpen && messages.length === 0) {
-            setMessages([
-                {
-                    id: 'welcome',
-                    role: 'assistant',
-                    content: 'Ciao, sono l\'assistente AI chiedimi ciò che ti serve'
-                }
-            ]);
+        if (isOpen && !hasShownWelcome && messages.length === 0) {
+            setHasShownWelcome(true);
+            setIsTypingWelcome(true);
+
+            // Simula il "sto scrivendo" per 1.5 secondi
+            setTimeout(() => {
+                setIsTypingWelcome(false);
+                setMessages([
+                    {
+                        id: 'welcome',
+                        role: 'assistant',
+                        content: 'Ciao, sono l\'assistente virtuale della Wishlist, come posso aiutarti oggi?'
+                    }
+                ]);
+            }, 1500);
         }
-    }, [isOpen, messages.length]);
+    }, [isOpen, hasShownWelcome, messages.length]);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -164,7 +173,7 @@ const AIAssistant = ({ isDarkMode, products = [] }) => {
                         ))}
 
                         {/* Loading indicator */}
-                        {isLoading && (
+                        {(isLoading || isTypingWelcome) && (
                             <div className="flex justify-start">
                                 <div className={`px-4 py-2.5 rounded-2xl rounded-bl-md ${isDarkMode ? 'bg-zinc-800' : 'bg-white shadow-sm'
                                     }`}>
