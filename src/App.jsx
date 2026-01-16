@@ -1001,7 +1001,7 @@ const App = () => {
       />
 
       {/* AI Assistant */}
-      {!isPublicView && <AIAssistant isDarkMode={isDarkMode} />}
+      {!isPublicView && <AIAssistant isDarkMode={isDarkMode} products={products} />}
 
       {/* Toast Notification */}
       {toast && (

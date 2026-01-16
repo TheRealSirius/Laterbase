@@ -6,6 +6,21 @@ const corsHeaders = {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// System prompt per istruire l'AI sul suo ruolo
+const SYSTEM_PROMPT = `Sei l'assistente AI di una app Wishlist. Il tuo nome è "Assistente Wishlist".
+
+Il tuo ruolo è aiutare l'utente a gestire la sua lista dei desideri. Puoi:
+- Rispondere a domande sui prodotti nella wishlist (prezzi, categorie, priorità)
+- Dare consigli su cosa comprare prima in base al budget
+- Calcolare statistiche (totale, media prezzi, prodotto più/meno costoso)
+- Suggerire quando è un buon momento per acquistare (se il prezzo è vicino al target)
+- Dare consigli generali sugli acquisti
+
+Rispondi sempre in italiano, in modo amichevole e conciso.
+Se l'utente chiede qualcosa che non riguarda la wishlist, puoi comunque aiutarlo ma ricordagli gentilmente che sei specializzato nella gestione della wishlist.
+
+I dati della wishlist dell'utente ti verranno forniti in formato JSON.`;
+
 serve(async (req: Request) => {
     console.log("=== AI Assistant Function Called ===");
     console.log("Method:", req.method);
@@ -34,11 +49,11 @@ serve(async (req: Request) => {
 
         // Parse request body
         const payload = await req.json();
-        console.log("Richiesta ricevuta:", JSON.stringify(payload));
+        console.log("Richiesta ricevuta");
 
         // Get API key from environment
         const apiKey = Deno.env.get("GEMINI_API_KEY");
-        console.log("API Key presente:", apiKey ? "Sì (lunghezza: " + apiKey.length + ")" : "NO!");
+        console.log("API Key presente:", apiKey ? "Sì" : "NO!");
 
         if (!apiKey) {
             console.error("ERRORE: GEMINI_API_KEY non configurata!");
@@ -51,7 +66,7 @@ serve(async (req: Request) => {
             );
         }
 
-        const { prompt } = payload;
+        const { prompt, products } = payload;
         if (!prompt || typeof prompt !== "string") {
             console.error("ERRORE: Prompt mancante o non valido");
             return new Response(
@@ -63,12 +78,33 @@ serve(async (req: Request) => {
             );
         }
 
-        console.log("Prompt ricevuto:", prompt.substring(0, 100) + "...");
-        console.log("Chiamata a Gemini in corso...");
+        // Costruisci il contesto con i dati della wishlist
+        let wishlistContext = "";
+        if (products && Array.isArray(products) && products.length > 0) {
+            const activeProducts = products.filter((p: any) => !p.isPurchased && !p.isArchived);
+            const purchasedProducts = products.filter((p: any) => p.isPurchased);
 
-        // Call Gemini API
+            wishlistContext = `
+
+DATI WISHLIST DELL'UTENTE:
+- Prodotti attivi: ${activeProducts.length}
+- Prodotti acquistati: ${purchasedProducts.length}
+- Totale wishlist attiva: €${activeProducts.reduce((sum: number, p: any) => sum + Number(p.price), 0).toFixed(2)}
+
+LISTA PRODOTTI ATTIVI:
+${activeProducts.map((p: any) => `- ${p.name}: €${p.price} (categoria: ${p.category || 'N/A'}, priorità: ${p.priority || 'normale'}${p.targetPrice ? ', target: €' + p.targetPrice : ''})`).join('\n')}
+`;
+        } else {
+            wishlistContext = "\n\nL'utente non ha ancora prodotti nella wishlist.";
+        }
+
+        const fullPrompt = SYSTEM_PROMPT + wishlistContext + "\n\nDOMANDA DELL'UTENTE: " + prompt;
+
+        console.log("Prompt completo costruito, chiamata a Gemini...");
+
+        // Call Gemini API (Gemini 3 Flash - free tier)
         const geminiResponse = await fetch(
-            "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + apiKey,
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey,
             {
                 method: "POST",
                 headers: {
@@ -79,7 +115,7 @@ serve(async (req: Request) => {
                         {
                             parts: [
                                 {
-                                    text: prompt,
+                                    text: fullPrompt,
                                 },
                             ],
                         },

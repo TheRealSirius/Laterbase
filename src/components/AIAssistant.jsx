@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Sparkles, Loader2 } from 'lucide-react';
 
-const AIAssistant = ({ isDarkMode }) => {
+const AIAssistant = ({ isDarkMode, products = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
@@ -58,7 +58,7 @@ const AIAssistant = ({ isDarkMode }) => {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer sb_publishable_vH8l3jz7oi9N-OhZhuzaHQ_Vb7PPM97'
                     },
-                    body: JSON.stringify({ prompt: trimmedInput })
+                    body: JSON.stringify({ prompt: trimmedInput, products: products })
                 }
             );
 
