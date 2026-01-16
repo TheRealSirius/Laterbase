@@ -27,7 +27,7 @@ import MigrationModal from './components/MigrationModal';
 import LogoutConfirmModal from './components/LogoutConfirmModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import ProfileModal from './components/ProfileModal';
-import AIAssistant from './components/AIAssistant';
+
 import LandingPage from './components/LandingPage';
 import { useAuth } from './context/AuthContext';
 import * as productService from './lib/productService';
@@ -1000,8 +1000,6 @@ const App = () => {
         isDarkMode={isDarkMode}
       />
 
-      {/* AI Assistant */}
-      {!isPublicView && <AIAssistant isDarkMode={isDarkMode} products={products} />}
 
       {/* Toast Notification */}
       {toast && (
