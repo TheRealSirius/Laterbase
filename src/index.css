@@ -3,3 +3,18 @@
 .dark .product-image {
     filter: brightness(0.85) contrast(1.1);
 }
+
+/* AI Assistant floating animation */
+@keyframes ai-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+    }
+
+    50% {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 35px -5px rgba(139, 92, 246, 0.5);
+    }
+}
