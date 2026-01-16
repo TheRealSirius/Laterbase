@@ -74,25 +74,17 @@ const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onE
                     : ''
                 } ${!isPurchasing ? 'transition-all duration-300' : ''}`}
         >
-            <div className={`relative h-56 flex items-center justify-center p-4 overflow-hidden ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-50/50'}`}>
-                {product.imageUrl ? (() => {
-                    // Check if product name contains "bianco" or "bianca" (case-insensitive)
-                    const isWhiteProduct = /bianc[oa]/i.test(product.name);
-                    const shouldApplyMultiply = isDarkMode && !isWhiteProduct;
-
-                    return (
+            <div className={`relative h-56 flex items-center justify-center p-4 overflow-hidden ${isDarkMode ? 'bg-zinc-950' : 'bg-slate-50/50'}`}>
+                {product.imageUrl ? (
+                    <div className="w-full h-full flex items-center justify-center bg-white rounded-2xl p-3">
                         <img
                             src={product.imageUrl}
                             alt={product.name}
-                            className="product-image w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-105"
-                            style={shouldApplyMultiply ? {
-                                mixBlendMode: 'multiply',
-                                opacity: 0.92
-                            } : {}}
+                            className="w-full h-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                             onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=600&auto=format&fit=crop'; }}
                         />
-                    );
-                })() : (
+                    </div>
+                ) : (
                     <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'text-zinc-800' : 'text-slate-100'}`}>
                         <ShoppingBag size={56} strokeWidth={1.5} />
                     </div>
