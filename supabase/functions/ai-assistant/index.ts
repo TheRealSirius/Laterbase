@@ -7,8 +7,12 @@ const corsHeaders = {
 };
 
 serve(async (req: Request) => {
+    console.log("=== AI Assistant Function Called ===");
+    console.log("Method:", req.method);
+
     // Handle CORS preflight
     if (req.method === "OPTIONS") {
+        console.log("CORS preflight request - returning 204");
         return new Response(null, {
             status: 204,
             headers: corsHeaders,
@@ -18,6 +22,7 @@ serve(async (req: Request) => {
     try {
         // Only allow POST
         if (req.method !== "POST") {
+            console.log("Method not allowed:", req.method);
             return new Response(
                 JSON.stringify({ error: "Method not allowed" }),
                 {
@@ -27,9 +32,16 @@ serve(async (req: Request) => {
             );
         }
 
+        // Parse request body
+        const payload = await req.json();
+        console.log("Richiesta ricevuta:", JSON.stringify(payload));
+
         // Get API key from environment
         const apiKey = Deno.env.get("GEMINI_API_KEY");
+        console.log("API Key presente:", apiKey ? "Sì (lunghezza: " + apiKey.length + ")" : "NO!");
+
         if (!apiKey) {
+            console.error("ERRORE: GEMINI_API_KEY non configurata!");
             return new Response(
                 JSON.stringify({ error: "GEMINI_API_KEY not configured" }),
                 {
@@ -39,9 +51,9 @@ serve(async (req: Request) => {
             );
         }
 
-        // Parse request body
-        const { prompt } = await req.json();
+        const { prompt } = payload;
         if (!prompt || typeof prompt !== "string") {
+            console.error("ERRORE: Prompt mancante o non valido");
             return new Response(
                 JSON.stringify({ error: "Invalid request: 'prompt' is required" }),
                 {
@@ -50,6 +62,9 @@ serve(async (req: Request) => {
                 }
             );
         }
+
+        console.log("Prompt ricevuto:", prompt.substring(0, 100) + "...");
+        console.log("Chiamata a Gemini in corso...");
 
         // Call Gemini API
         const geminiResponse = await fetch(
@@ -73,9 +88,11 @@ serve(async (req: Request) => {
             }
         );
 
+        console.log("Risposta Gemini ricevuta - Status:", geminiResponse.status);
+
         if (!geminiResponse.ok) {
             const errorData = await geminiResponse.text();
-            console.error("Gemini API error:", errorData);
+            console.error("ERRORE Gemini API:", errorData);
             return new Response(
                 JSON.stringify({ error: "Gemini API error", details: errorData }),
                 {
@@ -86,9 +103,11 @@ serve(async (req: Request) => {
         }
 
         const geminiData = await geminiResponse.json();
+        console.log("Gemini data parsed successfully");
 
         // Extract text from Gemini response
         const responseText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        console.log("Risposta estratta (primi 100 char):", responseText.substring(0, 100));
 
         return new Response(
             JSON.stringify({ response: responseText }),
@@ -97,10 +116,15 @@ serve(async (req: Request) => {
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
             }
         );
-    } catch (error) {
-        console.error("Error:", error);
+    } catch (err) {
+        const error = err as Error;
+        console.error("=== ERRORE DETTAGLIATO ===");
+        console.error("Tipo:", error.constructor?.name || "Unknown");
+        console.error("Messaggio:", error.message || String(err));
+        console.error("Stack:", error.stack || "No stack");
+
         return new Response(
-            JSON.stringify({ error: "Internal server error", details: String(error) }),
+            JSON.stringify({ error: "Internal server error", details: error.message || String(err) }),
             {
                 status: 500,
                 headers: { ...corsHeaders, "Content-Type": "application/json" },
