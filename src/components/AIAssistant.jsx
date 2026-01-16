@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Sparkles, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 const AIAssistant = ({ isDarkMode }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -50,11 +49,24 @@ const AIAssistant = ({ isDarkMode }) => {
         setIsLoading(true);
 
         try {
-            const { data, error } = await supabase.functions.invoke('ai-assistant', {
-                body: { prompt: trimmedInput }
-            });
+            // Chiamata diretta con Authorization header
+            const response = await fetch(
+                'https://mbsfzxwzgqtxgldlktzp.supabase.co/functions/v1/ai-assistant',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer sb_publishable_vH8l3jz7oi9N-OhZhuzaHQ_Vb7PPM97'
+                    },
+                    body: JSON.stringify({ prompt: trimmedInput })
+                }
+            );
 
-            if (error) throw error;
+            if (!response.ok) {
+                throw new Error('Errore HTTP: ' + response.status);
+            }
+
+            const data = await response.json();
 
             const assistantMessage = {
                 id: (Date.now() + 1).toString(),
@@ -100,14 +112,14 @@ const AIAssistant = ({ isDarkMode }) => {
             {/* Chat Window */}
             <div
                 className={`fixed bottom-5 right-5 z-[1000] transition-all duration-300 ease-out ${isOpen
-                        ? 'opacity-100 scale-100 translate-y-0'
-                        : 'opacity-0 scale-90 translate-y-4 pointer-events-none'
+                    ? 'opacity-100 scale-100 translate-y-0'
+                    : 'opacity-0 scale-90 translate-y-4 pointer-events-none'
                     }`}
             >
                 <div
                     className={`w-[350px] h-[450px] max-w-[calc(100vw-40px)] max-h-[calc(100vh-100px)] rounded-2xl shadow-2xl flex flex-col overflow-hidden border backdrop-blur-sm ${isDarkMode
-                            ? 'bg-zinc-900/95 border-zinc-700'
-                            : 'bg-white/95 border-slate-200'
+                        ? 'bg-zinc-900/95 border-zinc-700'
+                        : 'bg-white/95 border-slate-200'
                         }`}
                 >
                     {/* Header */}
@@ -122,8 +134,8 @@ const AIAssistant = ({ isDarkMode }) => {
                         <button
                             onClick={() => setIsOpen(false)}
                             className={`p-1.5 rounded-lg transition-colors ${isDarkMode
-                                    ? 'hover:bg-zinc-800 text-zinc-400 hover:text-white'
-                                    : 'hover:bg-slate-100 text-slate-400 hover:text-slate-600'
+                                ? 'hover:bg-zinc-800 text-zinc-400 hover:text-white'
+                                : 'hover:bg-slate-100 text-slate-400 hover:text-slate-600'
                                 }`}
                         >
                             <X size={18} />
@@ -140,10 +152,10 @@ const AIAssistant = ({ isDarkMode }) => {
                             >
                                 <div
                                     className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
-                                            ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white rounded-br-md'
-                                            : isDarkMode
-                                                ? 'bg-zinc-800 text-zinc-100 rounded-bl-md'
-                                                : 'bg-white text-slate-800 shadow-sm rounded-bl-md'
+                                        ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white rounded-br-md'
+                                        : isDarkMode
+                                            ? 'bg-zinc-800 text-zinc-100 rounded-bl-md'
+                                            : 'bg-white text-slate-800 shadow-sm rounded-bl-md'
                                         }`}
                                 >
                                     {msg.content}
@@ -183,18 +195,18 @@ const AIAssistant = ({ isDarkMode }) => {
                                 placeholder="Scrivi un messaggio..."
                                 disabled={isLoading}
                                 className={`flex-1 bg-transparent text-sm outline-none placeholder:text-sm ${isDarkMode
-                                        ? 'text-white placeholder:text-zinc-500'
-                                        : 'text-slate-900 placeholder:text-slate-400'
+                                    ? 'text-white placeholder:text-zinc-500'
+                                    : 'text-slate-900 placeholder:text-slate-400'
                                     }`}
                             />
                             <button
                                 onClick={handleSend}
                                 disabled={!inputValue.trim() || isLoading}
                                 className={`p-2 rounded-lg transition-all ${inputValue.trim() && !isLoading
-                                        ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white hover:opacity-90'
-                                        : isDarkMode
-                                            ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
-                                            : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                    ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white hover:opacity-90'
+                                    : isDarkMode
+                                        ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                     }`}
                             >
                                 <Send size={16} />
