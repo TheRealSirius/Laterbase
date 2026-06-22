@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, PieChart, TrendingUp, ShoppingBag, Target, Wallet } from 'lucide-react';
 
-const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initialMode = 'spent' }) => {
+const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initialMode = 'spent', t, getCategoryLabel, formatCurrency }) => {
     const [mode, setMode] = useState(initialMode); // 'spent' or 'wishlist'
 
     const currentMonth = new Date().getMonth();
@@ -26,6 +26,9 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
     });
 
     const totalAmount = filteredItems.reduce((sum, p) => sum + Number(p.price), 0);
+    const potentialSaving = products
+        .filter(p => !p.isPurchased && !p.isArchived && p.targetPrice && Number(p.price) > Number(p.targetPrice))
+        .reduce((sum, p) => sum + (Number(p.price) - Number(p.targetPrice)), 0);
 
     const categoryBreakdown = categories.map(cat => {
         const amount = filteredItems
@@ -64,9 +67,9 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 <PieChart size={24} />
                             </div>
                             <div>
-                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Analisi Budget</h2>
+                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{t('analysis.title')}</h2>
                                 <p className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
-                                    {mode === 'spent' ? 'Spese Mese Corrente' : 'Breakdown Wishlist Attiva'}
+                                    {mode === 'spent' ? t('analysis.spentSubtitle') : t('analysis.wishlistSubtitle')}
                                 </p>
                             </div>
                         </div>
@@ -88,7 +91,7 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 }`}
                         >
                             <Wallet size={14} />
-                            <span>Speso</span>
+                            <span>{t('analysis.spent')}</span>
                         </button>
                         <button
                             onClick={() => setMode('wishlist')}
@@ -98,25 +101,22 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 }`}
                         >
                             <Target size={14} />
-                            <span>Desideri</span>
+                            <span>{t('analysis.wishes')}</span>
                         </button>
                     </div>
 
                     <div className={`p-6 rounded-2xl mb-8 flex items-center justify-between ${isDarkMode ? 'bg-indigo-500/5 border border-indigo-500/10' : 'bg-indigo-50 border border-indigo-100'}`}>
                         <div className="flex-1">
                             <span className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
-                                {mode === 'spent' ? 'Totale Speso' : 'Valore Wishlist'}
+                                {mode === 'spent' ? t('analysis.totalSpent') : t('analysis.wishlistValue')}
                             </span>
-                            <div className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-indigo-900'}`}>€ {totalAmount.toFixed(2)}</div>
+                            <div className={`text-3xl font-black ${isDarkMode ? 'text-white' : 'text-indigo-900'}`}>{formatCurrency(totalAmount)}</div>
 
                             {mode === 'wishlist' && (
                                 <div className="mt-2 flex items-center gap-2">
-                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-emerald-500/80' : 'text-emerald-600'}`}>Risparmio Potenziale:</span>
+                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDarkMode ? 'text-emerald-500/80' : 'text-emerald-600'}`}>{t('analysis.potentialSaving')}</span>
                                     <span className={`text-xs font-black ${isDarkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                                        € {products
-                                            .filter(p => !p.isPurchased && !p.isArchived && p.targetPrice && Number(p.price) > Number(p.targetPrice))
-                                            .reduce((sum, p) => sum + (Number(p.price) - Number(p.targetPrice)), 0)
-                                            .toFixed(2)}
+                                        {formatCurrency(potentialSaving)}
                                     </span>
                                 </div>
                             )}
@@ -132,10 +132,10 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 <div key={idx} className="space-y-2 group">
                                     <div className="flex justify-between items-end">
                                         <div className="flex items-center gap-2">
-                                            <span className={`font-bold transition-colors ${isDarkMode ? 'text-zinc-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'}`}>{item.name}</span>
+                                            <span className={`font-bold transition-colors ${isDarkMode ? 'text-zinc-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'}`}>{getCategoryLabel ? getCategoryLabel(item.name) : item.name}</span>
                                             <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${isDarkMode ? 'bg-zinc-800 text-zinc-500' : 'bg-slate-200 text-slate-500'}`}>{item.percentage.toFixed(0)}%</span>
                                         </div>
-                                        <span className={`font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€ {item.amount.toFixed(2)}</span>
+                                        <span className={`font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(item.amount)}</span>
                                     </div>
                                     <div className={`w-full h-2 rounded-full overflow-hidden ${isDarkMode ? 'bg-zinc-800' : 'bg-slate-100'}`}>
                                         <div
@@ -152,9 +152,9 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 </div>
                                 <div>
                                     <p className={`font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>
-                                        {mode === 'spent' ? 'Nessuna spesa registrata, ottimo lavoro!' : 'La tua wishlist è vuota, aggiungi qualcosa!'}
+                                        {mode === 'spent' ? t('analysis.noSpent') : t('analysis.emptyWishlist')}
                                     </p>
-                                    <p className={`text-xs ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-1`}>Mantieni il controllo del tuo budget.</p>
+                                    <p className={`text-xs ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-1`}>{t('analysis.keepControl')}</p>
                                 </div>
                             </div>
                         )}
@@ -167,7 +167,7 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 ? 'bg-white text-zinc-950 hover:bg-zinc-200 shadow-white/5'
                                 : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/10'}`}
                         >
-                            <span>Ho capito</span>
+                            <span>{t('common.close')}</span>
                         </button>
                     </div>
                 </div>

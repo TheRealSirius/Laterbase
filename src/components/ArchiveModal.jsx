@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Archive, RotateCcw, ShoppingBag, Tag } from 'lucide-react';
 
-const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
+const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive, t, getCategoryLabel, formatCurrency }) => {
     const archivedItems = products.filter(p => !p.isPurchased && p.isArchived);
     const totalArchivedValue = archivedItems.reduce((sum, p) => sum + Number(p.price), 0);
 
@@ -29,8 +29,8 @@ const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
                                 <Archive size={28} />
                             </div>
                             <div>
-                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Sogni nel Cassetto</h2>
-                                <p className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Oggetti archiviati fuori budget</p>
+                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{t('archive.title')}</h2>
+                                <p className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{t('archive.subtitle')}</p>
                             </div>
                         </div>
                         <button
@@ -43,8 +43,8 @@ const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
 
                     <div className={`mb-6 p-4 rounded-2xl border ${isDarkMode ? 'bg-zinc-950 border-zinc-800' : 'bg-slate-50 border-slate-100'}`}>
                         <div className="flex justify-between items-center">
-                            <span className={`text-sm font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Valore Sogni nel Cassetto</span>
-                            <span className={`text-2xl font-black ${isDarkMode ? 'text-amber-500' : 'text-amber-600'}`}>€ {totalArchivedValue.toFixed(2)}</span>
+                            <span className={`text-sm font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{t('archive.valueLabel')}</span>
+                            <span className={`text-2xl font-black ${isDarkMode ? 'text-amber-500' : 'text-amber-600'}`}>{formatCurrency(totalArchivedValue)}</span>
                         </div>
                     </div>
 
@@ -64,7 +64,7 @@ const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
                                         </div>
                                         <div className="overflow-hidden">
                                             <h3 className={`font-bold truncate ${isDarkMode ? 'text-zinc-200' : 'text-slate-700'}`}>{item.name}</h3>
-                                            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{item.category} • € {Number(item.price).toFixed(2)}</p>
+                                            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{getCategoryLabel ? getCategoryLabel(item.category) : item.category} • {formatCurrency(item.price)}</p>
                                         </div>
                                     </div>
                                     <button
@@ -74,7 +74,7 @@ const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white'}`}
                                     >
                                         <RotateCcw size={14} />
-                                        <span className="hidden sm:inline">Riporta in lista</span>
+                                        <span className="hidden sm:inline">{t('product.restoreToList')}</span>
                                     </button>
                                 </div>
                             ))
@@ -83,8 +83,8 @@ const ArchiveModal = ({ onClose, products, isDarkMode, onToggleArchive }) => {
                                 <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${isDarkMode ? 'bg-zinc-950 text-zinc-800' : 'bg-slate-50 text-slate-200'}`}>
                                     <ShoppingBag size={40} />
                                 </div>
-                                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>Cassetto vuoto</h3>
-                                <p className={`text-sm ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-2`}>Non hai ancora archiviato nessun desiderio costoso.</p>
+                                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('archive.emptyTitle')}</h3>
+                                <p className={`text-sm ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-2`}>{t('archive.emptyText')}</p>
                             </div>
                         )}
                     </div>

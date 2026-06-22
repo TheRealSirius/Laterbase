@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CreditCard, ShoppingCart, TrendingUp, ChevronRight, Settings, X, Check } from 'lucide-react';
 
-const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick, isPublicView }) => {
-    const [monthlyBudget, setMonthlyBudget] = useState(() => {
-        const saved = localStorage.getItem('wishlist_monthly_budget');
-        return saved ? parseFloat(saved) : 0;
-    });
-    const [extraInfoEnabled, setExtraInfoEnabled] = useState(() => {
-        const saved = localStorage.getItem('wishlist_stats_extra_info');
-        return saved ? JSON.parse(saved) : { total: true, spent: true, count: true };
-    });
+const defaultSettings = {
+    monthlyBudget: 0,
+    savingsFund: 0,
+    extraInfoEnabled: { total: true, spent: true, count: true },
+};
+
+const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick, isPublicView, settings = defaultSettings, onSettingsChange, t, formatCurrency, currencyCode }) => {
+    const monthlyBudget = Number(settings.monthlyBudget) || 0;
+    const savingsFund = Number(settings.savingsFund) || 0;
+    const extraInfoEnabled = {
+        ...defaultSettings.extraInfoEnabled,
+        ...(settings.extraInfoEnabled || {}),
+    };
     const [editingCard, setEditingCard] = useState(null); // 'total', 'spent', or 'count'
     const [tempBudget, setTempBudget] = useState('');
-    const [savingsFund, setSavingsFund] = useState(() => {
-        const saved = localStorage.getItem('wishlist_savings_fund');
-        return saved ? parseFloat(saved) : 0;
-    });
     const [tempSavings, setTempSavings] = useState('');
 
     const activeWishlist = products.filter(p => !p.isPurchased && !p.isArchived);
@@ -48,20 +48,17 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
     const handleSaveSettings = () => {
         if (editingCard === 'spent') {
             const value = parseFloat(tempBudget) || 0;
-            setMonthlyBudget(value);
-            localStorage.setItem('wishlist_monthly_budget', value.toString());
+            onSettingsChange?.({ ...settings, monthlyBudget: value, extraInfoEnabled });
         } else if (editingCard === 'total') {
             const value = parseFloat(tempSavings) || 0;
-            setSavingsFund(value);
-            localStorage.setItem('wishlist_savings_fund', value.toString());
+            onSettingsChange?.({ ...settings, savingsFund: value, extraInfoEnabled });
         }
         setEditingCard(null);
     };
 
     const toggleExtraInfo = (id) => {
         const newState = { ...extraInfoEnabled, [id]: !extraInfoEnabled[id] };
-        setExtraInfoEnabled(newState);
-        localStorage.setItem('wishlist_stats_extra_info', JSON.stringify(newState));
+        onSettingsChange?.({ ...settings, extraInfoEnabled: newState });
     };
 
     const openSettings = (e, cardId) => {
@@ -77,8 +74,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
     const stats = [
         {
             id: 'total',
-            label: 'Totale Desideri',
-            value: '€ ' + totalWishlistValue.toFixed(2),
+            label: t('dashboard.totalWishes'),
+            value: formatCurrency(totalWishlistValue),
             icon: <ShoppingCart size={20} />,
             color: 'bg-indigo-500',
             bgClass: isDarkMode ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100',
@@ -88,8 +85,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         },
         ...(!isPublicView ? [{
             id: 'spent',
-            label: 'Speso questo Mese',
-            value: '€ ' + monthlySpent.toFixed(2),
+            label: t('dashboard.spentThisMonth'),
+            value: formatCurrency(monthlySpent),
             icon: <CreditCard size={20} />,
             color: 'bg-emerald-500',
             bgClass: isDarkMode ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50 border-emerald-100',
@@ -100,7 +97,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         }] : []),
         {
             id: 'count',
-            label: 'Oggetti in Lista',
+            label: t('dashboard.itemsInList'),
             value: activeWishlist.length,
             icon: <TrendingUp size={20} />,
             color: 'bg-orange-500',
@@ -137,13 +134,15 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                     {stat.label}
                                 </span>
                             </div>
-                            <button
-                                onClick={(e) => openSettings(e, stat.id)}
-                                className={'p-2 rounded-xl transition-all ' + (isDarkMode ? 'hover:bg-zinc-800 text-zinc-600 hover:text-zinc-300' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-600')}
-                                title="Impostazioni card"
-                            >
-                                <Settings size={16} />
-                            </button>
+                            {!isPublicView && (
+                                <button
+                                    onClick={(e) => openSettings(e, stat.id)}
+                                    className={'p-2 rounded-xl transition-all ' + (isDarkMode ? 'hover:bg-zinc-800 text-zinc-600 hover:text-zinc-300' : 'hover:bg-slate-100 text-slate-400 hover:text-slate-600')}
+                                    title={t('dashboard.cardSettings')}
+                                >
+                                    <Settings size={16} />
+                                </button>
+                            )}
                         </div>
 
                         {/* Section 2: Value (Centered vertically in the remaining space) */}
@@ -162,7 +161,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                         <div>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                    Budget: €{monthlyBudget.toFixed(0)}
+                                                    {t('dashboard.budget')}: {formatCurrency(monthlyBudget)}
                                                 </span>
                                                 <span className={'text-[10px] font-bold ' + (budgetPercentage >= 100 ? 'text-red-500' : budgetPercentage >= 75 ? 'text-amber-500' : 'text-emerald-500')}>
                                                     {budgetPercentage.toFixed(0)}%
@@ -176,7 +175,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                             </div>
                                             {budgetPercentage >= 100 && (
                                                 <p className="text-[10px] text-red-500 mt-1.5 font-medium">
-                                                    ⚠️ Budget superato di €{(monthlySpent - monthlyBudget).toFixed(2)}
+                                                    {t('dashboard.budgetExceeded')} {formatCurrency(monthlySpent - monthlyBudget)}
                                                 </p>
                                             )}
                                         </div>
@@ -186,11 +185,11 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                                 <div className="flex justify-between items-center mb-1.5">
                                                     <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
                                                         {savingsFund >= totalWishlistValue
-                                                            ? "Puoi permetterti l'intera lista! 🎉"
-                                                            : `Puoi permetterti il ${Math.floor((savingsFund / totalWishlistValue) * 100)}% della lista`}
+                                                            ? t('dashboard.canAffordAll')
+                                                            : t('dashboard.canAffordPercent').replace('{percent}', Math.floor((savingsFund / totalWishlistValue) * 100))}
                                                     </span>
                                                     <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
-                                                        €{savingsFund.toFixed(0)}
+                                                        {formatCurrency(savingsFund)}
                                                     </span>
                                                 </div>
                                                 <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
@@ -201,11 +200,11 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                                 </div>
                                             </div>
                                         ) : null
-                                    ) : stat.label === 'Oggetti in Lista' ? (
+                                    ) : stat.id === 'count' ? (
                                         <div>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                    {activeWishlist.length} attivi • {purchasedCount} acquistati
+                                                    {t('dashboard.activePurchased').replace('{active}', activeWishlist.length).replace('{purchased}', purchasedCount)}
                                                 </span>
                                                 <span className={'text-[10px] font-bold ' + (isDarkMode ? 'text-orange-500/80' : 'text-orange-600')}>
                                                     {completionPercentage.toFixed(0)}%
@@ -239,7 +238,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                         </button>
 
                         <h3 className="text-lg font-bold mb-4">
-                            Impostazioni Card
+                            {t('dashboard.cardSettings')}
                         </h3>
 
                         <div className="space-y-6">
@@ -247,16 +246,16 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                             {editingCard === 'spent' && (
                                 <div>
                                     <label className={'block text-[10px] font-bold uppercase tracking-wider mb-2 ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                                        Budget Mensile
+                                        {t('dashboard.monthlyBudget')}
                                     </label>
                                     <div className="relative">
-                                        <span className={'absolute left-4 top-1/2 -translate-y-1/2 font-bold ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>€</span>
+                                        <span className={'absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>{currencyCode}</span>
                                         <input
                                             type="number"
                                             value={tempBudget}
                                             onChange={(e) => setTempBudget(e.target.value)}
                                             placeholder="0"
-                                            className={'w-full pl-10 pr-4 py-3 rounded-xl border transition-all text-lg font-bold ' + (isDarkMode
+                                            className={'w-full pl-16 pr-4 py-3 rounded-xl border transition-all text-lg font-bold ' + (isDarkMode
                                                 ? 'bg-zinc-800 border-zinc-700 focus:border-emerald-500'
                                                 : 'bg-slate-50 border-slate-200 focus:border-emerald-500') + ' focus:outline-none focus:ring-2 focus:ring-emerald-500/20'}
                                             autoFocus
@@ -269,23 +268,23 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                             {editingCard === 'total' && (
                                 <div>
                                     <label className={'block text-[10px] font-bold uppercase tracking-wider mb-2 ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                                        Fondo Risparmi
+                                        {t('dashboard.savingsFund')}
                                     </label>
                                     <div className="relative">
-                                        <span className={'absolute left-4 top-1/2 -translate-y-1/2 font-bold ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>€</span>
+                                        <span className={'absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>{currencyCode}</span>
                                         <input
                                             type="number"
                                             value={tempSavings}
                                             onChange={(e) => setTempSavings(e.target.value)}
-                                            placeholder="Inserisci i tuoi risparmi..."
-                                            className={'w-full pl-10 pr-4 py-3 rounded-xl border transition-all text-lg font-bold ' + (isDarkMode
+                                        placeholder={t('dashboard.savingsPlaceholder')}
+                                            className={'w-full pl-16 pr-4 py-3 rounded-xl border transition-all text-lg font-bold ' + (isDarkMode
                                                 ? 'bg-zinc-800 border-zinc-700 focus:border-indigo-500'
                                                 : 'bg-slate-50 border-slate-200 focus:border-indigo-500') + ' focus:outline-none focus:ring-2 focus:ring-indigo-500/20'}
                                             autoFocus
                                         />
                                     </div>
                                     <p className={'text-[10px] mt-2 ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                        Impulsa i tuoi risparmi per vedere quanta parte della tua wishlist puoi acquistare.
+                                        {t('dashboard.savingsHelp')}
                                     </p>
                                 </div>
                             )}
@@ -293,9 +292,9 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                             {/* Extra Info Toggle */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-bold text-sm">Informazioni aggiuntive</p>
+                                    <p className="font-bold text-sm">{t('dashboard.extraInfo')}</p>
                                     <p className={'text-[10px] ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                                        Mostra dettagli extra
+                                        {t('dashboard.showExtraDetails')}
                                     </p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
@@ -318,14 +317,14 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                 onClick={() => setEditingCard(null)}
                                 className={'flex-1 py-2.5 rounded-xl font-semibold border transition-all ' + (isDarkMode ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50')}
                             >
-                                Annulla
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={handleSaveSettings}
                                 className="flex-1 py-2.5 rounded-xl font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
                             >
                                 <Check size={16} />
-                                Conferma
+                                {t('common.confirm')}
                             </button>
                         </div>
                     </div>

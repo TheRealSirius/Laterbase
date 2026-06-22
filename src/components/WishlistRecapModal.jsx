@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Tag, ArrowRight, ShoppingBag, Search } from 'lucide-react';
 
-const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
+const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate, t, getCategoryLabel, formatCurrency }) => {
     const activeItems = products.filter(p => !p.isPurchased && !p.isArchived);
 
     useEffect(() => {
@@ -28,8 +28,8 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
                                 <Search size={24} />
                             </div>
                             <div>
-                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>I tuoi Desideri</h2>
-                                <p className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>Recap veloce oggetti attivi</p>
+                                <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{t('recap.title')}</h2>
+                                <p className={`text-xs font-bold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{t('recap.subtitle')}</p>
                             </div>
                         </div>
                         <button
@@ -57,11 +57,11 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
                                         </div>
                                         <div className="overflow-hidden">
                                             <h3 className={`font-bold truncate ${isDarkMode ? 'text-zinc-200' : 'text-slate-700'}`}>{item.name}</h3>
-                                            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{item.category}</p>
+                                            <p className={`text-xs font-medium ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{getCategoryLabel ? getCategoryLabel(item.category) : item.category}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0 ml-4">
-                                        <span className={`font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>€ {Number(item.price).toFixed(2)}</span>
+                                        <span className={`font-black ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(item.price)}</span>
                                         <ArrowRight size={16} className={`transition-transform group-hover:translate-x-1 ${isDarkMode ? 'text-zinc-700' : 'text-slate-300'}`} />
                                     </div>
                                 </button>
@@ -71,8 +71,8 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
                                 <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${isDarkMode ? 'bg-zinc-950 text-zinc-800' : 'bg-slate-50 text-slate-200'}`}>
                                     <ShoppingBag size={40} />
                                 </div>
-                                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>La tua wishlist è pronta...</h3>
-                                <p className={`text-sm ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-2`}>...per essere riempita di nuovi desideri!</p>
+                                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('recap.emptyTitle')}</h3>
+                                <p className={`text-sm ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-2`}>{t('recap.emptyText')}</p>
                             </div>
                         )}
                     </div>
@@ -84,7 +84,7 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate }) => {
                                 ? 'bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700'
                                 : 'bg-slate-100 text-slate-900 hover:bg-slate-200 border border-slate-200'}`}
                         >
-                            Ho capito
+                            {t('common.close')}
                         </button>
                     </div>
                 </div>

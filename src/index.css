@@ -4,7 +4,11 @@
     filter: brightness(0.85) contrast(1.1);
 }
 
-/* AI Assistant floating animation */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Subtle floating animation for decorative controls. */
 @keyframes ai-float {
 
     0%,

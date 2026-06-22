@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Trash2 } from 'lucide-react';
 
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, isDarkMode }) => {
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, title, message, irreversible, confirmLabel, isDarkMode, t }) => {
     if (!isOpen) return null;
 
     return (
@@ -31,12 +31,12 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, isDarkMod
                         (isDarkMode ? 'bg-red-500/10' : 'bg-red-50')}>
                         <Trash2 size={24} className="text-red-500" />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">Elimina Prodotto</h3>
+                    <h3 className="text-xl font-bold mb-2">{title || t('deleteModal.title')}</h3>
                     <p className={'text-sm ' + (isDarkMode ? 'text-zinc-400' : 'text-slate-500')}>
-                        Sei sicuro di voler eliminare{productName ? ` "${productName}"` : ' questo prodotto'} dalla tua lista?
+                        {message || t('deleteModal.message').replace('{product}', productName ? `"${productName}"` : t('deleteModal.thisProduct'))}
                     </p>
                     <p className={'text-xs mt-2 ' + (isDarkMode ? 'text-zinc-500' : 'text-slate-400')}>
-                        L'azione è irreversibile.
+                        {irreversible || t('deleteModal.irreversible')}
                     </p>
                 </div>
 
@@ -48,13 +48,13 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, isDarkMod
                                 ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800'
                                 : 'border-slate-200 text-slate-600 hover:bg-slate-50')}
                     >
-                        Annulla
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={onConfirm}
                         className="flex-1 py-2.5 rounded-xl font-semibold bg-red-500 text-white hover:bg-red-600 transition-all"
                     >
-                        Elimina
+                        {confirmLabel || t('common.delete')}
                     </button>
                 </div>
             </div>

@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Save } from 'lucide-react';
 
-const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
-    const [newPrice, setNewPrice] = useState('');
+const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode, t, currencyCode }) => {
+    const [newPrice, setNewPrice] = useState(product?.price || '');
     const inputRef = useRef(null);
 
     useEffect(() => {
         if (isOpen) {
-            setNewPrice(product?.price || '');
             setTimeout(() => {
                 inputRef.current?.focus();
                 inputRef.current?.select();
@@ -49,11 +48,11 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                 <div className="p-4 border-b border-zinc-800/50 flex justify-between items-start">
                     <div>
                         <h3 className={`font-bold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                            Aggiorna Prezzo
+                            {t('priceUpdate.title')}
                         </h3>
                         {product?.lastChecked && (
                             <p className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
-                                Controllo: {new Date(product.lastChecked).toLocaleDateString()}
+                                {t('priceUpdate.lastCheck').replace('{date}', new Date(product.lastChecked).toLocaleDateString())}
                             </p>
                         )}
                     </div>
@@ -69,7 +68,7 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                 <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                         <label className={`text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
-                            Nuovo Prezzo (€)
+                            {t('priceUpdate.newPrice')} ({currencyCode})
                         </label>
                         <input
                             ref={inputRef}
@@ -90,7 +89,7 @@ const PriceUpdateModal = ({ isOpen, onClose, onSave, product, isDarkMode }) => {
                         className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
                         <Save size={18} />
-                        Salva prezzo
+                        {t('priceUpdate.save')}
                     </button>
                 </form>
             </div>

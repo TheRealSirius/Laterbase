@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Tag, Plus, Check, Trash2, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Plus, Check, Trash2, X } from 'lucide-react';
 
-const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete, isDarkMode }) => {
+const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete, readOnly = false, isDarkMode, t, getCategoryLabel }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [newCat, setNewCat] = useState('');
     const [editingCategory, setEditingCategory] = useState(null);
@@ -16,7 +16,7 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
 
     const handleAdd = (e) => {
         e.preventDefault();
-        if (newCat.trim()) {
+        if (!readOnly && newCat.trim()) {
             onAdd(newCat.trim());
             setNewCat('');
             setIsAdding(false);
@@ -24,22 +24,32 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
     };
 
     const startEditing = (cat) => {
-        if (cat === 'Tutti') return; // Cannot edit "Tutti"
+        if (readOnly || cat === 'Tutti') return;
         setEditingCategory(cat);
-        setEditValue(cat);
+        setEditValue(getCategoryLabel ? getCategoryLabel(cat) : cat);
     };
 
     const handleRename = (e) => {
         e.preventDefault();
-        if (editValue.trim() && editValue.trim() !== editingCategory) {
+        if (readOnly) return;
+        const currentLabel = getCategoryLabel ? getCategoryLabel(editingCategory) : editingCategory;
+        if (editValue.trim() && editValue.trim() !== currentLabel) {
             onRename(editingCategory, editValue.trim());
         }
         setEditingCategory(null);
     };
 
+    const handleDeleteEditing = async (cat) => {
+        if (readOnly) return;
+        const deleted = await onDelete(cat);
+        if (deleted !== false) {
+            setEditingCategory(null);
+        }
+    };
+
     // Long press logic for mobile
     const handleTouchStart = (cat) => {
-        if (cat === 'Tutti') return;
+        if (readOnly || cat === 'Tutti') return;
         pressTimer.current = setTimeout(() => {
             startEditing(cat);
         }, 600);
@@ -79,16 +89,14 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
             onMouseLeave={onMouseLeave}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
-            className={'flex items-center gap-3 overflow-x-auto flex-nowrap pb-2 select-none active:cursor-grabbing cursor-grab max-w-full relative ' + (isDarkMode ? 'bg-zinc-900' : 'bg-white')}
+            className={'no-scrollbar flex items-center gap-3 overflow-x-auto flex-nowrap pb-2 select-none active:cursor-grabbing cursor-grab max-w-full relative ' + (isDarkMode ? 'bg-zinc-900' : 'bg-white')}
             style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch'
             }}
         >
-            <style dangerouslySetInnerHTML={{ __html: '.no-scrollbar::-webkit-scrollbar { display: none; }' }} />
-
-            {/* Sticky "Tutti" button with gradient fade */}
+            {/* Sticky all-categories button with gradient fade */}
             <div className={'sticky left-0 z-10 flex items-center shrink-0 ' + (isDarkMode ? 'bg-zinc-900' : 'bg-white')}>
                 <button
                     onClick={() => onSelect('Tutti')}
@@ -97,7 +105,7 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                         : (isDarkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300')
                     )}
                 >
-                    Tutti
+                    {t('all')}
                 </button>
                 {/* Gradient fade effect */}
                 <div
@@ -125,7 +133,8 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                             />
                             <button
                                 type="button"
-                                onClick={() => onDelete(cat)}
+                                onClick={() => handleDeleteEditing(cat)}
+                                title={t('deleteCategory').replace('{category}', getCategoryLabel ? getCategoryLabel(cat) : cat)}
                                 className={`p-2 border-y transition-colors ${isDarkMode
                                     ? 'bg-rose-950/30 border-zinc-700 text-rose-500 hover:bg-rose-500 hover:text-white'
                                     : 'bg-rose-50 border-slate-300 text-rose-600 hover:bg-rose-600 hover:text-white'}`}
@@ -159,13 +168,13 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                                 : (isDarkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300')
                                 }`}
                         >
-                            {cat}
+                            {getCategoryLabel ? getCategoryLabel(cat) : cat}
                         </button>
                     )}
                 </div>
             ))}
 
-            {!isAdding ? (
+            {!readOnly && (!isAdding ? (
                 <button
                     onClick={() => setIsAdding(true)}
                     className={`flex items-center gap-1 whitespace-nowrap px-3 py-2 rounded-full text-sm font-medium transition-all border border-dashed ${isDarkMode
@@ -173,7 +182,7 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                         : 'bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 border-slate-300'}`}
                 >
                     <Plus size={14} />
-                    <span>Nuova</span>
+                    <span>{t('newCategoryShort')}</span>
                 </button>
             ) : (
                 <form onSubmit={handleAdd} className="flex items-center animate-in slide-in-from-right-2 duration-300">
@@ -183,7 +192,7 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                         value={newCat}
                         onChange={(e) => setNewCat(e.target.value)}
                         onBlur={() => !newCat && setIsAdding(false)}
-                        placeholder="Nome..."
+                        placeholder={t('categoryNamePlaceholder')}
                         className={`w-24 px-3 py-1.5 rounded-l-full text-sm border focus:outline-none transition-all ${isDarkMode
                             ? 'bg-zinc-800 border-zinc-700 text-white focus:border-white placeholder:text-zinc-600'
                             : 'bg-white border-slate-300 focus:border-slate-900 placeholder:text-slate-400'}`}
@@ -197,7 +206,7 @@ const CategoryBar = ({ categories, selected, onSelect, onAdd, onRename, onDelete
                         <Check size={14} />
                     </button>
                 </form>
-            )}
+            ))}
         </div>
     );
 };

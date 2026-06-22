@@ -1,136 +1,48 @@
-import { supabase } from './supabase';
+const API_BASE = '/api';
 
-// Fetch all products for a user
-export const fetchProducts = async (userId) => {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+const request = async (path, options = {}) => {
+    const response = await fetch(`${API_BASE}${path}`, {
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+        },
+        ...options,
+    });
 
-    if (error) {
-        console.error('Error fetching products:', error);
-        throw error;
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(data.error || 'Local save failed');
     }
 
-    // Map snake_case from DB to camelCase for frontend
-    return data.map(mapProductFromDb);
+    return data;
 };
 
-// Create a new product
-export const createProduct = async (product, userId) => {
-    const dbProduct = mapProductToDb(product, userId);
+export const fetchState = () => request('/state');
 
-    const { data, error } = await supabase
-        .from('products')
-        .insert([dbProduct])
-        .select()
-        .single();
+export const saveState = ({ products, categories, settings }) => request('/state', {
+    method: 'PUT',
+    body: JSON.stringify({ products, categories, settings }),
+});
 
-    if (error) {
-        console.error('Error creating product:', error);
-        throw error;
-    }
+export const fetchProductPreview = (url) => request('/product-preview', {
+    method: 'POST',
+    body: JSON.stringify({ url }),
+});
 
-    return mapProductFromDb(data);
-};
+export const getCurrentUser = () => request('/auth/me');
 
-// Update an existing product
-export const updateProduct = async (product) => {
-    const { id, ...updateData } = mapProductToDb(product);
+export const login = ({ email, password }) => request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+});
 
-    const { data, error } = await supabase
-        .from('products')
-        .update(updateData)
-        .eq('id', product.id)
-        .select()
-        .single();
+export const logout = () => request('/auth/logout', {
+    method: 'POST',
+});
 
-    if (error) {
-        console.error('Error updating product:', error);
-        throw error;
-    }
-
-    return mapProductFromDb(data);
-};
-
-// Delete a product
-export const deleteProduct = async (productId) => {
-    const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', productId);
-
-    if (error) {
-        console.error('Error deleting product:', error);
-        throw error;
-    }
-
-    return true;
-};
-
-// Bulk upload products (for initial migration from localStorage)
-export const uploadLocalProducts = async (products, userId) => {
-    const dbProducts = products.map(p => mapProductToDb(p, userId));
-
-    const { data, error } = await supabase
-        .from('products')
-        .insert(dbProducts)
-        .select();
-
-    if (error) {
-        console.error('Error uploading products:', error);
-        throw error;
-    }
-
-    return data.map(mapProductFromDb);
-};
-
-// Helper: Map frontend camelCase to DB snake_case
-const mapProductToDb = (product, userId = null) => {
-    const mapped = {
-        name: product.name,
-        price: parseFloat(product.price) || 0,
-        initial_price: parseFloat(product.initialPrice) || parseFloat(product.price) || 0,
-        category: product.category || '',
-        url: product.url || '',
-        image_url: product.imageUrl || '',
-        target_price: product.targetPrice ? parseFloat(product.targetPrice) : null,
-        priority: parseInt(product.priority) || 2,
-        is_purchased: product.isPurchased || false,
-        is_archived: product.isArchived || false,
-        purchase_date: product.purchaseDate || null,
-        created_at: product.createdAt || new Date().toISOString(),
-        last_checked: product.lastChecked || null
-    };
-
-    if (product.id) {
-        mapped.id = product.id;
-    }
-
-    if (userId) {
-        mapped.user_id = userId;
-    }
-
-    return mapped;
-};
-
-// Helper: Map DB snake_case to frontend camelCase
-const mapProductFromDb = (dbProduct) => {
-    return {
-        id: dbProduct.id,
-        name: dbProduct.name,
-        price: dbProduct.price,
-        initialPrice: dbProduct.initial_price,
-        category: dbProduct.category,
-        url: dbProduct.url,
-        imageUrl: dbProduct.image_url,
-        targetPrice: dbProduct.target_price,
-        priority: dbProduct.priority,
-        isPurchased: dbProduct.is_purchased,
-        isArchived: dbProduct.is_archived,
-        purchaseDate: dbProduct.purchase_date,
-        createdAt: dbProduct.created_at,
-        lastChecked: dbProduct.last_checked
-    };
-};
+export const updateAccount = ({ email, currentPassword, newPassword }) => request('/auth/account', {
+    method: 'PUT',
+    body: JSON.stringify({ email, currentPassword, newPassword }),
+});
