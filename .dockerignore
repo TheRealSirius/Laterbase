@@ -1,0 +1,10 @@
+node_modules
+dist
+data
+.git
+.idea
+.vercel
+*.log
+Dockerfile
+docker-compose.yml
+README.md
