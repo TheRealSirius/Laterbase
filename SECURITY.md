@@ -18,7 +18,7 @@ Please report security issues privately before opening a public issue.
 Use one of these channels:
 
 - GitHub private vulnerability reporting, if enabled on the repository.
-- A direct private message to the repository owner.
+- If private vulnerability reporting is not available, open a public issue without exploit details or sensitive data and ask for a private contact channel.
 
 Please include:
 

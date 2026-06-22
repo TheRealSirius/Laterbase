@@ -64,22 +64,36 @@ Wishlist is designed for one private installation, not for a public marketplace,
 
 ## Quick Start
 
-The current repository is ready to build locally with Docker Compose.
+This is the recommended installation path for most people.
+
+Before you start, make sure you have:
+
+- Docker Desktop installed and running;
+- Git installed;
+- PowerShell, Terminal, or another command line open.
+
+You do not need Node.js, npm, Supabase, Vercel, or any database to run Wishlist with Docker.
 
 ### 1. Clone the repository
+
+Open PowerShell in the folder where you want to download Wishlist, then run:
 
 ```powershell
 git clone https://github.com/TheRealSirius/Wishlist.git
 cd Wishlist
 ```
 
-### 2. Start Wishlist
+### 2. Start Wishlist with Docker Compose
 
 ```powershell
 docker compose up -d --build
 ```
 
+The first start can take a few minutes because Docker has to download Node.js and build the app.
+
 ### 3. Open the app
+
+Open your browser and go to:
 
 ```text
 http://localhost:8080
@@ -93,7 +107,7 @@ By default, Wishlist creates the first account with:
 Email: admin@wishlist.local
 ```
 
-If you did not set an admin password, Wishlist generates one during first start. Read it with:
+If you did not set an admin password, Wishlist generates one during the first start. Read it with:
 
 ```powershell
 docker logs wishlist
@@ -106,6 +120,24 @@ Generated password: ...
 ```
 
 Use that password for the first login, then change it from the Account screen.
+
+If you do not see a generated password, the account probably already exists. In that case, use the password you set earlier or restore/reset your Docker volume.
+
+### 5. Stop Wishlist
+
+To stop the app:
+
+```powershell
+docker compose down
+```
+
+Your data stays in the Docker volume named `wishlist_data`.
+
+To start it again later:
+
+```powershell
+docker compose up -d
+```
 
 ## Choose Your First Password
 
@@ -126,9 +158,11 @@ docker compose up -d --build
 
 These variables are only used when no account exists yet. After the first account is created, change email and password inside Wishlist.
 
+If Wishlist was already started once, editing `.env` will not change the existing account. Change the password inside the app instead.
+
 ## Docker Run
 
-You can also run the locally built image directly:
+Docker Compose is easier, but you can also run the locally built image directly:
 
 ```powershell
 docker build -t wishlist-selfhosted:local .
@@ -139,6 +173,12 @@ Open:
 
 ```text
 http://localhost:8080
+```
+
+To read the generated password:
+
+```powershell
+docker logs wishlist
 ```
 
 ## Docker Hub
