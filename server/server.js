@@ -15,7 +15,7 @@ const dataFile = path.join(dataDir, 'wishlist.json');
 const authFile = path.join(dataDir, 'auth.json');
 const sessionsFile = path.join(dataDir, 'sessions.json');
 const port = Number(process.env.PORT || 8080);
-const sessionCookie = 'id';
+const sessionCookie = 'wishlist_session';
 const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
 const maxBodyBytes = 1024 * 1024;
 const secureCookies = process.env.WISHLIST_SECURE_COOKIES === 'true' || process.env.SECURE_COOKIES === 'true';
@@ -239,7 +239,7 @@ const clearSessionCookie = (res) => {
   const secureFlag = secureCookies ? '; Secure' : '';
   res.setHeader('Set-Cookie', [
     `${sessionCookie}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
-    `wishlist_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
+    `id=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
   ]);
 };
 
