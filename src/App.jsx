@@ -323,8 +323,14 @@ const App = () => {
   const copyQuickAddBookmarklet = async () => {
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
     const script = `javascript:(()=>{const u=encodeURIComponent(location.href);window.open('${baseUrl}?addUrl='+u,'_blank','noopener,noreferrer');})();`;
-    await navigator.clipboard.writeText(script);
-    showToast(t('toast.quickAddCopied'));
+    try {
+      await navigator.clipboard.writeText(script);
+      showToast(t('toast.quickAddCopied'));
+      return { script, copied: true };
+    } catch {
+      showToast(t('toast.quickAddCopyFailed'), 'error');
+      return { script, copied: false };
+    }
   };
 
   const handleSettingsChange = async (nextSettings) => {

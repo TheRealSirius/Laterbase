@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Image, Lock, Mail, Save, X, LogOut, Download, Upload, MousePointer2, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Image, Lock, Mail, Save, X, LogOut, Download, Upload, MousePointer2, ShieldCheck, CheckCircle2, Clipboard } from 'lucide-react';
 
 const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, allowExternalImages, onToggleExternalImages, onExportData, onImportData, onCopyQuickAdd, onOpenPrivacy, t }) => {
     const [email, setEmail] = useState(user?.email || '');
@@ -10,6 +10,8 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [saving, setSaving] = useState(false);
+    const [quickAddScript, setQuickAddScript] = useState('');
+    const [quickAddCopied, setQuickAddCopied] = useState(false);
 
     if (!isOpen) return null;
 
@@ -45,6 +47,13 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
         ? 'bg-zinc-950 border-zinc-800 text-white focus:border-white placeholder:text-zinc-700'
         : 'bg-slate-50 border-slate-200 focus:border-slate-900 placeholder:text-slate-400'
         }`;
+
+    const handleQuickAdd = async () => {
+        const result = await onCopyQuickAdd?.();
+        if (!result?.script) return;
+        setQuickAddScript(result.script);
+        setQuickAddCopied(Boolean(result.copied));
+    };
 
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
@@ -117,7 +126,7 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
                         </label>
                         <button
                             type="button"
-                            onClick={onCopyQuickAdd}
+                            onClick={handleQuickAdd}
                             className={`rounded-xl px-3 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${isDarkMode ? 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800' : 'bg-white text-slate-700 hover:bg-slate-100'}`}
                         >
                             <MousePointer2 size={14} />
@@ -132,6 +141,32 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
                             {t('privacyModal.shortTitle')}
                         </button>
                     </div>
+                    {quickAddScript && (
+                        <div className={`mt-4 rounded-2xl border p-3 text-xs ${isDarkMode ? 'border-zinc-800 bg-zinc-900/80 text-zinc-300' : 'border-slate-200 bg-white text-slate-600'}`}>
+                            <div className="flex items-start gap-2">
+                                {quickAddCopied ? (
+                                    <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-500" size={15} />
+                                ) : (
+                                    <Clipboard className="mt-0.5 shrink-0 text-amber-500" size={15} />
+                                )}
+                                <div className="min-w-0">
+                                    <p className={`font-black ${isDarkMode ? 'text-white' : 'text-slate-950'}`}>{t('accountModal.quickAddTitle')}</p>
+                                    <p className="mt-1 leading-relaxed">{t('accountModal.quickAddText')}</p>
+                                </div>
+                            </div>
+                            <a
+                                href={quickAddScript}
+                                onClick={(event) => event.preventDefault()}
+                                className={`mt-3 flex items-center justify-center rounded-xl px-3 py-2 font-black transition-all ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-200' : 'bg-slate-950 text-white hover:bg-slate-800'}`}
+                            >
+                                {t('accountModal.quickAddBookmark')}
+                            </a>
+                            <p className={`mt-2 leading-relaxed ${isDarkMode ? 'text-zinc-500' : 'text-slate-500'}`}>{t('accountModal.quickAddDrag')}</p>
+                            <code className={`mt-2 block max-h-20 overflow-auto rounded-xl px-3 py-2 text-[10px] leading-relaxed ${isDarkMode ? 'bg-zinc-950 text-zinc-400' : 'bg-slate-50 text-slate-500'}`}>
+                                {quickAddScript}
+                            </code>
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
