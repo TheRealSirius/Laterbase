@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Wishlist will be documented in this file.
+All notable changes to Laterbase will be documented in this file.
 
 The format follows a simple human-readable style. This project is currently preparing its first public release.
 
@@ -10,7 +10,7 @@ The format follows a simple human-readable style. This project is currently prep
 
 - Self-hosted Docker runtime with local JSON storage.
 - Local account login with hashed passwords and session cookies.
-- Wishlist dashboard with products, categories, budget, archive, purchase tracking, and insights.
+- Laterbase dashboard with products, categories, budget, archive, purchase tracking, and insights.
 - Product autofill from public product pages.
 - Best-effort price refresh.
 - Gift idea mode and shareable read-only exports.
@@ -23,7 +23,7 @@ The format follows a simple human-readable style. This project is currently prep
 
 ### Changed
 
-- Removed Supabase and cloud database requirements.
+- Removed hosted database requirements.
 - Removed public localhost share links in favor of static exports.
 
 ### Security

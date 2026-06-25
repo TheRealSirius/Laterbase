@@ -1,10 +1,10 @@
-# Wishlist
+# Laterbase
 
-![Wishlist logo](public/readme-logo.png)
+![Laterbase logo](public/readme-logo.png)
 
-A private, self-hosted wishlist and shopping tracker for Docker.
+A private, self-hosted product and shopping tracker for Docker.
 
-Wishlist helps you track products, prices, budgets, purchases, gift ideas, archives, and shareable exports without a hosted database, analytics, telemetry, or a required cloud account.
+Laterbase helps you track products, prices, budgets, purchases, gift ideas, archives, and shareable exports without a hosted database, analytics, telemetry, or a required cloud account.
 
 ![License](https://img.shields.io/badge/license-AGPL--3.0-6B7280?style=flat-square)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)
@@ -18,21 +18,21 @@ Wishlist helps you track products, prices, budgets, purchases, gift ideas, archi
 
 ---
 
-## What is Wishlist?
+## What is Laterbase?
 
-Wishlist is a small self-hosted web app for people who want a private place to manage shopping ideas, target prices, budgets, and purchases.
+Laterbase is a small self-hosted web app for people who want a private place to manage shopping ideas, target prices, budgets, and purchases.
 
 You run it on your own machine, NAS, VPS, home server, or Docker Desktop on Windows. Data stays in your Docker volume. The app serves a private browser interface protected by a local login.
 
-Wishlist is designed for one private installation, not for a public marketplace, cloud service, or social network.
+Laterbase is designed for one private installation, not for a public marketplace, cloud service, or social network.
 
 ## What You Can Do
 
 - Track products with current price, target price, notes, priority, and category.
 - Organize active wishes, purchased items, and archived items.
 - Mark gift ideas and create clean gift-list exports.
-- View budget and wishlist insights.
-- Paste a product URL and let Wishlist try to read title, price, image, and category.
+- View budget and list insights.
+- Paste a product URL and let Laterbase try to read title, price, image, and category.
 - Refresh product prices when supported by the source website.
 - Export a polished PNG image or printable PDF snapshot.
 - Use a multilingual interface with locale-aware currency formatting.
@@ -54,10 +54,10 @@ Wishlist is designed for one private installation, not for a public marketplace,
 ## Highlights
 
 - **Self-hosted by default**: run it with Docker on Windows, macOS, Linux, a NAS, or a small server.
-- **Local JSON storage**: no Supabase, Firebase, Postgres, Redis, or external database required.
+- **Local JSON storage**: no external database required.
 - **Private login**: first-run admin account, password hashing, and session cookies.
 - **No telemetry**: no analytics, no tracking pixel, no remote font or script CDN.
-- **Best-effort product autofill**: paste a product URL and Wishlist tries to read public metadata.
+- **Best-effort product autofill**: paste a product URL and Laterbase tries to read public metadata.
 - **Static sharing**: export PNG or PDF snapshots instead of exposing your local server.
 - **Privacy controls**: external product images are disabled by default.
 - **International UI**: includes Italian, English, German, Spanish, French, Hungarian, Dutch, Portuguese, Czech, Polish, Japanese, Chinese, Arabic, Indonesian, Korean, and more.
@@ -72,18 +72,18 @@ Before you start, make sure you have:
 - Git installed;
 - PowerShell, Terminal, or another command line open.
 
-You do not need Node.js, npm, Supabase, Vercel, or any database to run Wishlist with Docker.
+You do not need Node.js, npm, or any database to run Laterbase with Docker.
 
 ### 1. Clone the repository
 
-Open PowerShell in the folder where you want to download Wishlist, then run:
+Open PowerShell in the folder where you want to download Laterbase, then run:
 
 ```powershell
-git clone https://github.com/TheRealSirius/Wishlist.git
-cd Wishlist
+git clone https://github.com/TheRealSirius/Laterbase.git
+cd Laterbase
 ```
 
-### 2. Start Wishlist with Docker Compose
+### 2. Start Laterbase with Docker Compose
 
 ```powershell
 docker compose up -d --build
@@ -101,16 +101,16 @@ http://localhost:8080
 
 ### 4. Log in
 
-By default, Wishlist creates the first account with:
+By default, Laterbase creates the first account with:
 
 ```text
-Email: admin@wishlist.local
+Email: admin@laterbase.local
 ```
 
-If you did not set an admin password, Wishlist generates one during the first start. Read it with:
+If you did not set an admin password, Laterbase generates one during the first start. Read it with:
 
 ```powershell
-docker logs wishlist
+docker logs laterbase
 ```
 
 Look for:
@@ -123,7 +123,7 @@ Use that password for the first login, then change it from the Account screen.
 
 If you do not see a generated password, the account probably already exists. In that case, use the password you set earlier or restore/reset your Docker volume.
 
-### 5. Stop Wishlist
+### 5. Stop Laterbase
 
 To stop the app:
 
@@ -131,7 +131,7 @@ To stop the app:
 docker compose down
 ```
 
-Your data stays in the Docker volume named `wishlist_data`.
+Your data stays in the Docker volume named `laterbase_data`.
 
 To start it again later:
 
@@ -144,7 +144,7 @@ docker compose up -d
 If you want to set the first password yourself, create a `.env` file next to `docker-compose.yml`:
 
 ```env
-ADMIN_EMAIL=admin@wishlist.local
+ADMIN_EMAIL=admin@laterbase.local
 ADMIN_PASSWORD=change-me-now-123
 ```
 
@@ -156,17 +156,17 @@ docker compose up -d --build
 
 `ADMIN_PASSWORD` must be at least 12 characters long.
 
-These variables are only used when no account exists yet. After the first account is created, change email and password inside Wishlist.
+These variables are only used when no account exists yet. After the first account is created, change email and password inside Laterbase.
 
-If Wishlist was already started once, editing `.env` will not change the existing account. Change the password inside the app instead.
+If Laterbase was already started once, editing `.env` will not change the existing account. Change the password inside the app instead.
 
 ## Docker Run
 
 Docker Compose is easier, but you can also run the locally built image directly:
 
 ```powershell
-docker build -t wishlist-selfhosted:local .
-docker run -d --name wishlist -p 8080:8080 -v wishlist_data:/data -e ADMIN_EMAIL=admin@wishlist.local --restart unless-stopped wishlist-selfhosted:local
+docker build -t laterbase-selfhosted:local .
+docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data -e ADMIN_EMAIL=admin@laterbase.local --restart unless-stopped laterbase-selfhosted:local
 ```
 
 Open:
@@ -178,7 +178,7 @@ http://localhost:8080
 To read the generated password:
 
 ```powershell
-docker logs wishlist
+docker logs laterbase
 ```
 
 ## Docker Hub
@@ -188,7 +188,7 @@ A Docker Hub image can be added after the first public release. Until then, the 
 When an image is available, the command will look like:
 
 ```powershell
-docker run -d --name wishlist -p 8080:8080 -v wishlist_data:/data --restart unless-stopped <dockerhub-user>/wishlist:latest
+docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data --restart unless-stopped <dockerhub-user>/laterbase:latest
 ```
 
 ## Configuration
@@ -196,33 +196,37 @@ docker run -d --name wishlist -p 8080:8080 -v wishlist_data:/data --restart unle
 | Variable | Default | Description |
 | --- | --- | --- |
 | `PORT` | `8080` | Internal server port used by the container. |
-| `WISHLIST_DATA_DIR` | `/data` | Directory where Wishlist stores data files. |
-| `ADMIN_EMAIL` | `admin@wishlist.local` | Email for the first local account. Used only when no account exists. |
+| `LATERBASE_DATA_DIR` | `/data` | Directory where Laterbase stores data files. |
+| `ADMIN_EMAIL` | `admin@laterbase.local` | Email for the first local account. Used only when no account exists. |
 | `ADMIN_PASSWORD` | Generated automatically | First local password. Must be at least 12 characters. Used only when no account exists. |
-| `WISHLIST_SECURE_COOKIES` | `false` | Set to `true` when serving Wishlist behind HTTPS. |
+| `LATERBASE_SECURE_COOKIES` | `false` | Set to `true` when serving Laterbase behind HTTPS. |
 | `SECURE_COOKIES` | `false` | Alternative name for enabling secure cookies. |
+
+Older `WISHLIST_DATA_DIR` and `WISHLIST_SECURE_COOKIES` variables are still accepted so existing private installs can upgrade safely.
 
 ## Data Storage
 
-Wishlist stores data in the container data directory:
+Laterbase stores data in the container data directory:
 
 ```text
 /data
 ```
 
-With Docker Compose, that directory is mapped to the `wishlist_data` Docker volume.
+With Docker Compose, that directory is mapped to the `laterbase_data` Docker volume.
 
 Main files:
 
 ```text
-/data/wishlist.json
+/data/laterbase.json
 /data/auth.json
 /data/sessions.json
 ```
 
-`wishlist.json` contains products, categories, budget settings, purchases, archive data, gift flags, and dashboard preferences.
+`laterbase.json` contains products, categories, budget settings, purchases, archive data, gift flags, and dashboard preferences.
 
-`auth.json` contains local account data. Passwords are not stored in plain text; Wishlist stores a `scrypt` hash.
+If an older private install already has `/data/wishlist.json`, Laterbase migrates it to `/data/laterbase.json` on first start.
+
+`auth.json` contains local account data. Passwords are not stored in plain text; Laterbase stores a `scrypt` hash.
 
 `sessions.json` contains hashed session tokens.
 
@@ -233,28 +237,28 @@ Treat backups as personal data.
 Open PowerShell in the folder where you want to save the backup, then run:
 
 ```powershell
-docker run --rm -v wishlist_data:/data -v "${PWD}:/backup" alpine sh -c "tar -czf /backup/wishlist-data-backup.tar.gz -C /data ."
+docker run --rm -v laterbase_data:/data -v "${PWD}:/backup" alpine sh -c "tar -czf /backup/laterbase-data-backup.tar.gz -C /data ."
 ```
 
 This creates:
 
 ```text
-wishlist-data-backup.tar.gz
+laterbase-data-backup.tar.gz
 ```
 
 Store it somewhere private.
 
 ## Restore
 
-Put `wishlist-data-backup.tar.gz` in the current PowerShell folder, then run:
+Put `laterbase-data-backup.tar.gz` in the current PowerShell folder, then run:
 
 ```powershell
-docker stop wishlist
-docker run --rm -v wishlist_data:/data -v "${PWD}:/backup" alpine sh -c "tar -xzf /backup/wishlist-data-backup.tar.gz -C /data"
-docker start wishlist
+docker stop laterbase
+docker run --rm -v laterbase_data:/data -v "${PWD}:/backup" alpine sh -c "tar -xzf /backup/laterbase-data-backup.tar.gz -C /data"
+docker start laterbase
 ```
 
-Open Wishlist again:
+Open Laterbase again:
 
 ```text
 http://localhost:8080
@@ -269,7 +273,7 @@ git pull
 docker compose up -d --build
 ```
 
-Your `wishlist_data` volume is reused.
+Your `laterbase_data` volume is reused.
 
 ## Change Port
 
@@ -288,14 +292,14 @@ http://localhost:9090
 
 ## HTTPS and Reverse Proxy
 
-Wishlist is fine over HTTP on `localhost` or a trusted private network.
+Laterbase is fine over HTTP on `localhost` or a trusted private network.
 
 If you expose it outside your machine or private network, put it behind HTTPS with a reverse proxy such as Caddy, Traefik, or Nginx Proxy Manager.
 
 Example Caddy route:
 
 ```caddyfile
-wishlist.example.com {
+laterbase.example.com {
   reverse_proxy 127.0.0.1:8080
 }
 ```
@@ -304,14 +308,14 @@ When serving over HTTPS, enable secure cookies:
 
 ```yaml
 environment:
-  - WISHLIST_SECURE_COOKIES=true
+  - LATERBASE_SECURE_COOKIES=true
 ```
 
-Do not expose a private wishlist directly to the public internet without HTTPS and a strong password.
+Do not expose a private Laterbase instance directly to the public internet without HTTPS and a strong password.
 
 ## Privacy Model
 
-Wishlist is built to be quiet.
+Laterbase is built to be quiet.
 
 It does not include:
 
@@ -320,7 +324,7 @@ It does not include:
 - tracking pixels;
 - remote JavaScript CDNs;
 - remote font CDNs;
-- Supabase, Firebase, Vercel, or any required cloud service;
+- any required cloud database or cloud service;
 - central accounts controlled by the project maintainer.
 
 External network activity can still happen when you choose to:
@@ -334,7 +338,7 @@ See [PRIVACY.md](PRIVACY.md) for the full privacy model.
 
 ## Product Autofill
 
-Wishlist can try to fill product details from a pasted URL.
+Laterbase can try to fill product details from a pasted URL.
 
 It looks for public page metadata such as:
 
@@ -345,7 +349,7 @@ It looks for public page metadata such as:
 
 This is best-effort. Many large e-commerce websites block automated requests with bot protection, CAPTCHA, Cloudflare, JavaScript-only rendering, or private APIs.
 
-Wishlist does not bypass those protections, does not use hidden scraping proxies, and does not send product URLs to a third-party extraction service.
+Laterbase does not bypass those protections, does not use hidden scraping proxies, and does not send product URLs to a third-party extraction service.
 
 If autofill fails, fill the product manually.
 
@@ -359,7 +363,7 @@ Results vary by country, network, website rules, and time.
 
 ## Read-Only Exports
 
-Wishlist does not expose your local server to friends or create public cloud links.
+Laterbase does not expose your local server to friends or create public cloud links.
 
 Instead, it creates static files you can send yourself:
 
@@ -368,11 +372,11 @@ Instead, it creates static files you can send yourself:
 - **Gift mode** creates a softer, shareable layout and can include only items marked as gift ideas.
 - **Prices can be hidden** when you want to send a gift list without amounts.
 
-Exported files are snapshots. They do not sync back to your server and do not give anyone access to your local Wishlist instance.
+Exported files are snapshots. They do not sync back to your server and do not give anyone access to your local Laterbase instance.
 
 ## Security Notes
 
-Wishlist includes practical protections for a small self-hosted app:
+Laterbase includes practical protections for a small self-hosted app:
 
 - password hashing with `scrypt`;
 - opaque random session tokens;
@@ -436,7 +440,7 @@ npm run preview
 
 ## Project Status
 
-Wishlist is preparing its first public release.
+Laterbase is preparing its first public release.
 
 Before publishing a tagged release and Docker Hub image:
 
@@ -447,4 +451,4 @@ Before publishing a tagged release and Docker Hub image:
 
 ## License
 
-Wishlist is licensed under the [GNU Affero General Public License v3.0](LICENSE).
+Laterbase is licensed under the [GNU Affero General Public License v3.0](LICENSE).

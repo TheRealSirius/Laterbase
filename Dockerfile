@@ -13,7 +13,7 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=8080
-ENV WISHLIST_DATA_DIR=/data
+ENV LATERBASE_DATA_DIR=/data
 
 COPY --from=build /app/dist ./dist
 COPY server ./server

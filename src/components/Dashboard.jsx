@@ -7,7 +7,7 @@ const defaultSettings = {
     extraInfoEnabled: { total: true, spent: true, count: true },
 };
 
-const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCountClick, isPublicView, settings = defaultSettings, onSettingsChange, t, formatCurrency, currencyCode }) => {
+const Dashboard = ({ products, isDarkMode, onSpentClick, onLaterbaseClick, onCountClick, isPublicView, settings = defaultSettings, onSettingsChange, t, formatCurrency, currencyCode }) => {
     const monthlyBudget = Number(settings.monthlyBudget) || 0;
     const savingsFund = Number(settings.savingsFund) || 0;
     const extraInfoEnabled = {
@@ -18,8 +18,8 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
     const [tempBudget, setTempBudget] = useState('');
     const [tempSavings, setTempSavings] = useState('');
 
-    const activeWishlist = products.filter(p => !p.isPurchased && !p.isArchived);
-    const totalWishlistValue = activeWishlist.reduce((sum, p) => sum + Number(p.price), 0);
+    const activeLaterbase = products.filter(p => !p.isPurchased && !p.isArchived);
+    const totalLaterbaseValue = activeLaterbase.reduce((sum, p) => sum + Number(p.price), 0);
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -40,7 +40,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         return 'bg-emerald-500';
     };
 
-    // Calculate Wishlist Completion Percentage
+    // Calculate Laterbase Completion Percentage
     const purchasedCount = products.filter(p => p.isPurchased).length;
     const totalCount = products.filter(p => !p.isArchived).length;
     const completionPercentage = totalCount > 0 ? Math.min((purchasedCount / totalCount) * 100, 100) : 0;
@@ -75,13 +75,13 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         {
             id: 'total',
             label: t('dashboard.totalWishes'),
-            value: formatCurrency(totalWishlistValue),
+            value: formatCurrency(totalLaterbaseValue),
             icon: <ShoppingCart size={20} />,
             color: 'bg-indigo-500',
             bgClass: isDarkMode ? 'bg-indigo-500/10 border-indigo-500/20' : 'bg-indigo-50 border-indigo-100',
             iconColor: 'text-indigo-500',
             clickable: !isPublicView,
-            onClick: onWishlistClick
+            onClick: onLaterbaseClick
         },
         ...(!isPublicView ? [{
             id: 'spent',
@@ -98,7 +98,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
         {
             id: 'count',
             label: t('dashboard.itemsInList'),
-            value: activeWishlist.length,
+            value: activeLaterbase.length,
             icon: <TrendingUp size={20} />,
             color: 'bg-orange-500',
             bgClass: isDarkMode ? 'bg-orange-500/10 border-orange-500/20' : 'bg-orange-50 border-orange-100',
@@ -184,18 +184,18 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                             <div>
                                                 <div className="flex justify-between items-center mb-1.5">
                                                     <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                        {savingsFund >= totalWishlistValue
+                                                        {savingsFund >= totalLaterbaseValue
                                                             ? t('dashboard.canAffordAll')
-                                                            : t('dashboard.canAffordPercent').replace('{percent}', Math.floor((savingsFund / totalWishlistValue) * 100))}
+                                                            : t('dashboard.canAffordPercent').replace('{percent}', Math.floor((savingsFund / totalLaterbaseValue) * 100))}
                                                     </span>
-                                                    <span className={'text-[10px] font-bold ' + (savingsFund >= totalWishlistValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
+                                                    <span className={'text-[10px] font-bold ' + (savingsFund >= totalLaterbaseValue ? 'text-emerald-500' : isDarkMode ? 'text-indigo-400' : 'text-indigo-600')}>
                                                         {formatCurrency(savingsFund)}
                                                     </span>
                                                 </div>
                                                 <div className={'h-2 rounded-full overflow-hidden ' + (isDarkMode ? 'bg-zinc-800/50' : 'bg-slate-50')}>
                                                     <div
-                                                        className={'h-full rounded-full transition-all duration-700 ease-out ' + (savingsFund >= totalWishlistValue ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500')}
-                                                        style={{ width: Math.min((savingsFund / totalWishlistValue) * 100, 100) + '%' }}
+                                                        className={'h-full rounded-full transition-all duration-700 ease-out ' + (savingsFund >= totalLaterbaseValue ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-indigo-500')}
+                                                        style={{ width: Math.min((savingsFund / totalLaterbaseValue) * 100, 100) + '%' }}
                                                     />
                                                 </div>
                                             </div>
@@ -204,7 +204,7 @@ const Dashboard = ({ products, isDarkMode, onSpentClick, onWishlistClick, onCoun
                                         <div>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className={'text-[10px] font-bold uppercase tracking-wider ' + (isDarkMode ? 'text-zinc-600' : 'text-slate-400')}>
-                                                    {t('dashboard.activePurchased').replace('{active}', activeWishlist.length).replace('{purchased}', purchasedCount)}
+                                                    {t('dashboard.activePurchased').replace('{active}', activeLaterbase.length).replace('{purchased}', purchasedCount)}
                                                 </span>
                                                 <span className={'text-[10px] font-bold ' + (isDarkMode ? 'text-orange-500/80' : 'text-orange-600')}>
                                                     {completionPercentage.toFixed(0)}%

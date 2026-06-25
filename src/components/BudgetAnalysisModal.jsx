@@ -152,7 +152,7 @@ const BudgetAnalysisModal = ({ onClose, products, categories, isDarkMode, initia
                                 </div>
                                 <div>
                                     <p className={`font-bold ${isDarkMode ? 'text-zinc-400' : 'text-slate-600'}`}>
-                                        {mode === 'spent' ? t('analysis.noSpent') : t('analysis.emptyWishlist')}
+                                        {mode === 'spent' ? t('analysis.noSpent') : t('analysis.emptyLaterbase')}
                                     </p>
                                     <p className={`text-xs ${isDarkMode ? 'text-zinc-600' : 'text-slate-400'} mt-1`}>{t('analysis.keepControl')}</p>
                                 </div>

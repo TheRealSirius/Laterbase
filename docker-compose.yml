@@ -1,21 +1,21 @@
 services:
-  wishlist:
+  laterbase:
     build: .
-    image: wishlist-selfhosted:local
-    container_name: wishlist
+    image: laterbase-selfhosted:local
+    container_name: laterbase
     ports:
       - "8080:8080"
     environment:
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@wishlist.local}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@laterbase.local}
       # Set ADMIN_PASSWORD only on first run if you want to choose the first password.
       # It must be at least 12 characters.
-      # If left empty, Wishlist generates a password and prints it in the logs.
+      # If left empty, Laterbase generates a password and prints it in the logs.
       # - ADMIN_PASSWORD=change-me-now-123
       # If you serve the app behind HTTPS, enable Secure cookies.
-      # - WISHLIST_SECURE_COOKIES=true
+      # - LATERBASE_SECURE_COOKIES=true
     volumes:
-      - wishlist_data:/data
+      - laterbase_data:/data
     restart: unless-stopped
 
 volumes:
-  wishlist_data:
+  laterbase_data:

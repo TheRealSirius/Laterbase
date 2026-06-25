@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Tag, ArrowRight, ShoppingBag, Search } from 'lucide-react';
 
-const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate, t, getCategoryLabel, formatCurrency }) => {
+const LaterbaseRecapModal = ({ onClose, products, isDarkMode, onNavigate, t, getCategoryLabel, formatCurrency }) => {
     const activeItems = products.filter(p => !p.isPurchased && !p.isArchived);
 
     useEffect(() => {
@@ -93,4 +93,4 @@ const WishlistRecapModal = ({ onClose, products, isDarkMode, onNavigate, t, getC
     );
 };
 
-export default WishlistRecapModal;
+export default LaterbaseRecapModal;

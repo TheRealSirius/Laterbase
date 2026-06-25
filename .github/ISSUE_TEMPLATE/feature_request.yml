@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an improvement for Wishlist
+description: Suggest an improvement for Laterbase
 title: "[Feature]: "
 labels:
   - enhancement
@@ -15,7 +15,7 @@ body:
     id: solution
     attributes:
       label: Proposed solution
-      description: What would you like Wishlist to do?
+      description: What would you like Laterbase to do?
     validations:
       required: true
   - type: textarea

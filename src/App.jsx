@@ -18,7 +18,7 @@ import CategoryBar from './components/CategoryBar';
 import ProductCard from './components/ProductCard';
 import ProductForm from './components/ProductForm';
 import BudgetAnalysisModal from './components/BudgetAnalysisModal';
-import WishlistRecapModal from './components/WishlistRecapModal';
+import LaterbaseRecapModal from './components/LaterbaseRecapModal';
 import PriceUpdateModal from './components/PriceUpdateModal';
 import ArchiveModal from './components/ArchiveModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
@@ -30,7 +30,7 @@ import OnboardingModal from './components/OnboardingModal';
 import * as productService from './lib/productService';
 import LanguageSelector from './components/LanguageSelector';
 import { createMoneyFormatter, createTranslator, getCurrencyMeta, getInitialLanguage } from './lib/i18n';
-import { getPriceStats, getWishScore, normalizePriceHistory } from './lib/wishlistInsights';
+import { getPriceStats, getWishScore, normalizePriceHistory } from './lib/laterbaseInsights';
 
 const STORAGE_KEY = 'wishlist_products';
 const CATEGORIES_KEY = 'wishlist_categories';
@@ -118,7 +118,7 @@ const App = () => {
   const [language, setLanguage] = useState(getInitialLanguage);
   const [historyTimeFilter, setHistoryTimeFilter] = useState('month'); // 'month', '3months', 'all'
   const [analysisMode, setAnalysisMode] = useState(null); // null, 'spent', 'wishlist'
-  const [showWishlistRecap, setShowWishlistRecap] = useState(false);
+  const [showLaterbaseRecap, setShowLaterbaseRecap] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [activeProductForPriceUpdate, setActiveProductForPriceUpdate] = useState(null);
   const [toast, setToast] = useState(null);
@@ -200,7 +200,7 @@ const App = () => {
         nextSettings = imported.settings || nextSettings;
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(CATEGORIES_KEY);
-        showToast(t('toast.oldWishlistImported'));
+        showToast(t('toast.oldLaterbaseImported'));
       }
     }
 
@@ -294,7 +294,7 @@ const App = () => {
     const link = document.createElement('a');
     const dateSlug = new Date().toISOString().slice(0, 10);
     link.href = url;
-    link.download = `wishlist-backup-${dateSlug}.json`;
+    link.download = `laterbase-backup-${dateSlug}.json`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -388,7 +388,7 @@ const App = () => {
     window.history.replaceState({}, '', nextUrl);
   }, [authUser, isPublicView]);
 
-  const downloadWishlistImage = (activeProducts, exportOptions, total, exportedAt, categoriesSummary) => {
+  const downloadLaterbaseImage = (activeProducts, exportOptions, total, exportedAt, categoriesSummary) => {
     const isGiftTheme = exportOptions.theme === 'gift';
     const scale = 2;
     const width = isGiftTheme ? 1080 : 1280;
@@ -478,7 +478,7 @@ const App = () => {
 
     ctx.fillStyle = '#10233f';
     ctx.font = '900 24px Arial';
-    ctx.fillText('Wishlist', padding + markSize + 16, y + 34);
+    ctx.fillText('Laterbase', padding + markSize + 16, y + 34);
 
     const title = isGiftTheme ? t('exportHtml.giftHeading') : t('exportHtml.heading');
     const subtitle = isGiftTheme ? t('exportHtml.giftSubtitle') : t('exportHtml.subtitle');
@@ -611,14 +611,14 @@ const App = () => {
 
     const dateSlug = new Date().toISOString().slice(0, 10);
     const link = document.createElement('a');
-    link.download = `wishlist-${exportOptions.theme}-${dateSlug}.png`;
+    link.download = `laterbase-${exportOptions.theme}-${dateSlug}.png`;
     link.href = canvas.toDataURL('image/png');
     document.body.appendChild(link);
     link.click();
     link.remove();
   };
 
-  const exportReadOnlyWishlist = (options = {}) => {
+  const exportReadOnlyLaterbase = (options = {}) => {
     const exportOptions = {
       theme: options.theme || 'compact',
       format: options.format || 'image',
@@ -638,7 +638,7 @@ const App = () => {
       .join(' · ');
 
     if (exportOptions.format === 'image') {
-      downloadWishlistImage(activeProducts, exportOptions, total, exportedAt, categoriesSummary);
+      downloadLaterbaseImage(activeProducts, exportOptions, total, exportedAt, categoriesSummary);
       showToast(t('toast.exportImageReady'));
       return;
     }
@@ -1118,7 +1118,7 @@ const App = () => {
   <main>
     <header>
       <div>
-        <div class="brand"><span class="mark">♡</span><span>Wishlist</span></div>
+        <div class="brand"><span class="mark">♡</span><span>Laterbase</span></div>
         <h1>${escapeHtml(exportOptions.theme === 'gift' ? t('exportHtml.giftHeading') : t('exportHtml.heading'))}</h1>
         <p class="subtitle">${escapeHtml(exportOptions.theme === 'gift' ? t('exportHtml.giftSubtitle') : t('exportHtml.subtitle'))}</p>
       </div>
@@ -1163,7 +1163,7 @@ const App = () => {
   };
 
   const handleScrollToProduct = (id) => {
-    setShowWishlistRecap(false);
+    setShowLaterbaseRecap(false);
     setShowHistory(false);
     setSelectedCategory('Tutti');
     setSearchQuery('');
@@ -1293,7 +1293,7 @@ const App = () => {
 
     const nextProducts = products.map(p => p.id === id ? updatedProduct : p);
     setProducts(nextProducts);
-    showToast(newArchivedState ? t('toast.movedToArchive') : t('toast.restoredToWishlist'));
+    showToast(newArchivedState ? t('toast.movedToArchive') : t('toast.restoredToLaterbase'));
     await persistState(nextProducts);
   };
 
@@ -1348,7 +1348,7 @@ const App = () => {
     await persistState(nextProducts);
   };
 
-  const refreshWishlistPrices = async () => {
+  const refreshLaterbasePrices = async () => {
     if (isBulkRefreshingPrices) return;
 
     const candidates = products.filter((product) => (
@@ -1548,7 +1548,7 @@ const App = () => {
       <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-zinc-950 text-white' : 'bg-[#F9FAFB] text-slate-900'}`}>
         <div className="flex items-center gap-3 text-sm font-semibold">
           <Server size={18} />
-          {t('loadingLocalWishlist')}
+          {t('loadingLocalLaterbase')}
         </div>
       </div>
     );
@@ -1661,7 +1661,7 @@ const App = () => {
                 className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-zinc-900 text-white hover:bg-zinc-800' : 'bg-white border border-slate-100 text-slate-900 hover:bg-slate-50'
                   }`}
               >
-                {t('createWishlist')}
+                {t('createLaterbase')}
               </button>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
@@ -1677,8 +1677,8 @@ const App = () => {
           products={products}
           isDarkMode={isDarkMode}
           onSpentClick={() => setAnalysisMode('spent')}
-          onWishlistClick={() => setAnalysisMode('wishlist')}
-          onCountClick={() => setShowWishlistRecap(true)}
+          onLaterbaseClick={() => setAnalysisMode('wishlist')}
+          onCountClick={() => setShowLaterbaseRecap(true)}
           isPublicView={isPublicView}
           settings={settings}
           onSettingsChange={handleSettingsChange}
@@ -1725,7 +1725,7 @@ const App = () => {
 
                   <div className="flex flex-row items-center gap-2 w-full md:w-auto">
                     <button
-                      onClick={refreshWishlistPrices}
+                      onClick={refreshLaterbasePrices}
                       disabled={isBulkRefreshingPrices}
                       className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors whitespace-nowrap ${isBulkRefreshingPrices
                         ? (isDarkMode ? 'text-zinc-700 bg-zinc-900 cursor-not-allowed' : 'text-slate-300 bg-slate-100 cursor-not-allowed')
@@ -1770,7 +1770,7 @@ const App = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-bold group flex items-center gap-2">
-                {showHistory ? t('history.title') : selectedCategory === 'Tutti' ? t('activeWishlist') : t('categoryTitle').replace('{category}', getCategoryLabel(selectedCategory))}
+                {showHistory ? t('history.title') : selectedCategory === 'Tutti' ? t('activeLaterbase') : t('categoryTitle').replace('{category}', getCategoryLabel(selectedCategory))}
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${isDarkMode ? 'bg-zinc-900 text-zinc-500' : 'bg-slate-100 text-slate-500'}`}>{filteredProducts.length}</span>
               </h2>
               {showHistory && (
@@ -1940,9 +1940,9 @@ const App = () => {
         />
       )}
 
-      {showWishlistRecap && (
-        <WishlistRecapModal
-          onClose={() => setShowWishlistRecap(false)}
+      {showLaterbaseRecap && (
+        <LaterbaseRecapModal
+          onClose={() => setShowLaterbaseRecap(false)}
           products={products}
           isDarkMode={isDarkMode}
           onNavigate={handleScrollToProduct}
@@ -2000,7 +2000,7 @@ const App = () => {
       <ExportModal
         isOpen={showExportModal}
         onClose={() => setShowExportModal(false)}
-        onExport={exportReadOnlyWishlist}
+        onExport={exportReadOnlyLaterbase}
         isDarkMode={isDarkMode}
         t={t}
       />

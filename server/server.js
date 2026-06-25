@@ -10,15 +10,18 @@ import { isIP } from 'node:net';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 const publicDir = path.join(rootDir, 'dist');
-const dataDir = process.env.WISHLIST_DATA_DIR || path.join(rootDir, 'data');
-const dataFile = path.join(dataDir, 'wishlist.json');
+const dataDir = process.env.LATERBASE_DATA_DIR || process.env.WISHLIST_DATA_DIR || path.join(rootDir, 'data');
+const dataFile = path.join(dataDir, 'laterbase.json');
+const legacyDataFile = path.join(dataDir, 'wishlist.json');
 const authFile = path.join(dataDir, 'auth.json');
 const sessionsFile = path.join(dataDir, 'sessions.json');
 const port = Number(process.env.PORT || 8080);
-const sessionCookie = 'wishlist_session';
+const sessionCookie = 'laterbase_session';
 const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
 const maxBodyBytes = 1024 * 1024;
-const secureCookies = process.env.WISHLIST_SECURE_COOKIES === 'true' || process.env.SECURE_COOKIES === 'true';
+const secureCookies = process.env.LATERBASE_SECURE_COOKIES === 'true' ||
+  process.env.WISHLIST_SECURE_COOKIES === 'true' ||
+  process.env.SECURE_COOKIES === 'true';
 const loginAttempts = new Map();
 const loginWindowMs = 15 * 60 * 1000;
 const loginMaxAttempts = 10;
@@ -143,7 +146,7 @@ const ensureAuthFile = async () => {
 
   const envEmail = process.env.ADMIN_EMAIL?.trim();
   const envPassword = process.env.ADMIN_PASSWORD;
-  const email = envEmail || 'admin@wishlist.local';
+  const email = envEmail || 'admin@laterbase.local';
   const password = envPassword || generatePassword();
   if (envPassword && envPassword.length < 12) {
     throw new Error('ADMIN_PASSWORD must be at least 12 characters long.');
@@ -239,6 +242,7 @@ const clearSessionCookie = (res) => {
   const secureFlag = secureCookies ? '; Secure' : '';
   res.setHeader('Set-Cookie', [
     `${sessionCookie}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
+    `wishlist_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
     `id=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secureFlag}`,
   ]);
 };
@@ -267,7 +271,13 @@ const ensureDataFile = async () => {
   try {
     await stat(dataFile);
   } catch {
-    await writeState(defaultState);
+    try {
+      await stat(legacyDataFile);
+      await rename(legacyDataFile, dataFile);
+      console.log(`Migrated legacy data file from ${legacyDataFile} to ${dataFile}`);
+    } catch {
+      await writeState(defaultState);
+    }
   }
 };
 
@@ -652,7 +662,7 @@ const fetchProductHtml = async (initialUrl, redirects = 0) => {
     headers: {
       Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 WishlistSelfHosted/1.0',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36 LaterbaseSelfHosted/1.0',
     },
   });
 
@@ -901,6 +911,6 @@ const server = createServer(async (req, res) => {
 
 server.listen(port, '0.0.0.0', () => {
   ensureAuthFile().catch((error) => console.error('Auth initialization error:', error));
-  console.log(`Wishlist self-hosted started at http://0.0.0.0:${port}`);
+  console.log(`Laterbase self-hosted started at http://0.0.0.0:${port}`);
   console.log(`Data saved in ${dataFile}`);
 });

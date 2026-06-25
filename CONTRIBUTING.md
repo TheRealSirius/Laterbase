@@ -1,8 +1,8 @@
 # Contributing
 
-Thanks for wanting to improve Wishlist.
+Thanks for wanting to improve Laterbase.
 
-Wishlist aims to stay small, private, self-hosted, and easy to run with Docker. Contributions should protect those goals.
+Laterbase aims to stay small, private, self-hosted, and easy to run with Docker. Contributions should protect those goals.
 
 ## Before You Start
 
@@ -63,7 +63,7 @@ Before opening a pull request:
 
 ## Translations
 
-Wishlist supports multiple languages. User-facing text should go through the existing translation helpers rather than being hardcoded in a component.
+Laterbase supports multiple languages. User-facing text should go through the existing translation helpers rather than being hardcoded in a component.
 
 If a feature is not translated yet, prefer adding a clear English string and opening a follow-up issue rather than silently mixing languages across the UI.
 

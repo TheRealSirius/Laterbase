@@ -1,17 +1,17 @@
 {
-  "name": "wishlist",
+  "name": "laterbase",
   "private": true,
   "version": "1.0.0",
-  "description": "A private, self-hosted wishlist and shopping tracker for Docker.",
+  "description": "A private, self-hosted product and shopping tracker for Docker.",
   "license": "AGPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TheRealSirius/Wishlist.git"
+    "url": "https://github.com/TheRealSirius/Laterbase.git"
   },
   "bugs": {
-    "url": "https://github.com/TheRealSirius/Wishlist/issues"
+    "url": "https://github.com/TheRealSirius/Laterbase/issues"
   },
-  "homepage": "https://github.com/TheRealSirius/Wishlist#readme",
+  "homepage": "https://github.com/TheRealSirius/Laterbase#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",

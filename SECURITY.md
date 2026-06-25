@@ -1,6 +1,6 @@
 # Security Policy
 
-Wishlist is a self-hosted app. The maintainer cannot inspect your private instance, your Docker volume, your browser session, or your local wishlist data.
+Laterbase is a self-hosted app. The maintainer cannot inspect your private instance, your Docker volume, your browser session, or your local app data.
 
 ## Supported Versions
 
@@ -28,7 +28,7 @@ Please include:
 - whether the instance was running behind HTTPS or only on localhost;
 - relevant logs with secrets removed.
 
-Do not include real passwords, session cookies, backup files, or private wishlist data in a report.
+Do not include real passwords, session cookies, backup files, or private Laterbase data in a report.
 
 ## Scope
 
@@ -53,9 +53,9 @@ Out of scope:
 
 ## Security Model
 
-Wishlist uses local authentication, hashed passwords, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill and price refresh requests.
+Laterbase uses local authentication, hashed passwords, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill and price refresh requests.
 
-Self-hosting still requires operational care. Keep Docker updated, use HTTPS when exposing Wishlist outside `localhost`, choose a strong password, and back up your Docker volume.
+Self-hosting still requires operational care. Keep Docker updated, use HTTPS when exposing Laterbase outside `localhost`, choose a strong password, and back up your Docker volume.
 
 ## Disclosure
 

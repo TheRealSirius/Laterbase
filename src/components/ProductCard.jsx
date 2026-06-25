@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ExternalLink, CheckCircle, Trash2, ShoppingBag, FileText, Share2, GripVertical, RefreshCw, Eye, Archive, Link, ClipboardList, BadgeCheck, Clock, PauseCircle, Gift } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createPriceSparkline, getPriceStats, getWishScore } from '../lib/wishlistInsights';
+import { createPriceSparkline, getPriceStats, getWishScore } from '../lib/laterbaseInsights';
 
 const ProductCard = ({ product, onTogglePurchase, onToggleArchive, onDelete, onEdit, onShowToast, onCheckPrice, isDarkMode, isPublicView, isPurchasing, allowExternalImages, t, getCategoryLabel, formatCurrency, settings }) => {
     const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);

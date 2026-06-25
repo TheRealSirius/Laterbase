@@ -85,7 +85,7 @@ const ProductPreview = ({ t, formatCurrency, className = '' }) => (
         <div className="relative flex items-center justify-between gap-4">
             <div>
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-slate-500">{t('login.capabilitiesLabel')}</p>
-                <h3 className="mt-1 font-serif text-2xl font-black text-[#10233f]">Wishlist OS</h3>
+                <h3 className="mt-1 font-serif text-2xl font-black text-[#10233f]">Laterbase OS</h3>
             </div>
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#10233f] text-white">
                 <Server size={20} />
@@ -228,7 +228,7 @@ const SelfHostedLogin = ({ isDarkMode, onLogin, language, onLanguageChange, t, f
                                         autoComplete="username"
                                         value={email}
                                         onChange={(event) => setEmail(event.target.value)}
-                                        placeholder="admin@wishlist.local"
+                                        placeholder="admin@laterbase.local"
                                         className={`w-full rounded-2xl border py-4 pl-12 pr-4 text-sm font-bold outline-none transition-all ${isDarkMode ? 'border-zinc-800 bg-zinc-950 text-white placeholder:text-zinc-700 focus:border-[#79c7b5]' : 'border-slate-200 bg-white text-[#10233f] placeholder:text-slate-400 focus:border-[#10233f]'}`}
                                     />
                                 </div>
@@ -287,7 +287,7 @@ const SelfHostedLogin = ({ isDarkMode, onLogin, language, onLanguageChange, t, f
 
                         <div className={`mt-5 rounded-2xl border px-4 py-3 text-center text-sm font-black ${isDarkMode ? 'border-zinc-800 text-zinc-400' : 'border-[#79c7b5]/50 text-[#377f72]'}`}>
                             <Server className="mr-2 inline" size={16} />
-                            Wishlist.local
+                            Laterbase.local
                         </div>
                     </form>
                 </aside>
