@@ -18,6 +18,16 @@ Laterbase helps you track products, prices, budgets, purchases, gift ideas, arch
 
 ---
 
+## Screenshots
+
+| Private login | Active dashboard |
+| --- | --- |
+| ![Laterbase login screen](public/screenshots/laterbase-login.svg) | ![Laterbase dashboard screen](public/screenshots/laterbase-dashboard.svg) |
+
+| Add a product | Export a shareable snapshot |
+| --- | --- |
+| ![Laterbase add product modal](public/screenshots/laterbase-add-product.svg) | ![Laterbase export screen](public/screenshots/laterbase-export.svg) |
+
 ## What is Laterbase?
 
 Laterbase is a small self-hosted web app for people who want a private place to manage shopping ideas, target prices, budgets, and purchases.

@@ -106,8 +106,8 @@ const ProductPreview = ({ t, formatCurrency, className = '' }) => (
         </div>
 
         <div className="relative mt-4 space-y-2.5">
-            <PreviewRow name="Sony WH-1000XM5" meta={t('login.previewTargetMeta')} value="-18%" tone="coral" />
-            <PreviewRow name="Steam Deck OLED" meta={t('login.previewSavingsMeta')} value={formatCurrency(679)} tone="mint" />
+            <PreviewRow name="Wireless Desk Speaker" meta={t('login.previewTargetMeta')} value="-18%" tone="coral" />
+            <PreviewRow name="Compact Workstation" meta={t('login.previewSavingsMeta')} value={formatCurrency(679)} tone="mint" />
             <PreviewRow name={t('login.previewGiftName')} meta={t('login.previewShareMeta')} value={t('login.previewShareButton')} />
         </div>
 
