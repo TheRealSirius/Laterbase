@@ -1,40 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Laterbase add product modal">
-  <defs>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#0f172a" flood-opacity=".18"/></filter>
-  </defs>
-  <rect width="1200" height="760" fill="#eef3f7"/>
-  <g opacity=".42" font-family="Inter, Arial, sans-serif">
-    <rect x="88" y="76" width="1024" height="116" rx="30" fill="#fff"/>
-    <rect x="88" y="228" width="1024" height="74" rx="24" fill="#fff"/>
-    <rect x="88" y="340" width="1024" height="82" rx="24" fill="#fff"/>
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="34" fill="#E8EBF0"/>
+  <rect width="1200" height="760" rx="34" fill="#0F172A" fill-opacity="0.22"/>
+  <rect x="292" y="58" width="616" height="644" rx="34" fill="#FFFFFF"/>
+  <text x="348" y="128" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="900">New wish</text>
+  <text x="348" y="182" fill="#9AA6BA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2">PRODUCT NAME</text>
+  <rect x="348" y="202" width="504" height="58" rx="18" fill="#F6F8FA"/>
+  <text x="382" y="238" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">Steam Deck OLED</text>
+  <text x="348" y="302" fill="#9AA6BA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2">PRICE</text>
+  <rect x="348" y="322" width="236" height="58" rx="18" fill="#F6F8FA"/>
+  <text x="382" y="358" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">679.00</text>
+  <text x="616" y="302" fill="#9AA6BA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2">TARGET</text>
+  <rect x="616" y="322" width="236" height="58" rx="18" fill="#F6F8FA"/>
+  <text x="650" y="358" fill="#738097" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">599.00</text>
+  <text x="348" y="422" fill="#9AA6BA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2">CATEGORY</text>
+  <rect x="348" y="442" width="504" height="58" rx="18" fill="#F6F8FA"/>
+  <text x="382" y="478" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">Electronics</text>
+  <g transform="translate(348 526)">
+    <rect width="116" height="42" rx="21" fill="#EDF7F4" stroke="#CDE9E1"/>
+    <text x="28" y="27" fill="#317D70" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900">Gift idea</text>
   </g>
-  <rect x="318" y="54" width="564" height="652" rx="34" fill="#fff" filter="url(#shadow)"/>
-  <g transform="translate(366 106)" font-family="Inter, Arial, sans-serif">
-    <text font-size="34" font-weight="900" fill="#111b35">New product</text>
-    <text x="470" y="-10" font-size="44" font-weight="200" fill="#8a98b3">×</text>
-    <text y="88" font-size="14" font-weight="900" fill="#8a98b3" letter-spacing="3">PRODUCT NAME</text>
-    <rect y="104" width="464" height="58" rx="18" fill="#f6f8fb"/>
-    <text x="28" y="141" font-size="18" font-weight="800" fill="#c0cad8">Minimal desk lamp</text>
-    <text y="214" font-size="14" font-weight="900" fill="#8a98b3" letter-spacing="3">PRICE</text>
-    <text x="244" y="214" font-size="14" font-weight="900" fill="#8a98b3" letter-spacing="3">TARGET PRICE</text>
-    <rect y="230" width="208" height="58" rx="18" fill="#f6f8fb"/>
-    <rect x="244" y="230" width="220" height="58" rx="18" fill="#f6f8fb"/>
-    <text x="28" y="267" font-size="18" font-weight="800" fill="#c0cad8">$42.00</text>
-    <text x="272" y="267" font-size="18" font-weight="800" fill="#c0cad8">$35.00</text>
-    <text y="340" font-size="14" font-weight="900" fill="#8a98b3" letter-spacing="3">CATEGORY</text>
-    <rect y="356" width="464" height="58" rx="18" fill="#f6f8fb"/>
-    <text x="28" y="393" font-size="18" font-weight="900" fill="#111b35">Home</text>
-    <g transform="translate(0 438)" font-size="15" font-weight="800" fill="#52617c">
-      <rect width="92" height="40" rx="20" fill="#f8fafc" stroke="#dce5ef"/><text x="26" y="26">Home</text>
-      <rect x="108" width="128" height="40" rx="20" fill="#f8fafc" stroke="#dce5ef"/><text x="130" y="26">Electronics</text>
-      <rect x="252" width="88" height="40" rx="20" fill="#f8fafc" stroke="#dce5ef"/><text x="281" y="26">Gifts</text>
-    </g>
-    <text y="526" font-size="14" font-weight="900" fill="#8a98b3" letter-spacing="3">PRODUCT URL</text>
-    <rect y="542" width="360" height="58" rx="18" fill="#f6f8fb"/>
-    <rect x="376" y="542" width="88" height="58" rx="18" fill="#edf3f8"/>
-    <text x="28" y="579" font-size="18" font-weight="800" fill="#c0cad8">https://example.com/...</text>
-    <text x="394" y="579" font-size="16" font-weight="900" fill="#8a98b3">Autofill</text>
+  <g transform="translate(484 526)">
+    <rect width="128" height="42" rx="21" fill="#FFF4E6" stroke="#F6D9B5"/>
+    <text x="28" y="27" fill="#B46A2A" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900">Watch price</text>
   </g>
-  <rect x="366" y="632" width="464" height="58" rx="18" fill="#0f1d3a"/>
-  <text x="543" y="669" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" fill="#fff">Add to list</text>
+  <text x="348" y="592" fill="#9AA6BA" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900" letter-spacing="2">PRODUCT URL</text>
+  <rect x="348" y="612" width="504" height="54" rx="18" fill="#F6F8FA"/>
+  <text x="382" y="646" fill="#738097" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="800">https://store.example/product</text>
+  <rect x="348" y="688" width="504" height="56" rx="20" fill="#0F1B33"/>
+  <text x="548" y="723" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="900">Add to list</text>
 </svg>

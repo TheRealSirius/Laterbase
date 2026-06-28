@@ -1,34 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Laterbase export options">
-  <defs>
-    <linearGradient id="rose" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff2f2"/><stop offset="1" stop-color="#f4fffb"/></linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#0f172a" flood-opacity=".15"/></filter>
-  </defs>
-  <rect width="1200" height="760" fill="url(#rose)"/>
-  <rect x="178" y="86" width="844" height="588" rx="34" fill="#fff" filter="url(#shadow)"/>
-  <g transform="translate(230 136)" font-family="Inter, Arial, sans-serif">
-    <rect width="46" height="46" rx="14" fill="#e95c7b"/>
-    <path d="M14 18c0-6 8-8 10-2 3-6 10-4 10 2 0 7-10 13-10 13S14 25 14 18Z" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="60" y="31" font-size="24" font-weight="900" fill="#111b35">Laterbase</text>
-    <text y="118" font-family="Georgia, serif" font-size="62" font-weight="700" fill="#2a1024">Gift list</text>
-    <text y="166" font-size="20" font-weight="800" fill="#6b7891">A clean read-only snapshot, ready to send.</text>
-    <rect x="610" y="0" width="178" height="86" rx="28" fill="#fff0ed"/>
-    <text x="640" y="34" font-size="14" font-weight="900" fill="#c95f7b" letter-spacing="2">TOTAL LIST</text>
-    <text x="640" y="64" font-size="28" font-weight="900" fill="#2a1024">$365.00</text>
-    <g transform="translate(0 216)">
-      <rect width="248" height="70" rx="20" fill="#f6f1eb"/><text x="26" y="30" font-size="13" font-weight="900" fill="#8a98b3" letter-spacing="2">PRODUCTS</text><text x="26" y="56" font-size="22" font-weight="900" fill="#111b35">3</text>
-      <rect x="272" width="248" height="70" rx="20" fill="#f6f1eb"/><text x="298" y="30" font-size="13" font-weight="900" fill="#8a98b3" letter-spacing="2">EXPORTED</text><text x="298" y="56" font-size="22" font-weight="900" fill="#111b35">Today, 14:20</text>
-      <rect x="544" width="248" height="70" rx="20" fill="#f6f1eb"/><text x="570" y="30" font-size="13" font-weight="900" fill="#8a98b3" letter-spacing="2">CATEGORIES</text><text x="570" y="56" font-size="22" font-weight="900" fill="#111b35">Home · Gifts</text>
-    </g>
-    <g transform="translate(0 330)">
-      <rect width="792" height="86" rx="22" fill="#fff7f7" stroke="#ffd9df"/>
-      <rect x="18" y="22" width="6" height="42" rx="3" fill="#e95c7b"/>
-      <text x="42" y="35" font-size="13" font-weight="900" fill="#c95f7b" letter-spacing="2">HOME</text>
-      <text x="42" y="64" font-size="22" font-weight="900" fill="#2a1024">Warm Reading Lamp</text>
-      <text x="688" y="56" font-size="24" font-weight="900" fill="#2a1024">$42.00</text>
-      <rect y="108" width="792" height="86" rx="22" fill="#fff" stroke="#e6edf4"/>
-      <text x="42" y="143" font-size="13" font-weight="900" fill="#54a692" letter-spacing="2">GIFTS</text>
-      <text x="42" y="172" font-size="22" font-weight="900" fill="#2a1024">Weekend Travel Pack</text>
-      <text x="688" y="164" font-size="24" font-weight="900" fill="#2a1024">$86.00</text>
-    </g>
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="34" fill="#FDF5F3"/>
+  <rect x="152" y="74" width="896" height="612" rx="34" fill="#FFFFFF" stroke="#F2E3DF"/>
+  <g transform="translate(210 130)">
+    <rect width="52" height="52" rx="16" fill="#E95074"/>
+    <path d="M26 34s-15-8-15-20c0-9 10-12 15-5 5-7 15-4 15 5 0 12-15 20-15 20Z" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="70" y="34" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="900">Laterbase</text>
   </g>
+  <text x="210" y="244" fill="#351226" font-family="Georgia, serif" font-size="72" font-weight="700">Gift list</text>
+  <text x="210" y="292" fill="#748099" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">A clean read-only snapshot, ready to share.</text>
+  <rect x="808" y="128" width="180" height="96" rx="30" fill="#FFF0EC"/>
+  <text x="842" y="166" fill="#C75D75" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="1.5">TOTAL LIST</text>
+  <text x="842" y="202" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="900">689.00 EUR</text>
+  <line x1="210" y1="338" x2="988" y2="338" stroke="#E8EDF3"/>
+  <g transform="translate(210 372)">
+    <rect width="238" height="72" rx="18" fill="#F8F4EE"/>
+    <text x="24" y="29" fill="#8A7483" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.5">PRODUCTS</text>
+    <text x="24" y="56" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">2</text>
+  </g>
+  <g transform="translate(480 372)">
+    <rect width="238" height="72" rx="18" fill="#F8F4EE"/>
+    <text x="24" y="29" fill="#8A7483" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.5">EXPORTED</text>
+    <text x="24" y="56" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Today</text>
+  </g>
+  <g transform="translate(750 372)">
+    <rect width="238" height="72" rx="18" fill="#F8F4EE"/>
+    <text x="24" y="29" fill="#8A7483" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.5">CATEGORIES</text>
+    <text x="24" y="56" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Gifts</text>
+  </g>
+  <rect x="210" y="488" width="778" height="88" rx="22" fill="#FFF6F5" stroke="#FFD6D8"/>
+  <rect x="234" y="512" width="10" height="40" rx="5" fill="#E95074"/>
+  <text x="268" y="526" fill="#E95074" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.5">ELECTRONICS</text>
+  <text x="268" y="558" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900">Nintendo Switch 2 bundle</text>
+  <text x="850" y="558" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900">489.00</text>
+  <rect x="210" y="596" width="778" height="68" rx="22" fill="#FFFFFF" stroke="#E8EDF3"/>
+  <text x="268" y="638" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">Birthday gift idea</text>
+  <text x="858" y="638" fill="#351226" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">200.00</text>
 </svg>
