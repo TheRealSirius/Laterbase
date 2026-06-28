@@ -45,6 +45,18 @@ const ImportWishlistModal = ({
 
     const selectedItems = items.filter((item) => item.selected && item.name);
 
+    const resetState = () => {
+        setUrl('');
+        setItems([]);
+        setError('');
+        setIsLoading(false);
+    };
+
+    const handleClose = () => {
+        resetState();
+        onClose();
+    };
+
     const handleAnalyze = async () => {
         if (!url.trim() || isLoading) return;
         setIsLoading(true);
@@ -82,19 +94,19 @@ const ImportWishlistModal = ({
             isGiftIdea: false,
             isArchived: false,
         })));
-        onClose();
+        handleClose();
     };
 
     return (
         <div
             className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-300 ${isDarkMode ? 'bg-zinc-950/60' : 'bg-slate-900/30'}`}
-            onClick={onClose}
+            onClick={handleClose}
         >
             <div
-                className={`w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl border shadow-2xl animate-in zoom-in-95 duration-300 ${isDarkMode ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-100 text-slate-950'}`}
+                className={`flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl border shadow-2xl animate-in zoom-in-95 duration-300 ${isDarkMode ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-100 text-slate-950'}`}
                 onClick={(event) => event.stopPropagation()}
             >
-                <div className={`flex items-start justify-between gap-4 border-b p-6 ${isDarkMode ? 'border-zinc-800' : 'border-slate-100'}`}>
+                <div className={`shrink-0 flex items-start justify-between gap-4 border-b p-6 ${isDarkMode ? 'border-zinc-800' : 'border-slate-100'}`}>
                     <div>
                         <div className={`mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-widest ${isDarkMode ? 'bg-zinc-800 text-zinc-300' : 'bg-emerald-50 text-emerald-700'}`}>
                             <Upload size={14} />
@@ -106,14 +118,14 @@ const ImportWishlistModal = ({
                         </p>
                     </div>
                     <button
-                        onClick={onClose}
+                        onClick={handleClose}
                         className={`rounded-full p-2 transition-all ${isDarkMode ? 'text-zinc-500 hover:bg-zinc-800 hover:text-white' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}
                     >
                         <X size={24} />
                     </button>
                 </div>
 
-                <div className="max-h-[calc(90vh-180px)] overflow-y-auto p-6">
+                <div className="min-h-0 flex-1 overflow-y-auto p-6">
                     <div className={`rounded-3xl border p-4 ${isDarkMode ? 'border-zinc-800 bg-zinc-950/70' : 'border-slate-100 bg-slate-50'}`}>
                         <label className={`mb-2 block text-xs font-black uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
                             {t('importList.linkLabel')}
@@ -239,13 +251,13 @@ const ImportWishlistModal = ({
                     )}
                 </div>
 
-                <div className={`flex flex-col gap-3 border-t p-6 sm:flex-row sm:items-center sm:justify-between ${isDarkMode ? 'border-zinc-800' : 'border-slate-100'}`}>
+                <div className={`shrink-0 flex flex-col gap-3 border-t p-6 sm:flex-row sm:items-center sm:justify-between ${isDarkMode ? 'border-zinc-800' : 'border-slate-100'}`}>
                     <p className={`text-xs font-bold ${isDarkMode ? 'text-zinc-500' : 'text-slate-500'}`}>
                         {t('importList.externalImageNote')}
                     </p>
                     <div className="flex gap-3">
                         <button
-                            onClick={onClose}
+                            onClick={handleClose}
                             className={`rounded-2xl px-5 py-3 text-sm font-black transition-all ${isDarkMode ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                         >
                             {t('common.cancel')}
