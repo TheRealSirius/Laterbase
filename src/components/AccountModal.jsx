@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Eye, EyeOff, Image, Lock, Mail, Save, X, LogOut, Download, Upload, MousePointer2, ShieldCheck, CheckCircle2, Clipboard } from 'lucide-react';
 
 const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, allowExternalImages, onToggleExternalImages, onExportData, onImportData, onCopyQuickAdd, onOpenPrivacy, t }) => {
@@ -12,6 +12,12 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
     const [saving, setSaving] = useState(false);
     const [quickAddScript, setQuickAddScript] = useState('');
     const [quickAddCopied, setQuickAddCopied] = useState(false);
+    const quickAddBookmarkRef = useRef(null);
+
+    useEffect(() => {
+        if (!quickAddBookmarkRef.current || !quickAddScript) return;
+        quickAddBookmarkRef.current.setAttribute('href', quickAddScript);
+    }, [quickAddScript]);
 
     if (!isOpen) return null;
 
@@ -155,7 +161,8 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
                                 </div>
                             </div>
                             <a
-                                href={quickAddScript}
+                                ref={quickAddBookmarkRef}
+                                href="#"
                                 onClick={(event) => event.preventDefault()}
                                 className={`mt-3 flex items-center justify-center rounded-xl px-3 py-2 font-black transition-all ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-200' : 'bg-slate-950 text-white hover:bg-slate-800'}`}
                             >
