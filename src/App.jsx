@@ -53,6 +53,11 @@ const DEFAULT_SETTINGS = {
   extraInfoEnabled: { total: true, spent: true, count: true },
 };
 
+const buildQuickAddBookmarklet = (baseUrl) => {
+  const laterbaseUrl = JSON.stringify(baseUrl);
+  return `javascript:(()=>{const c=s=>(s||'').replace(/\\s+/g,' ').trim(),u=s=>{try{return new URL(s,location.href).href}catch{return''}},m=n=>document.querySelector('meta[property="'+n+'"],meta[name="'+n+'"]')?.content||'',flat=x=>Array.isArray(x)?x.flatMap(flat):x&&typeof x==='object'&&Array.isArray(x['@graph'])?flat(x['@graph']):[x],json=()=>{try{return[...document.querySelectorAll('script[type="application/ld+json"]')].flatMap(s=>flat(JSON.parse(s.textContent||'{}'))).find(x=>x&&/Product/i.test(Array.isArray(x['@type'])?x['@type'].join(' '):x['@type']||''))||{}}catch{return{}}},price=t=>{const x=c(t).match(/([0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{1,2})|[0-9]+)/);if(!x)return'';const r=x[1];return r.lastIndexOf(',')>r.lastIndexOf('.')?r.replace(/\\./g,'').replace(',','.'):r.replace(/,/g,'')},first=o=>Array.isArray(o)?o[0]:o||{},o=json(),offer=first(o.offers),image=first(o.image),data={name:c(o.name||m('og:title')||m('twitter:title')||document.querySelector('#productTitle,h1')?.textContent||document.title).replace(/\\s*[:|-]\\s*Amazon\\..*$/i,''),price:price(offer.price||m('product:price:amount')||m('og:price:amount')||document.querySelector('#corePrice_feature_div .a-offscreen,.a-price .a-offscreen,[itemprop="price"],.price,[class*="price"]')?.textContent),url:location.href,imageUrl:u(image||m('og:image')||m('twitter:image')||document.querySelector('#landingImage,#imgTagWrapperId img,[itemprop="image"],img[src*="media"],img[src*="images"]')?.src),category:c(o.category||m('product:category')||document.querySelector('#wayfinding-breadcrumbs_container,.breadcrumb,[class*="breadcrumb"]')?.textContent)},target=${laterbaseUrl}+'#quickAdd='+encodeURIComponent(JSON.stringify(data)),w=window.open(target,'_blank');if(w)w.opener=null;else location.assign(target);})();`;
+};
+
 const escapeHtml = (value) => String(value ?? '')
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -154,6 +159,26 @@ const App = () => {
     ));
     return matchingSystemCategory || trimmed;
   }, [getCategoryLabel]);
+
+  const inferQuickAddCategory = useCallback((payload) => {
+    const rawCategory = canonicalizeCategoryName(payload?.category || '');
+    if (SYSTEM_CATEGORIES.includes(rawCategory)) return rawCategory;
+
+    const text = `${payload?.name || ''} ${payload?.category || ''}`.toLocaleLowerCase();
+    if (/(camera|computer|console|monitor|phone|smartphone|tablet|laptop|gaming|pc|usb|audio|cuffie|elettronica|electronics|elektronik|électronique|electrónica|電子|电器|전자)/i.test(text)) {
+      return 'Elettronica';
+    }
+    if (/(home|house|kitchen|cucina|casa|garden|office|desk|sedia|table|scrivania|maison|hogar|家庭|家居|홈)/i.test(text)) {
+      return 'Casa';
+    }
+    if (/(shirt|shoe|dress|clothing|fashion|abbigliamento|scarpe|moda|kleidung|vêtement|ropa|服|衣類|의류)/i.test(text)) {
+      return 'Abbigliamento';
+    }
+    if (/(gift|regalo|cadeau|geschenk|prezent|present|선물|ギフト|礼物)/i.test(text)) {
+      return 'Regali';
+    }
+    return OTHER_CATEGORY;
+  }, [canonicalizeCategoryName]);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -324,7 +349,7 @@ const App = () => {
 
   const copyQuickAddBookmarklet = async () => {
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const script = `javascript:(()=>{const u=encodeURIComponent(location.href);window.open('${baseUrl}?addUrl='+u,'_blank','noopener,noreferrer');})();`;
+    const script = buildQuickAddBookmarklet(baseUrl);
     try {
       await navigator.clipboard.writeText(script);
       showToast(t('toast.quickAddCopied'));
@@ -377,10 +402,45 @@ const App = () => {
   }, [language]);
 
   useEffect(() => {
-    if (!authUser || isPublicView) return;
+    if (!authUser || isPublicView) return undefined;
+
+    const openQuickAddDraft = () => {
+      const quickAddMatch = window.location.hash.match(/^#quickAdd=(.+)$/);
+      if (!quickAddMatch) return false;
+      try {
+        const payload = JSON.parse(decodeURIComponent(quickAddMatch[1]));
+        setDraftProduct({
+          name: String(payload.name || '').trim(),
+          price: payload.price == null ? '' : String(payload.price).trim(),
+          url: String(payload.url || '').trim(),
+          imageUrl: String(payload.imageUrl || '').trim(),
+          category: inferQuickAddCategory(payload),
+          priority: '2',
+        });
+        setShowForm(true);
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+        return true;
+      } catch {
+        showToast(t('toast.quickAddFailed'), 'error');
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+        return true;
+      }
+    };
+
+    const onHashChange = () => {
+      openQuickAddDraft();
+    };
+
+    window.addEventListener('hashchange', onHashChange);
+
+    if (openQuickAddDraft()) {
+      return () => window.removeEventListener('hashchange', onHashChange);
+    }
+
     const params = new URLSearchParams(window.location.search);
     const addUrl = params.get('addUrl');
-    if (!addUrl) return;
+
+    if (!addUrl) return () => window.removeEventListener('hashchange', onHashChange);
 
     setDraftProduct({ url: addUrl });
     setShowForm(true);
@@ -388,7 +448,9 @@ const App = () => {
     const nextSearch = params.toString();
     const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`;
     window.history.replaceState({}, '', nextUrl);
-  }, [authUser, isPublicView]);
+
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [authUser, inferQuickAddCategory, isPublicView, showToast, t]);
 
   const downloadLaterbaseImage = (activeProducts, exportOptions, total, exportedAt, categoriesSummary) => {
     const isGiftTheme = exportOptions.theme === 'gift';

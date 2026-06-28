@@ -344,6 +344,7 @@ External network activity can still happen when you choose to:
 - open a product link;
 - enable external product images;
 - use product autofill;
+- use the browser quick-add shortcut on a product page;
 - import a public Amazon wishlist link;
 - refresh prices from product URLs.
 
@@ -365,6 +366,20 @@ This is best-effort. Many large e-commerce websites block automated requests wit
 Laterbase does not bypass those protections, does not use hidden scraping proxies, and does not send product URLs to a third-party extraction service.
 
 If autofill fails, fill the product manually.
+
+## Browser Quick Add
+
+The account screen can generate an "Add to Laterbase" bookmarklet.
+
+Drag it to your browser bookmarks bar. When you are on a product page, click it and Laterbase will try to open a new local tab with:
+
+- product name;
+- price;
+- product URL;
+- product image URL;
+- a best-effort category.
+
+The shortcut runs in your browser on the page you already opened. The draft is passed to Laterbase through the URL fragment (`#quickAdd=...`), which is not sent to the web server as an HTTP request and is cleared after the app reads it.
 
 ## Amazon Wishlist Import
 

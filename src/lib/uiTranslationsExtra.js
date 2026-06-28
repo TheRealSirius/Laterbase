@@ -1021,6 +1021,73 @@ Object.entries(trustPolishTranslations).forEach(([code, patch]) => {
   extraUiTranslations[code] = mergeTranslationPatch(extraUiTranslations[code] || {}, patch);
 });
 
+const richQuickAddTranslations = {
+  it: {
+    accountModal: { quickAddText: 'Aggiungilo ai preferiti. Su una pagina prodotto prova a leggere nome, prezzo, immagine e categoria, poi apre Laterbase con il form già pronto.' },
+    toast: { quickAddFailed: 'Scorciatoia non riuscita: apri Laterbase e compila il prodotto a mano.' },
+  },
+  en: {
+    accountModal: { quickAddText: 'Add it to your bookmarks. On a product page it tries to read the name, price, image, and category, then opens Laterbase with the form ready.' },
+    toast: { quickAddFailed: 'Shortcut failed: open Laterbase and fill the product manually.' },
+  },
+  de: {
+    accountModal: { quickAddText: 'Füge es zu deinen Lesezeichen hinzu. Auf einer Produktseite liest es nach Möglichkeit Name, Preis, Bild und Kategorie und öffnet Laterbase mit vorbereitetem Formular.' },
+    toast: { quickAddFailed: 'Kurzbefehl fehlgeschlagen: öffne Laterbase und fülle den Artikel manuell aus.' },
+  },
+  es: {
+    accountModal: { quickAddText: 'Añádelo a tus marcadores. En una página de producto intenta leer nombre, precio, imagen y categoría, y abre Laterbase con el formulario listo.' },
+    toast: { quickAddFailed: 'El acceso falló: abre Laterbase y completa el producto manualmente.' },
+  },
+  fr: {
+    accountModal: { quickAddText: 'Ajoutez-le à vos favoris. Sur une page produit, il essaie de lire le nom, le prix, l’image et la catégorie, puis ouvre Laterbase avec le formulaire prêt.' },
+    toast: { quickAddFailed: 'Le raccourci a échoué : ouvrez Laterbase et remplissez le produit manuellement.' },
+  },
+  hu: {
+    accountModal: { quickAddText: 'Tedd a könyvjelzők közé. Termékoldalon megpróbálja beolvasni a nevet, árat, képet és kategóriát, majd megnyitja a Laterbase előkészített űrlapját.' },
+    toast: { quickAddFailed: 'A parancsikon nem sikerült: nyisd meg a Laterbase-t, és töltsd ki kézzel a terméket.' },
+  },
+  nl: {
+    accountModal: { quickAddText: 'Voeg hem toe aan je bladwijzers. Op een productpagina probeert hij naam, prijs, afbeelding en categorie te lezen en opent daarna Laterbase met een ingevuld formulier.' },
+    toast: { quickAddFailed: 'Snelkoppeling mislukt: open Laterbase en vul het product handmatig in.' },
+  },
+  pt: {
+    accountModal: { quickAddText: 'Adicione aos favoritos. Em uma página de produto, ele tenta ler nome, preço, imagem e categoria, depois abre o Laterbase com o formulário pronto.' },
+    toast: { quickAddFailed: 'O atalho falhou: abra o Laterbase e preencha o produto manualmente.' },
+  },
+  cs: {
+    accountModal: { quickAddText: 'Přidejte ho do záložek. Na stránce produktu se pokusí načíst název, cenu, obrázek a kategorii a otevře Laterbase s připraveným formulářem.' },
+    toast: { quickAddFailed: 'Zkratka selhala: otevřete Laterbase a vyplňte produkt ručně.' },
+  },
+  pl: {
+    accountModal: { quickAddText: 'Dodaj do zakładek. Na stronie produktu spróbuje odczytać nazwę, cenę, obraz i kategorię, a potem otworzy Laterbase z gotowym formularzem.' },
+    toast: { quickAddFailed: 'Skrót nie zadziałał: otwórz Laterbase i wypełnij produkt ręcznie.' },
+  },
+  ja: {
+    accountModal: { quickAddText: 'ブックマークに追加してください。商品ページで名前、価格、画像、カテゴリを読み取り、入力済みフォームで Laterbase を開きます。' },
+    toast: { quickAddFailed: 'ショートカットに失敗しました。Laterbase を開いて商品を手入力してください。' },
+  },
+  zh: {
+    accountModal: { quickAddText: '添加到书签。在产品页面点击后，它会尝试读取名称、价格、图片和分类，然后打开已填写的 Laterbase 表单。' },
+    toast: { quickAddFailed: '快捷方式失败：请打开 Laterbase 并手动填写产品。' },
+  },
+  ar: {
+    accountModal: { quickAddText: 'أضفه إلى الإشارات المرجعية. في صفحة المنتج يحاول قراءة الاسم والسعر والصورة والفئة، ثم يفتح Laterbase والنموذج جاهز.' },
+    toast: { quickAddFailed: 'فشل الاختصار: افتح Laterbase وأدخل المنتج يدوياً.' },
+  },
+  id: {
+    accountModal: { quickAddText: 'Tambahkan ke bookmark. Di halaman produk, pintasan ini mencoba membaca nama, harga, gambar, dan kategori, lalu membuka Laterbase dengan formulir siap.' },
+    toast: { quickAddFailed: 'Pintasan gagal: buka Laterbase dan isi produk secara manual.' },
+  },
+  ko: {
+    accountModal: { quickAddText: '북마크에 추가하세요. 상품 페이지에서 이름, 가격, 이미지, 카테고리를 읽어 Laterbase의 준비된 폼을 엽니다.' },
+    toast: { quickAddFailed: '바로가기가 실패했습니다. Laterbase를 열고 상품을 직접 입력하세요.' },
+  },
+};
+
+Object.entries(richQuickAddTranslations).forEach(([code, patch]) => {
+  extraUiTranslations[code] = mergeTranslationPatch(extraUiTranslations[code] || {}, patch);
+});
+
 const quickAddClipboardTranslations = {
   it: { toast: { quickAddCopyFailed: 'Il browser ha bloccato la copia: usa la scorciatoia mostrata.' } },
   en: { toast: { quickAddCopyFailed: 'The browser blocked copying: use the shortcut shown.' } },
