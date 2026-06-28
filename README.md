@@ -43,6 +43,7 @@ Laterbase is designed for one private installation, not for a public marketplace
 - Mark gift ideas and create clean gift-list exports.
 - View budget and list insights.
 - Paste a product URL and let Laterbase try to read title, price, image, and category.
+- Import products from a public Amazon wishlist link, then review them before saving.
 - Refresh product prices when supported by the source website.
 - Export a polished PNG image or printable PDF snapshot.
 - Use a multilingual interface with locale-aware currency formatting.
@@ -68,6 +69,7 @@ Laterbase is designed for one private installation, not for a public marketplace
 - **Private login**: first-run admin account, password hashing, and session cookies.
 - **No telemetry**: no analytics, no tracking pixel, no remote font or script CDN.
 - **Best-effort product autofill**: paste a product URL and Laterbase tries to read public metadata.
+- **Amazon wishlist import**: paste a public shared wishlist link and review products, prices, links, and image URLs before saving.
 - **Static sharing**: export PNG or PDF snapshots instead of exposing your local server.
 - **Privacy controls**: external product images are disabled by default.
 - **International UI**: includes Italian, English, German, Spanish, French, Hungarian, Dutch, Portuguese, Czech, Polish, Japanese, Chinese, Arabic, Indonesian, Korean, and more.
@@ -342,6 +344,7 @@ External network activity can still happen when you choose to:
 - open a product link;
 - enable external product images;
 - use product autofill;
+- import a public Amazon wishlist link;
 - refresh prices from product URLs.
 
 See [PRIVACY.md](PRIVACY.md) for the full privacy model.
@@ -362,6 +365,28 @@ This is best-effort. Many large e-commerce websites block automated requests wit
 Laterbase does not bypass those protections, does not use hidden scraping proxies, and does not send product URLs to a third-party extraction service.
 
 If autofill fails, fill the product manually.
+
+## Amazon Wishlist Import
+
+Laterbase can import from a public Amazon wishlist sharing link, for example a URL that contains:
+
+```text
+/hz/wishlist/ls/
+```
+
+It tries to read:
+
+- product names;
+- prices;
+- product links;
+- image URLs;
+- category hints.
+
+Before saving, Laterbase shows a review screen where you can edit names, prices, and categories, skip duplicates, or deselect products you do not want.
+
+This is best-effort and only supports public Amazon wishlist sharing pages. Print-view pages, private lists, login-only lists, bot-protected responses, and changed Amazon markup may fail.
+
+Imported images are stored as external image URLs. They are displayed only if you enable external images.
 
 You can run the compatibility helper:
 
@@ -397,8 +422,8 @@ Laterbase includes practical protections for a small self-hosted app:
 - login rate limiting;
 - strict security headers;
 - origin checks for unsafe API requests;
-- autofill URL validation;
-- private network and localhost targets blocked during autofill to reduce SSRF risk.
+- autofill, price refresh, and Amazon import URL validation;
+- private network and localhost targets blocked during server-side URL reads to reduce SSRF risk.
 
 No self-hosted app is automatically secure just because it runs in Docker. Keep Docker updated, use HTTPS when exposed outside your own machine, and back up your data.
 

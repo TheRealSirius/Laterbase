@@ -38,9 +38,10 @@ Laterbase can still contact external websites in user-controlled cases:
 - when you open a product link;
 - when you enable external product images;
 - when you use product autofill;
+- when you import a public Amazon wishlist link;
 - when you refresh prices from product URLs.
 
-Autofill and price refresh are best-effort. Laterbase does not bypass bot protection, CAPTCHA, paywalls, private APIs, or access restrictions.
+Autofill, Amazon wishlist import, and price refresh are best-effort. Laterbase does not bypass bot protection, CAPTCHA, paywalls, private APIs, or access restrictions.
 
 ## External Images
 
@@ -50,7 +51,9 @@ Keep external images disabled if you want the quietest privacy mode.
 
 ## Local Network Protection
 
-Laterbase blocks autofill requests to localhost, private networks, and link-local targets to reduce SSRF risk.
+Laterbase blocks autofill, price refresh, and wishlist import requests to localhost, private networks, and link-local targets to reduce SSRF risk.
+
+Amazon wishlist import is additionally limited to public Amazon wishlist sharing URLs. The import review stores product image URLs, but those images are not loaded by the browser unless you enable external images.
 
 ## Your Responsibilities
 

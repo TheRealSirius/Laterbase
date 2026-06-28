@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Download, ChevronDown, ChevronUp, Check, Server, UserCircle, X, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Download, ChevronDown, ChevronUp, Check, Server, UserCircle, X, RefreshCw, ShieldCheck, Upload } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
   DndContext,
@@ -25,6 +25,7 @@ import DeleteConfirmModal from './components/DeleteConfirmModal';
 import SelfHostedLogin from './components/SelfHostedLogin';
 import AccountModal from './components/AccountModal';
 import ExportModal from './components/ExportModal';
+import ImportWishlistModal from './components/ImportWishlistModal';
 import AboutPrivacyModal from './components/AboutPrivacyModal';
 import OnboardingModal from './components/OnboardingModal';
 import * as productService from './lib/productService';
@@ -127,6 +128,7 @@ const App = () => {
   const [authUser, setAuthUser] = useState(null);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
@@ -1233,6 +1235,45 @@ const App = () => {
     await persistState(nextProducts, nextCategories);
   };
 
+  const addImportedProducts = async (importedProducts) => {
+    const createdAt = new Date().toISOString();
+    const normalizedImportedProducts = importedProducts
+      .map((product, index) => {
+        const price = Number(product.price);
+        if (!product.name || !Number.isFinite(price)) return null;
+        return {
+          ...product,
+          id: crypto.randomUUID(),
+          price,
+          initialPrice: price,
+          priceHistory: [{ price, date: createdAt, source: 'import' }],
+          priority: product.priority || '2',
+          targetPrice: product.targetPrice || null,
+          notes: product.notes || '',
+          publicNote: product.publicNote || '',
+          isGiftIdea: Boolean(product.isGiftIdea),
+          isPurchased: false,
+          isArchived: false,
+          purchaseDate: null,
+          createdAt: new Date(Date.now() + index).toISOString(),
+          lastChecked: null,
+        };
+      })
+      .filter(Boolean);
+
+    if (!normalizedImportedProducts.length) return;
+
+    const nextProducts = [...normalizedImportedProducts, ...products];
+    const nextCategories = Array.from(new Set([
+      ...categories,
+      ...normalizedImportedProducts.map((product) => product.category).filter(Boolean),
+    ]));
+    setProducts(nextProducts);
+    setCategories(nextCategories);
+    await persistState(nextProducts, nextCategories);
+    showToast(t('toast.importedProducts').replace('{count}', String(normalizedImportedProducts.length)));
+  };
+
   const updateProduct = async (updatedProduct) => {
     const nextProducts = products.map(p => {
       if (p.id !== updatedProduct.id) return p;
@@ -1646,6 +1687,16 @@ const App = () => {
               </button>
 
               <button
+                onClick={() => setShowImportModal(true)}
+                className={`px-4 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white' : 'bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                  }`}
+                title={t('importList.openTitle')}
+              >
+                <Upload size={18} />
+                <span className="hidden sm:inline">{t('importList.open')}</span>
+              </button>
+
+              <button
                 onClick={() => setShowForm(true)}
                 className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800'
                   }`}
@@ -2003,6 +2054,19 @@ const App = () => {
         onExport={exportReadOnlyLaterbase}
         isDarkMode={isDarkMode}
         t={t}
+      />
+
+      <ImportWishlistModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImport={addImportedProducts}
+        categories={categories}
+        existingProducts={products}
+        isDarkMode={isDarkMode}
+        allowExternalImages={allowExternalImages}
+        t={t}
+        getCategoryLabel={getCategoryLabel}
+        formatCurrency={formatCurrency}
       />
 
       <AccountModal

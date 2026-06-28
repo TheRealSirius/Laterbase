@@ -38,7 +38,7 @@ Security reports are welcome for:
 - password hashing and account changes;
 - backup and import behavior;
 - server-side request handling;
-- autofill URL validation and SSRF protections;
+- autofill, price refresh, and wishlist import URL validation and SSRF protections;
 - cross-site scripting risks;
 - Docker image and runtime configuration;
 - accidental telemetry or unexpected external requests.
@@ -53,7 +53,7 @@ Out of scope:
 
 ## Security Model
 
-Laterbase uses local authentication, hashed passwords, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill and price refresh requests.
+Laterbase uses local authentication, hashed passwords, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill, price refresh, and wishlist import requests.
 
 Self-hosting still requires operational care. Keep Docker updated, use HTTPS when exposing Laterbase outside `localhost`, choose a strong password, and back up your Docker volume.
 
