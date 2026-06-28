@@ -19,7 +19,19 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
         quickAddBookmarkRef.current.setAttribute('href', quickAddScript);
     }, [quickAddScript]);
 
+    useEffect(() => {
+        if (isOpen) return;
+        setQuickAddScript('');
+        setQuickAddCopied(false);
+    }, [isOpen]);
+
     if (!isOpen) return null;
+
+    const closeModal = () => {
+        setQuickAddScript('');
+        setQuickAddCopied(false);
+        onClose();
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -55,6 +67,11 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
         }`;
 
     const handleQuickAdd = async () => {
+        if (quickAddScript) {
+            setQuickAddScript('');
+            setQuickAddCopied(false);
+            return;
+        }
         const result = await onCopyQuickAdd?.();
         if (!result?.script) return;
         setQuickAddScript(result.script);
@@ -63,10 +80,10 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
 
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
             <div className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border p-7 shadow-2xl ${isDarkMode ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-100 text-slate-950'}`}>
                 <button
-                    onClick={onClose}
+                    onClick={closeModal}
                     className={`absolute right-4 top-4 rounded-xl p-2 transition-colors ${isDarkMode ? 'text-zinc-500 hover:bg-zinc-800 hover:text-white' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}
                 >
                     <X size={18} />
