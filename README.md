@@ -157,7 +157,7 @@ If you want to set the first password yourself, create a `.env` file next to `do
 
 ```env
 ADMIN_EMAIL=admin@laterbase.local
-ADMIN_PASSWORD=change-me-now-123
+ADMIN_PASSWORD=correct-horse-local-47
 ```
 
 Then start the app:
@@ -166,7 +166,7 @@ Then start the app:
 docker compose up -d --build
 ```
 
-`ADMIN_PASSWORD` must be at least 12 characters long.
+`ADMIN_PASSWORD` must be 15 to 256 characters long and cannot be an obvious password such as `password123456`, `adminlaterbase`, `qwerty`, or one based on your email. Laterbase does not require symbols, numbers, or uppercase letters; a long passphrase is usually better.
 
 These variables are only used when no account exists yet. After the first account is created, change email and password inside Laterbase.
 
@@ -210,7 +210,7 @@ docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data --restart un
 | `PORT` | `8080` | Internal server port used by the container. |
 | `LATERBASE_DATA_DIR` | `/data` | Directory where Laterbase stores data files. |
 | `ADMIN_EMAIL` | `admin@laterbase.local` | Email for the first local account. Used only when no account exists. |
-| `ADMIN_PASSWORD` | Generated automatically | First local password. Must be at least 12 characters. Used only when no account exists. |
+| `ADMIN_PASSWORD` | Generated automatically | First local password. Must be 15 to 256 characters and not obviously guessable. Used only when no account exists. |
 | `LATERBASE_SECURE_COOKIES` | `false` | Set to `true` when serving Laterbase behind HTTPS. |
 | `SECURE_COOKIES` | `false` | Alternative name for enabling secure cookies. |
 
@@ -429,6 +429,7 @@ Exported files are snapshots. They do not sync back to your server and do not gi
 Laterbase includes practical protections for a small self-hosted app:
 
 - password hashing with `scrypt`;
+- password policy based on length and obvious-password blocking, without mandatory symbol rules;
 - opaque random session tokens;
 - hashed sessions at rest;
 - `HttpOnly` session cookie;

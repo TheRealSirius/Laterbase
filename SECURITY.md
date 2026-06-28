@@ -53,7 +53,7 @@ Out of scope:
 
 ## Security Model
 
-Laterbase uses local authentication, hashed passwords, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill, price refresh, and wishlist import requests.
+Laterbase uses local authentication, hashed passwords, a 15-character minimum password policy with obvious-password blocking, hashed session tokens, `HttpOnly` cookies, `SameSite=Strict`, origin checks for unsafe API requests, security headers, and SSRF-oriented checks for autofill, price refresh, and wishlist import requests.
 
 Self-hosting still requires operational care. Keep Docker updated, use HTTPS when exposing Laterbase outside `localhost`, choose a strong password, and back up your Docker volume.
 

@@ -98,6 +98,62 @@ const timingSafeEqual = (a, b) => {
   return first.length === second.length && crypto.timingSafeEqual(first, second);
 };
 
+const passwordPolicy = {
+  minLength: 15,
+  maxLength: 256,
+};
+
+const weakPasswordFragments = [
+  '123456',
+  '000000',
+  '111111',
+  'admin',
+  'administrator',
+  'changeme',
+  'letmein',
+  'laterbase',
+  'passw0rd',
+  'password',
+  'qwerty',
+  'wishlist',
+];
+
+const normalizePasswordForPolicy = (password) => String(password || '')
+  .normalize('NFKC')
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, '');
+
+const isContextualPassword = (compactedPassword, value) => {
+  if (!value) return false;
+  const compactedValue = normalizePasswordForPolicy(value);
+  if (compactedValue.length < 4) return false;
+  return compactedPassword === compactedValue ||
+    (compactedPassword.includes(compactedValue) && compactedPassword.length <= compactedValue.length + 10);
+};
+
+const validatePasswordPolicy = (password, context = {}) => {
+  const passwordValue = String(password || '');
+  if (passwordValue.length < passwordPolicy.minLength) {
+    return `Password must be at least ${passwordPolicy.minLength} characters long.`;
+  }
+  if (passwordValue.length > passwordPolicy.maxLength) {
+    return `Password must be no more than ${passwordPolicy.maxLength} characters long.`;
+  }
+
+  const compactedPassword = normalizePasswordForPolicy(passwordValue);
+  const usesWeakFragment = weakPasswordFragments.some((fragment) => (
+    compactedPassword === fragment ||
+    (compactedPassword.includes(fragment) && compactedPassword.length <= fragment.length + 10)
+  ));
+  const emailLocalPart = String(context.email || '').split('@')[0];
+
+  if (usesWeakFragment || isContextualPassword(compactedPassword, emailLocalPart)) {
+    return 'Password is too common or too easy to guess.';
+  }
+
+  return null;
+};
+
 const scrypt = (password, salt) => new Promise((resolve, reject) => {
   crypto.scrypt(password, salt, 64, (error, derivedKey) => {
     if (error) reject(error);
@@ -148,8 +204,9 @@ const ensureAuthFile = async () => {
   const envPassword = process.env.ADMIN_PASSWORD;
   const email = envEmail || 'admin@laterbase.local';
   const password = envPassword || generatePassword();
-  if (envPassword && envPassword.length < 12) {
-    throw new Error('ADMIN_PASSWORD must be at least 12 characters long.');
+  const passwordError = envPassword ? validatePasswordPolicy(envPassword, { email }) : null;
+  if (passwordError) {
+    throw new Error(`ADMIN_PASSWORD rejected: ${passwordError}`);
   }
   const auth = {
     admin: {
@@ -933,8 +990,9 @@ const handleApi = async (req, res) => {
 
     auth.admin.email = nextEmail;
     if (newPassword) {
-      if (String(newPassword).length < 12) {
-        sendJson(res, 400, { error: 'The new password must be at least 12 characters long' });
+      const passwordError = validatePasswordPolicy(newPassword, { email: nextEmail });
+      if (passwordError) {
+        sendJson(res, 400, { error: passwordError });
         return true;
       }
       auth.admin.password = await hashPassword(String(newPassword));

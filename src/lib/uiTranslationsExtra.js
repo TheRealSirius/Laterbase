@@ -359,63 +359,63 @@ Object.entries(productShareTranslations).forEach(([code, patch]) => {
 const formPolishTranslations = {
   it: {
     form: { productNamePlaceholder: 'Es. iPhone 15 Pro', productUrlPlaceholder: 'https://negozio.example/prodotto' },
-    accountModal: { passwordTooShort: 'La nuova password deve avere almeno 12 caratteri.' },
+    accountModal: { passwordTooShort: 'La nuova password deve avere almeno 15 caratteri.', passwordTooLong: 'La nuova password deve avere al massimo 256 caratteri.', passwordTooCommon: 'Scegli una password meno ovvia e non collegata a Laterbase o alla tua email.' },
   },
   en: {
     form: { productNamePlaceholder: 'E.g. iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: 'The new password must be at least 12 characters.' },
+    accountModal: { passwordTooShort: 'The new password must be at least 15 characters.', passwordTooLong: 'The new password must be no more than 256 characters.', passwordTooCommon: 'Choose a less obvious password that is not tied to Laterbase or your email.' },
   },
   de: {
     form: { productNamePlaceholder: 'z. B. iPhone 15 Pro', productUrlPlaceholder: 'https://shop.example/produkt' },
-    accountModal: { passwordTooShort: 'Das neue Passwort muss mindestens 12 Zeichen lang sein.' },
+    accountModal: { passwordTooShort: 'Das neue Passwort muss mindestens 15 Zeichen lang sein.', passwordTooLong: 'Das neue Passwort darf höchstens 256 Zeichen lang sein.', passwordTooCommon: 'Wähle ein weniger offensichtliches Passwort ohne Bezug zu Laterbase oder deiner E-Mail.' },
   },
   es: {
     form: { productNamePlaceholder: 'Ej. iPhone 15 Pro', productUrlPlaceholder: 'https://tienda.example/producto' },
-    accountModal: { passwordTooShort: 'La nueva contraseña debe tener al menos 12 caracteres.' },
+    accountModal: { passwordTooShort: 'La nueva contraseña debe tener al menos 15 caracteres.', passwordTooLong: 'La nueva contraseña no puede superar los 256 caracteres.', passwordTooCommon: 'Elige una contraseña menos obvia y que no esté ligada a Laterbase ni a tu email.' },
   },
   fr: {
     form: { productNamePlaceholder: 'Ex. iPhone 15 Pro', productUrlPlaceholder: 'https://boutique.example/produit' },
-    accountModal: { passwordTooShort: 'Le nouveau mot de passe doit contenir au moins 12 caractères.' },
+    accountModal: { passwordTooShort: 'Le nouveau mot de passe doit contenir au moins 15 caractères.', passwordTooLong: 'Le nouveau mot de passe doit contenir au maximum 256 caractères.', passwordTooCommon: 'Choisissez un mot de passe moins évident, sans lien avec Laterbase ni votre e-mail.' },
   },
   hu: {
     form: { productNamePlaceholder: 'Pl. iPhone 15 Pro', productUrlPlaceholder: 'https://bolt.example/termek' },
-    accountModal: { passwordTooShort: 'Az új jelszónak legalább 12 karakteresnek kell lennie.' },
+    accountModal: { passwordTooShort: 'Az új jelszónak legalább 15 karakteresnek kell lennie.', passwordTooLong: 'Az új jelszó legfeljebb 256 karakteres lehet.', passwordTooCommon: 'Válassz kevésbé nyilvánvaló jelszót, amely nem kötődik a Laterbasehez vagy az e-mail címedhez.' },
   },
   nl: {
     form: { productNamePlaceholder: 'Bijv. iPhone 15 Pro', productUrlPlaceholder: 'https://winkel.example/product' },
-    accountModal: { passwordTooShort: 'Het nieuwe wachtwoord moet minstens 12 tekens bevatten.' },
+    accountModal: { passwordTooShort: 'Het nieuwe wachtwoord moet minstens 15 tekens bevatten.', passwordTooLong: 'Het nieuwe wachtwoord mag maximaal 256 tekens bevatten.', passwordTooCommon: 'Kies een minder voor de hand liggend wachtwoord dat niet aan Laterbase of je e-mail is gekoppeld.' },
   },
   pt: {
     form: { productNamePlaceholder: 'Ex.: iPhone 15 Pro', productUrlPlaceholder: 'https://loja.example/produto' },
-    accountModal: { passwordTooShort: 'A nova senha deve ter pelo menos 12 caracteres.' },
+    accountModal: { passwordTooShort: 'A nova senha deve ter pelo menos 15 caracteres.', passwordTooLong: 'A nova senha deve ter no máximo 256 caracteres.', passwordTooCommon: 'Escolha uma senha menos óbvia e sem ligação ao Laterbase ou ao seu e-mail.' },
   },
   cs: {
     form: { productNamePlaceholder: 'Např. iPhone 15 Pro', productUrlPlaceholder: 'https://obchod.example/produkt' },
-    accountModal: { passwordTooShort: 'Nové heslo musí mít alespoň 12 znaků.' },
+    accountModal: { passwordTooShort: 'Nové heslo musí mít alespoň 15 znaků.', passwordTooLong: 'Nové heslo může mít nejvýše 256 znaků.', passwordTooCommon: 'Zvolte méně zřejmé heslo, které nesouvisí s Laterbase ani s vaším e-mailem.' },
   },
   pl: {
     form: { productNamePlaceholder: 'Np. iPhone 15 Pro', productUrlPlaceholder: 'https://sklep.example/produkt' },
-    accountModal: { passwordTooShort: 'Nowe hasło musi mieć co najmniej 12 znaków.' },
+    accountModal: { passwordTooShort: 'Nowe hasło musi mieć co najmniej 15 znaków.', passwordTooLong: 'Nowe hasło może mieć maksymalnie 256 znaków.', passwordTooCommon: 'Wybierz mniej oczywiste hasło, niezwiązane z Laterbase ani Twoim adresem e-mail.' },
   },
   ja: {
     form: { productNamePlaceholder: '例: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '新しいパスワードは12文字以上にしてください。' },
+    accountModal: { passwordTooShort: '新しいパスワードは15文字以上にしてください。', passwordTooLong: '新しいパスワードは256文字以内にしてください。', passwordTooCommon: 'Laterbase やメールに関連しない、推測されにくいパスワードを選んでください。' },
   },
   zh: {
     form: { productNamePlaceholder: '例如：iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '新密码至少需要 12 个字符。' },
+    accountModal: { passwordTooShort: '新密码至少需要 15 个字符。', passwordTooLong: '新密码最多 256 个字符。', passwordTooCommon: '请选择不明显、且不包含 Laterbase 或邮箱信息的密码。' },
   },
   ar: {
     form: { productNamePlaceholder: 'مثال: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: 'يجب أن تتكون كلمة المرور الجديدة من 12 حرفًا على الأقل.' },
+    accountModal: { passwordTooShort: 'يجب أن تتكون كلمة المرور الجديدة من 15 حرفًا على الأقل.', passwordTooLong: 'يجب ألا تتجاوز كلمة المرور الجديدة 256 حرفًا.', passwordTooCommon: 'اختر كلمة مرور أقل وضوحًا وغير مرتبطة بـ Laterbase أو بريدك الإلكتروني.' },
   },
   id: {
     form: { productNamePlaceholder: 'Mis. iPhone 15 Pro', productUrlPlaceholder: 'https://toko.example/produk' },
-    accountModal: { passwordTooShort: 'Kata sandi baru harus minimal 12 karakter.' },
+    accountModal: { passwordTooShort: 'Kata sandi baru harus minimal 15 karakter.', passwordTooLong: 'Kata sandi baru maksimal 256 karakter.', passwordTooCommon: 'Pilih kata sandi yang tidak mudah ditebak dan tidak terkait dengan Laterbase atau email Anda.' },
   },
   ko: {
     form: { productNamePlaceholder: '예: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '새 비밀번호는 12자 이상이어야 합니다.' },
+    accountModal: { passwordTooShort: '새 비밀번호는 15자 이상이어야 합니다.', passwordTooLong: '새 비밀번호는 256자 이하여야 합니다.', passwordTooCommon: 'Laterbase나 이메일과 관련 없는 덜 뻔한 비밀번호를 선택하세요.' },
   },
 };
 
