@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Plus, Search, History, Package, Moon, Sun, Download, ChevronDown, ChevronUp, Check, Server, UserCircle, X, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Plus, Search, History, Package, Moon, Sun, Download, ChevronDown, ChevronUp, Check, Server, UserCircle, X, RefreshCw, ShieldCheck, Upload } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
   DndContext,
@@ -25,6 +25,7 @@ import DeleteConfirmModal from './components/DeleteConfirmModal';
 import SelfHostedLogin from './components/SelfHostedLogin';
 import AccountModal from './components/AccountModal';
 import ExportModal from './components/ExportModal';
+import ImportWishlistModal from './components/ImportWishlistModal';
 import AboutPrivacyModal from './components/AboutPrivacyModal';
 import OnboardingModal from './components/OnboardingModal';
 import * as productService from './lib/productService';
@@ -50,6 +51,11 @@ const DEFAULT_SETTINGS = {
   monthlyBudget: 0,
   savingsFund: 0,
   extraInfoEnabled: { total: true, spent: true, count: true },
+};
+
+const buildQuickAddBookmarklet = (baseUrl) => {
+  const laterbaseUrl = JSON.stringify(baseUrl);
+  return `javascript:(()=>{const c=s=>(s||'').replace(/\\s+/g,' ').trim(),q=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)],host=location.hostname,u=s=>{try{return new URL(s,location.href).href}catch{return''}},fix=s=>{const v=u(s);if(!v||v.startsWith('data:'))return'';try{const x=new URL(v);if(/(^|\\.)media-amazon\\.|(^|\\.)ssl-images-amazon\\.|(^|\\.)images-amazon\\./i.test(x.hostname))x.pathname=x.pathname.replace(/\\._[^/]+_\\.(jpg|jpeg|png|webp)$/i,'.$1');return x.href}catch{return v}},m=n=>q('meta[property="'+n+'"],meta[name="'+n+'"]')?.content||'',flat=x=>Array.isArray(x)?x.flatMap(flat):x&&typeof x==='object'&&Array.isArray(x['@graph'])?flat(x['@graph']):[x],json=()=>{try{return qa('script[type="application/ld+json"]').flatMap(s=>flat(JSON.parse(s.textContent||'{}'))).find(x=>x&&/Product/i.test(Array.isArray(x['@type'])?x['@type'].join(' '):x['@type']||''))||{}}catch{return{}}},price=t=>{const x=c(t).match(/([0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{1,2})|[0-9]+)/);if(!x)return'';const r=x[1];return r.lastIndexOf(',')>r.lastIndexOf('.')?r.replace(/\\./g,'').replace(',','.'):r.replace(/,/g,'')},first=o=>Array.isArray(o)?o[0]:o||{},badTitle=s=>/riepilogo del prodotto|product summary|tasto di scelta rapida|keyboard shortcut|shortcut|maiusc|shift\\s*\\+\\s*alt/i.test(s),cleanTitle=s=>c(s).replace(/\\s*[:|-]\\s*Amazon\\..*$/i,'').replace(/\\s*[-|]\\s*Laterbase$/i,''),pickTitle=o=>[q('#productTitle')?.textContent,q('#title #productTitle')?.textContent,o.name,m('og:title'),m('twitter:title'),!/amazon\\./i.test(host)?q('h1')?.textContent:'',document.title].map(cleanTitle).find(x=>x&&x.length>3&&!badTitle(x))||'',bestImg=(seed)=>{const picks=[],add=(src,score=0)=>{const url=fix(src);if(url&&!picks.some(p=>p.url===url))picks.push({url,score})},isAmazon=/amazon\\./i.test(host),main=q('#landingImage')||q('#imgBlkFront')||q('#ebooksImgBlkFront')||q('#main-image')||q('#imgTagWrapperId img')||q('[data-a-dynamic-image]');add(main?.getAttribute('data-old-hires'),10000000);try{Object.entries(JSON.parse(main?.getAttribute('data-a-dynamic-image')||'{}')).forEach(([src,dim])=>add(src,9000000+((dim?.[0]||0)*(dim?.[1]||0))))}catch{}add(main?.currentSrc||main?.src||main?.getAttribute('data-src'),8000000);add(seed,7000000);add(m('og:image'),6000000);add(m('twitter:image'),5900000);if(!isAmazon)qa('img').forEach((img,i)=>{const src=img.currentSrc||img.src||img.getAttribute('data-src')||img.getAttribute('data-old-hires'),txt=String([img.id,img.className,img.alt,src].join(' ')),area=(img.naturalWidth||parseInt(img.getAttribute('width')||0,10)||0)*(img.naturalHeight||parseInt(img.getAttribute('height')||0,10)||0);if(area>10000&&/(product|main|hero|image|media)/i.test(txt)&&!/logo|avatar|icon|banner|sprite/i.test(txt))add(src,area-i)});picks.sort((a,b)=>b.score-a.score);return picks[0]?.url||''},o=json(),offer=first(o.offers),image=first(o.image),data={name:pickTitle(o),price:price(offer.price||m('product:price:amount')||m('og:price:amount')||q('#corePrice_feature_div .a-offscreen,.a-price .a-offscreen,[itemprop="price"],.price,[class*="price"]')?.textContent),url:location.href,imageUrl:bestImg(image),category:c(o.category||m('product:category')||q('#wayfinding-breadcrumbs_container,.breadcrumb,[class*="breadcrumb"]')?.textContent)},target=${laterbaseUrl}+'#quickAdd='+encodeURIComponent(JSON.stringify(data)),w=window.open(target,'_blank');if(w)w.opener=null;else location.assign(target);})();`;
 };
 
 const escapeHtml = (value) => String(value ?? '')
@@ -127,6 +133,7 @@ const App = () => {
   const [authUser, setAuthUser] = useState(null);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
@@ -152,6 +159,26 @@ const App = () => {
     ));
     return matchingSystemCategory || trimmed;
   }, [getCategoryLabel]);
+
+  const inferQuickAddCategory = useCallback((payload) => {
+    const rawCategory = canonicalizeCategoryName(payload?.category || '');
+    if (SYSTEM_CATEGORIES.includes(rawCategory)) return rawCategory;
+
+    const text = `${payload?.name || ''} ${payload?.category || ''}`.toLocaleLowerCase();
+    if (/(camera|computer|console|monitor|phone|smartphone|tablet|laptop|gaming|pc|usb|audio|cuffie|elettronica|electronics|elektronik|électronique|electrónica|電子|电器|전자)/i.test(text)) {
+      return 'Elettronica';
+    }
+    if (/(home|house|kitchen|cucina|casa|garden|office|desk|sedia|table|scrivania|maison|hogar|家庭|家居|홈)/i.test(text)) {
+      return 'Casa';
+    }
+    if (/(shirt|shoe|dress|clothing|fashion|abbigliamento|scarpe|moda|kleidung|vêtement|ropa|服|衣類|의류)/i.test(text)) {
+      return 'Abbigliamento';
+    }
+    if (/(gift|regalo|cadeau|geschenk|prezent|present|선물|ギフト|礼物)/i.test(text)) {
+      return 'Regali';
+    }
+    return OTHER_CATEGORY;
+  }, [canonicalizeCategoryName]);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -322,7 +349,7 @@ const App = () => {
 
   const copyQuickAddBookmarklet = async () => {
     const baseUrl = `${window.location.origin}${window.location.pathname}`;
-    const script = `javascript:(()=>{const u=encodeURIComponent(location.href);window.open('${baseUrl}?addUrl='+u,'_blank','noopener,noreferrer');})();`;
+    const script = buildQuickAddBookmarklet(baseUrl);
     try {
       await navigator.clipboard.writeText(script);
       showToast(t('toast.quickAddCopied'));
@@ -375,10 +402,45 @@ const App = () => {
   }, [language]);
 
   useEffect(() => {
-    if (!authUser || isPublicView) return;
+    if (!authUser || isPublicView) return undefined;
+
+    const openQuickAddDraft = () => {
+      const quickAddMatch = window.location.hash.match(/^#quickAdd=(.+)$/);
+      if (!quickAddMatch) return false;
+      try {
+        const payload = JSON.parse(decodeURIComponent(quickAddMatch[1]));
+        setDraftProduct({
+          name: String(payload.name || '').trim(),
+          price: payload.price == null ? '' : String(payload.price).trim(),
+          url: String(payload.url || '').trim(),
+          imageUrl: String(payload.imageUrl || '').trim(),
+          category: inferQuickAddCategory(payload),
+          priority: '2',
+        });
+        setShowForm(true);
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+        return true;
+      } catch {
+        showToast(t('toast.quickAddFailed'), 'error');
+        window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+        return true;
+      }
+    };
+
+    const onHashChange = () => {
+      openQuickAddDraft();
+    };
+
+    window.addEventListener('hashchange', onHashChange);
+
+    if (openQuickAddDraft()) {
+      return () => window.removeEventListener('hashchange', onHashChange);
+    }
+
     const params = new URLSearchParams(window.location.search);
     const addUrl = params.get('addUrl');
-    if (!addUrl) return;
+
+    if (!addUrl) return () => window.removeEventListener('hashchange', onHashChange);
 
     setDraftProduct({ url: addUrl });
     setShowForm(true);
@@ -386,7 +448,9 @@ const App = () => {
     const nextSearch = params.toString();
     const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}`;
     window.history.replaceState({}, '', nextUrl);
-  }, [authUser, isPublicView]);
+
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [authUser, inferQuickAddCategory, isPublicView, showToast, t]);
 
   const downloadLaterbaseImage = (activeProducts, exportOptions, total, exportedAt, categoriesSummary) => {
     const isGiftTheme = exportOptions.theme === 'gift';
@@ -1233,6 +1297,45 @@ const App = () => {
     await persistState(nextProducts, nextCategories);
   };
 
+  const addImportedProducts = async (importedProducts) => {
+    const createdAt = new Date().toISOString();
+    const normalizedImportedProducts = importedProducts
+      .map((product, index) => {
+        const price = Number(product.price);
+        if (!product.name || !Number.isFinite(price)) return null;
+        return {
+          ...product,
+          id: crypto.randomUUID(),
+          price,
+          initialPrice: price,
+          priceHistory: [{ price, date: createdAt, source: 'import' }],
+          priority: product.priority || '2',
+          targetPrice: product.targetPrice || null,
+          notes: product.notes || '',
+          publicNote: product.publicNote || '',
+          isGiftIdea: Boolean(product.isGiftIdea),
+          isPurchased: false,
+          isArchived: false,
+          purchaseDate: null,
+          createdAt: new Date(Date.now() + index).toISOString(),
+          lastChecked: null,
+        };
+      })
+      .filter(Boolean);
+
+    if (!normalizedImportedProducts.length) return;
+
+    const nextProducts = [...normalizedImportedProducts, ...products];
+    const nextCategories = Array.from(new Set([
+      ...categories,
+      ...normalizedImportedProducts.map((product) => product.category).filter(Boolean),
+    ]));
+    setProducts(nextProducts);
+    setCategories(nextCategories);
+    await persistState(nextProducts, nextCategories);
+    showToast(t('toast.importedProducts').replace('{count}', String(normalizedImportedProducts.length)));
+  };
+
   const updateProduct = async (updatedProduct) => {
     const nextProducts = products.map(p => {
       if (p.id !== updatedProduct.id) return p;
@@ -1646,6 +1749,16 @@ const App = () => {
               </button>
 
               <button
+                onClick={() => setShowImportModal(true)}
+                className={`px-4 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white' : 'bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                  }`}
+                title={t('importList.openTitle')}
+              >
+                <Upload size={18} />
+                <span className="hidden sm:inline">{t('importList.open')}</span>
+              </button>
+
+              <button
                 onClick={() => setShowForm(true)}
                 className={`px-5 py-2.5 rounded-full font-medium transition-all flex items-center gap-2 shadow-sm active:scale-95 whitespace-nowrap ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-100' : 'bg-slate-900 text-white hover:bg-slate-800'
                   }`}
@@ -2003,6 +2116,19 @@ const App = () => {
         onExport={exportReadOnlyLaterbase}
         isDarkMode={isDarkMode}
         t={t}
+      />
+
+      <ImportWishlistModal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        onImport={addImportedProducts}
+        categories={categories}
+        existingProducts={products}
+        isDarkMode={isDarkMode}
+        allowExternalImages={allowExternalImages}
+        t={t}
+        getCategoryLabel={getCategoryLabel}
+        formatCurrency={formatCurrency}
       />
 
       <AccountModal

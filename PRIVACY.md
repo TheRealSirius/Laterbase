@@ -38,9 +38,19 @@ Laterbase can still contact external websites in user-controlled cases:
 - when you open a product link;
 - when you enable external product images;
 - when you use product autofill;
+- when you use the browser quick-add shortcut on a product page;
+- when you import a public Amazon wishlist link;
 - when you refresh prices from product URLs.
 
-Autofill and price refresh are best-effort. Laterbase does not bypass bot protection, CAPTCHA, paywalls, private APIs, or access restrictions.
+Autofill, Amazon wishlist import, and price refresh are best-effort. Laterbase does not bypass bot protection, CAPTCHA, paywalls, private APIs, or access restrictions.
+
+## Browser Quick Add
+
+The browser quick-add shortcut is a bookmarklet that runs only when you click it on a page you already opened.
+
+It reads visible product metadata in your browser, then opens your Laterbase instance with a draft product in the URL fragment (`#quickAdd=...`). URL fragments are not sent to the Laterbase web server as HTTP request paths, and the app clears the fragment after reading it.
+
+If the product page does not expose readable metadata, the shortcut may open a partial draft or fail. You can always fill the product manually.
 
 ## External Images
 
@@ -50,7 +60,9 @@ Keep external images disabled if you want the quietest privacy mode.
 
 ## Local Network Protection
 
-Laterbase blocks autofill requests to localhost, private networks, and link-local targets to reduce SSRF risk.
+Laterbase blocks autofill, price refresh, and wishlist import requests to localhost, private networks, and link-local targets to reduce SSRF risk.
+
+Amazon wishlist import is additionally limited to public Amazon wishlist sharing URLs. The import review stores product image URLs, but those images are not loaded by the browser unless you enable external images.
 
 ## Your Responsibilities
 

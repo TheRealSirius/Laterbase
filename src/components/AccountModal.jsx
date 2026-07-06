@@ -1,5 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Eye, EyeOff, Image, Lock, Mail, Save, X, LogOut, Download, Upload, MousePointer2, ShieldCheck, CheckCircle2, Clipboard } from 'lucide-react';
+
+const PASSWORD_MIN_LENGTH = 15;
+const PASSWORD_MAX_LENGTH = 256;
+const WEAK_PASSWORD_FRAGMENTS = [
+    '123456',
+    '000000',
+    '111111',
+    'admin',
+    'administrator',
+    'changeme',
+    'letmein',
+    'laterbase',
+    'passw0rd',
+    'password',
+    'qwerty',
+    'wishlist',
+];
+
+const normalizePasswordForPolicy = (value) => String(value || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+
+const isContextualPassword = (compactedPassword, value) => {
+    if (!value) return false;
+    const compactedValue = normalizePasswordForPolicy(value);
+    if (compactedValue.length < 4) return false;
+    return compactedPassword === compactedValue ||
+        (compactedPassword.includes(compactedValue) && compactedPassword.length <= compactedValue.length + 10);
+};
 
 const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, allowExternalImages, onToggleExternalImages, onExportData, onImportData, onCopyQuickAdd, onOpenPrivacy, t }) => {
     const [email, setEmail] = useState(user?.email || '');
@@ -12,16 +42,49 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
     const [saving, setSaving] = useState(false);
     const [quickAddScript, setQuickAddScript] = useState('');
     const [quickAddCopied, setQuickAddCopied] = useState(false);
+    const quickAddBookmarkRef = useRef(null);
+
+    useEffect(() => {
+        if (!quickAddBookmarkRef.current || !quickAddScript) return;
+        quickAddBookmarkRef.current.setAttribute('href', quickAddScript);
+    }, [quickAddScript]);
+
+    useEffect(() => {
+        if (isOpen) return;
+        setQuickAddScript('');
+        setQuickAddCopied(false);
+    }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const closeModal = () => {
+        setQuickAddScript('');
+        setQuickAddCopied(false);
+        onClose();
+    };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
         setMessage('');
 
-        if (newPassword.trim() && newPassword.length < 12) {
+        const nextPassword = newPassword.trim();
+        if (nextPassword && nextPassword.length < PASSWORD_MIN_LENGTH) {
             setError(t('accountModal.passwordTooShort'));
+            return;
+        }
+        if (nextPassword.length > PASSWORD_MAX_LENGTH) {
+            setError(t('accountModal.passwordTooLong'));
+            return;
+        }
+        const compactedPassword = normalizePasswordForPolicy(nextPassword);
+        const usesWeakFragment = WEAK_PASSWORD_FRAGMENTS.some((fragment) => (
+            compactedPassword === fragment ||
+            (compactedPassword.includes(fragment) && compactedPassword.length <= fragment.length + 10)
+        ));
+        const emailLocalPart = String(email || '').split('@')[0];
+        if (nextPassword && (usesWeakFragment || isContextualPassword(compactedPassword, emailLocalPart))) {
+            setError(t('accountModal.passwordTooCommon'));
             return;
         }
 
@@ -31,7 +94,7 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
             await onSave({
                 email,
                 currentPassword,
-                newPassword: newPassword.trim() ? newPassword : undefined,
+                newPassword: nextPassword || undefined,
             });
             setCurrentPassword('');
             setNewPassword('');
@@ -49,6 +112,11 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
         }`;
 
     const handleQuickAdd = async () => {
+        if (quickAddScript) {
+            setQuickAddScript('');
+            setQuickAddCopied(false);
+            return;
+        }
         const result = await onCopyQuickAdd?.();
         if (!result?.script) return;
         setQuickAddScript(result.script);
@@ -57,10 +125,10 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
 
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closeModal} />
             <div className={`relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border p-7 shadow-2xl ${isDarkMode ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-white border-slate-100 text-slate-950'}`}>
                 <button
-                    onClick={onClose}
+                    onClick={closeModal}
                     className={`absolute right-4 top-4 rounded-xl p-2 transition-colors ${isDarkMode ? 'text-zinc-500 hover:bg-zinc-800 hover:text-white' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700'}`}
                 >
                     <X size={18} />
@@ -155,7 +223,8 @@ const AccountModal = ({ isOpen, onClose, onLogout, onSave, user, isDarkMode, all
                                 </div>
                             </div>
                             <a
-                                href={quickAddScript}
+                                ref={quickAddBookmarkRef}
+                                href="#"
                                 onClick={(event) => event.preventDefault()}
                                 className={`mt-3 flex items-center justify-center rounded-xl px-3 py-2 font-black transition-all ${isDarkMode ? 'bg-white text-zinc-950 hover:bg-zinc-200' : 'bg-slate-950 text-white hover:bg-slate-800'}`}
                             >

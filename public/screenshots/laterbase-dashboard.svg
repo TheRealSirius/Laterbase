@@ -1,0 +1,42 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="34" fill="#F6F8FA"/>
+  <rect x="72" y="64" width="1056" height="632" rx="30" fill="#FFFFFF" stroke="#E3E9F2"/>
+  <text x="118" y="128" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="900">Laterbase</text>
+  <text x="118" y="164" fill="#6D7890" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="600">Track products, budgets, prices, and wish scores locally.</text>
+  <rect x="690" y="96" width="210" height="48" rx="24" fill="#F7FAFC" stroke="#E4EAF2"/>
+  <text x="726" y="127" fill="#8B98AB" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">Search products...</text>
+  <rect x="924" y="90" width="158" height="60" rx="24" fill="#0F1B33"/>
+  <text x="970" y="128" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">New product</text>
+  <g transform="translate(118 214)">
+    <rect width="286" height="142" rx="26" fill="#FFFFFF" stroke="#E3E9F2"/>
+    <rect x="26" y="30" width="48" height="48" rx="15" fill="#EFEAFF"/>
+    <text x="96" y="61" fill="#8A96AA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="2">TOTAL LIST</text>
+    <text x="30" y="112" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">1,425.94 EUR</text>
+  </g>
+  <g transform="translate(456 214)">
+    <rect width="286" height="142" rx="26" fill="#FFFFFF" stroke="#E3E9F2"/>
+    <rect x="26" y="30" width="48" height="48" rx="15" fill="#E7F8F1"/>
+    <text x="96" y="61" fill="#8A96AA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="2">THIS MONTH</text>
+    <text x="30" y="112" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">220.00 EUR</text>
+  </g>
+  <g transform="translate(794 214)">
+    <rect width="286" height="142" rx="26" fill="#FFFFFF" stroke="#E3E9F2"/>
+    <rect x="26" y="30" width="48" height="48" rx="15" fill="#FFF4E6"/>
+    <text x="96" y="61" fill="#8A96AA" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="900" letter-spacing="2">ITEMS</text>
+    <text x="30" y="112" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">8 active</text>
+  </g>
+  <rect x="118" y="400" width="964" height="66" rx="26" fill="#FFFFFF" stroke="#E3E9F2"/>
+  <rect x="138" y="414" width="78" height="38" rx="19" fill="#0F1B33"/>
+  <text x="162" y="438" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900">All</text>
+  <text x="254" y="438" fill="#56637A" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800">Electronics</text>
+  <text x="390" y="438" fill="#56637A" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800">Home</text>
+  <text x="486" y="438" fill="#56637A" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800">Gifts</text>
+  <rect x="118" y="510" width="964" height="92" rx="24" fill="#FFF7F6" stroke="#FFDAD6"/>
+  <rect x="142" y="532" width="12" height="48" rx="6" fill="#FF705D"/>
+  <text x="180" y="548" fill="#C95B4F" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" letter-spacing="1.5">ELECTRONICS</text>
+  <text x="180" y="578" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="23" font-weight="900">OLED monitor for the studio</text>
+  <text x="846" y="570" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="900">679.00 EUR</text>
+  <rect x="118" y="620" width="964" height="56" rx="22" fill="#FFFFFF" stroke="#E3E9F2"/>
+  <text x="180" y="655" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="900">Gift idea: compact camera</text>
+  <text x="912" y="655" fill="#4E9B8D" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">Score 81</text>
+</svg>

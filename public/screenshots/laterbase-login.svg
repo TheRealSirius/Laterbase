@@ -1,0 +1,38 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="34" fill="#F7F4EE"/>
+  <rect x="32" y="32" width="1136" height="696" rx="30" fill="#FBFAF7" stroke="#E7E0D6"/>
+  <circle cx="111" cy="116" r="88" fill="#DFF2ED"/>
+  <circle cx="182" cy="656" r="118" fill="#FBE7E4"/>
+  <g transform="translate(148 146)">
+    <rect width="440" height="468" rx="28" fill="#FFFFFF" fill-opacity="0.55"/>
+    <rect x="52" y="62" width="64" height="64" rx="18" fill="#0F1B33"/>
+    <path d="M75 82c7-9 22-5 22 8 0 16-22 27-22 27S53 106 53 90c0-13 15-17 22-8Z" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="132" y="103" fill="#0F1B33" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">Laterbase</text>
+    <text x="52" y="198" fill="#0F1B33" font-family="Georgia, serif" font-size="62" font-weight="700">Private shopping,</text>
+    <text x="52" y="266" fill="#0F1B33" font-family="Georgia, serif" font-size="62" font-weight="700">saved for later.</text>
+    <text x="54" y="326" fill="#66738A" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600">Self-host your product ideas, prices,</text>
+    <text x="54" y="358" fill="#66738A" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600">budgets, and gift lists with Docker.</text>
+    <g transform="translate(52 420)">
+      <rect width="108" height="52" rx="26" fill="#E8F7F2"/>
+      <text x="38" y="34" fill="#317D70" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Local</text>
+      <circle cx="25" cy="26" r="10" fill="#4ABEA6"/>
+    </g>
+    <g transform="translate(180 420)">
+      <rect width="122" height="52" rx="26" fill="#FFF1E9"/>
+      <text x="38" y="34" fill="#C45B45" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Private</text>
+      <path d="M25 18v16M17 26h16" stroke="#FF705D" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+  <g transform="translate(690 156)">
+    <rect width="356" height="440" rx="30" fill="#FFFFFF" stroke="#E6EAF0"/>
+    <circle cx="178" cy="72" r="36" fill="#F2F5F8"/>
+    <path d="M164 74c0-8 6-14 14-14s14 6 14 14M154 102c8-14 40-14 48 0" stroke="#0F1B33" stroke-width="6" stroke-linecap="round"/>
+    <text x="122" y="146" fill="#0F1B33" font-family="Georgia, serif" font-size="38" font-weight="700">Sign in</text>
+    <rect x="48" y="190" width="260" height="58" rx="18" fill="#F8FAFC" stroke="#D8E1EC"/>
+    <text x="72" y="226" fill="#8A97AB" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">admin@laterbase.local</text>
+    <rect x="48" y="270" width="260" height="58" rx="18" fill="#F8FAFC" stroke="#D8E1EC"/>
+    <text x="72" y="306" fill="#8A97AB" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800">•••••••••••••••</text>
+    <rect x="48" y="358" width="260" height="64" rx="18" fill="#0F1B33"/>
+    <text x="147" y="398" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="900">Access Laterbase</text>
+  </g>
+</svg>

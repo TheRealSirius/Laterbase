@@ -98,6 +98,62 @@ const timingSafeEqual = (a, b) => {
   return first.length === second.length && crypto.timingSafeEqual(first, second);
 };
 
+const passwordPolicy = {
+  minLength: 15,
+  maxLength: 256,
+};
+
+const weakPasswordFragments = [
+  '123456',
+  '000000',
+  '111111',
+  'admin',
+  'administrator',
+  'changeme',
+  'letmein',
+  'laterbase',
+  'passw0rd',
+  'password',
+  'qwerty',
+  'wishlist',
+];
+
+const normalizePasswordForPolicy = (password) => String(password || '')
+  .normalize('NFKC')
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, '');
+
+const isContextualPassword = (compactedPassword, value) => {
+  if (!value) return false;
+  const compactedValue = normalizePasswordForPolicy(value);
+  if (compactedValue.length < 4) return false;
+  return compactedPassword === compactedValue ||
+    (compactedPassword.includes(compactedValue) && compactedPassword.length <= compactedValue.length + 10);
+};
+
+const validatePasswordPolicy = (password, context = {}) => {
+  const passwordValue = String(password || '');
+  if (passwordValue.length < passwordPolicy.minLength) {
+    return `Password must be at least ${passwordPolicy.minLength} characters long.`;
+  }
+  if (passwordValue.length > passwordPolicy.maxLength) {
+    return `Password must be no more than ${passwordPolicy.maxLength} characters long.`;
+  }
+
+  const compactedPassword = normalizePasswordForPolicy(passwordValue);
+  const usesWeakFragment = weakPasswordFragments.some((fragment) => (
+    compactedPassword === fragment ||
+    (compactedPassword.includes(fragment) && compactedPassword.length <= fragment.length + 10)
+  ));
+  const emailLocalPart = String(context.email || '').split('@')[0];
+
+  if (usesWeakFragment || isContextualPassword(compactedPassword, emailLocalPart)) {
+    return 'Password is too common or too easy to guess.';
+  }
+
+  return null;
+};
+
 const scrypt = (password, salt) => new Promise((resolve, reject) => {
   crypto.scrypt(password, salt, 64, (error, derivedKey) => {
     if (error) reject(error);
@@ -148,8 +204,9 @@ const ensureAuthFile = async () => {
   const envPassword = process.env.ADMIN_PASSWORD;
   const email = envEmail || 'admin@laterbase.local';
   const password = envPassword || generatePassword();
-  if (envPassword && envPassword.length < 12) {
-    throw new Error('ADMIN_PASSWORD must be at least 12 characters long.');
+  const passwordError = envPassword ? validatePasswordPolicy(envPassword, { email }) : null;
+  if (passwordError) {
+    throw new Error(`ADMIN_PASSWORD rejected: ${passwordError}`);
   }
   const auth = {
     admin: {
@@ -405,6 +462,7 @@ const clearLoginAttempts = (key) => {
 
 const productPreviewMaxBytes = 1_500_000;
 const productPreviewTimeoutMs = 9000;
+const wishlistImportMaxItems = 60;
 
 const decodeHtmlEntities = (value = '') => String(value)
   .replace(/&quot;/g, '"')
@@ -522,10 +580,10 @@ const parsePrice = (rawValue) => {
       .replace(decimalSeparator, '.');
   } else if (lastComma > -1) {
     const decimals = numeric.length - lastComma - 1;
-    normalized = decimals === 2 ? numeric.replace(',', '.') : numeric.replaceAll(',', '');
+    normalized = decimals > 0 && decimals <= 2 ? numeric.replace(',', '.') : numeric.replaceAll(',', '');
   } else if (lastDot > -1) {
     const decimals = numeric.length - lastDot - 1;
-    normalized = decimals === 2 ? numeric : numeric.replaceAll('.', '');
+    normalized = decimals > 0 && decimals <= 2 ? numeric : numeric.replaceAll('.', '');
   }
 
   const value = Number(normalized);
@@ -543,10 +601,10 @@ const absoluteUrl = (value, baseUrl) => {
 
 const inferCategory = (title = '', rawCategory = '') => {
   const text = `${title} ${rawCategory}`.toLowerCase();
-  if (/(iphone|ipad|macbook|apple|smartphone|telefono|phone|tablet|laptop|notebook|pc|computer|monitor|tv|headphone|cuffie|auricolari|camera|fotocamera|console|playstation|xbox|steam deck|kindle)/i.test(text)) {
+  if (/(iphone|ipad|macbook|apple|smartphone|telefono|phone|tablet|laptop|pc|computer|monitor|tv|headphone|cuffie|auricolari|camera|fotocamera|console|playstation|xbox|steam deck|kindle)/i.test(text)) {
     return 'Elettronica';
   }
-  if (/(casa|home|kitchen|cucina|garden|giardino|lamp|lampada|chair|sedia|table|tavolo|sofa|divano|bed|letto|mattress|materasso|vacuum|aspirapolvere|furniture|arredo)/i.test(text)) {
+  if (/(casa|home|kitchen|cucina|garden|giardino|lamp|lampada|chair|sedia|table|tavolo|desk|scrivania|sofa|divano|bed|letto|mattress|materasso|vacuum|aspirapolvere|furniture|arredo)/i.test(text)) {
     return 'Casa';
   }
   if (/(shirt|t-shirt|maglia|felpa|hoodie|dress|vestito|pants|pantaloni|jeans|scarpe|shoes|sneaker|jacket|giacca|coat|cappotto|abbigliamento|clothing|fashion)/i.test(text)) {
@@ -628,6 +686,19 @@ const cleanStoredProductUrl = (url) => {
   }
   cleanUrl.hash = '';
   return cleanUrl.toString();
+};
+
+const isAmazonHost = (hostname = '') => /^(?:www\.|smile\.)?amazon\.[a-z]{2,3}(?:\.[a-z]{2})?$/i.test(hostname);
+
+const validateAmazonWishlistUrl = async (rawUrl) => {
+  const url = await validateExternalProductUrl(rawUrl);
+  if (!isAmazonHost(url.hostname)) {
+    throw new Error('Only public Amazon wishlist links are supported right now');
+  }
+  if (!/^\/hz\/wishlist\/ls\//i.test(url.pathname)) {
+    throw new Error('Paste a public Amazon wishlist sharing link');
+  }
+  return url;
 };
 
 const readLimitedText = async (response) => {
@@ -731,6 +802,104 @@ const extractProductPreview = (html, finalUrl) => {
   return preview;
 };
 
+const getElementTextByPattern = (html, pattern) => {
+  const match = html.match(pattern);
+  return match ? normalizeText(match[1]) : '';
+};
+
+const getAttributeByPattern = (html, pattern, attributeName) => {
+  const match = html.match(pattern);
+  if (!match) return '';
+  const attrs = parseAttributes(match[0]);
+  return attrs[attributeName.toLowerCase()] || '';
+};
+
+const splitAmazonWishlistItems = (html) => {
+  const items = [];
+  const itemRegex = /<li\b[^>]*class=["'][^"']*g-item-sortable[^"']*["'][^>]*>[\s\S]*?(?=<li\b[^>]*class=["'][^"']*g-item-sortable|<\/ul>)/gi;
+  let match;
+  while ((match = itemRegex.exec(html)) && items.length < wishlistImportMaxItems) {
+    items.push(match[0]);
+  }
+  return items;
+};
+
+const extractAmazonWishlistProduct = (block, baseUrl) => {
+  const asin = firstString(
+    block.match(/ASIN:([A-Z0-9]{10})/i)?.[1],
+    block.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i)?.[1],
+    block.match(/data-csa-c-item-id=["']([A-Z0-9]{10})["']/i)?.[1],
+  ).toUpperCase();
+
+  const nameAnchorPattern = /<a\b[^>]*(?:id=["']itemName_[^"']+["'][^>]*|title=["'][^"']+["'][^>]*)href=["'][^"']*\/(?:dp|gp\/product)\/[A-Z0-9]{10}[^"']*["'][^>]*>[\s\S]*?<\/a>/i;
+  const imageTagPattern = /<img\b[^>]+src=["']https?:\/\/(?:m\.media-amazon|images-na\.ssl-images-amazon)\.com\/images\/I\/[^"']+["'][^>]*>/i;
+  const imageTag = block.match(imageTagPattern)?.[0] || '';
+  const imageAttrs = parseAttributes(imageTag);
+  const name = firstString(
+    getElementTextByPattern(block, /<a\b[^>]*id=["']itemName_[^"']+["'][^>]*>([\s\S]*?)<\/a>/i),
+    getAttributeByPattern(block, nameAnchorPattern, 'title'),
+    imageAttrs.alt,
+  );
+
+  const href = firstString(
+    getAttributeByPattern(block, nameAnchorPattern, 'href'),
+    block.match(/href=["']([^"']*\/(?:dp|gp\/product)\/[A-Z0-9]{10}[^"']*)["']/i)?.[1],
+  );
+
+  const imageUrl = absoluteUrl(imageAttrs.src || '', baseUrl);
+  const byline = getElementTextByPattern(block, /<span\b[^>]*id=["']item-byline-[^"']+["'][^>]*>([\s\S]*?)<\/span>/i);
+  const rawCategory = firstString(
+    byline.match(/\(([^)]+)\)/)?.[1],
+    block.match(/data-category=["']([^"']+)["']/i)?.[1],
+  );
+  const dataPrice = parseAttributes(block.match(/<li\b[^>]*class=["'][^"']*g-item-sortable[^"']*["'][^>]*>/i)?.[0] || '')['data-price'];
+  const priceText = firstString(
+    dataPrice,
+    block.match(/id=["']itemPrice_[^"']+["'][^>]*>[\s\S]*?<span\b[^>]*class=["'][^"']*a-offscreen[^"']*["'][^>]*>([\s\S]*?)<\/span>/i)?.[1],
+    block.match(/<span\b[^>]*class=["'][^"']*a-offscreen[^"']*["'][^>]*>([^<]*(?:€|\$|£|¥)[^<]*)<\/span>/i)?.[1],
+  );
+  const price = parsePrice(priceText);
+
+  if (!name || (!asin && !href && !imageUrl)) return null;
+
+  const productUrl = href ? cleanStoredProductUrl(new URL(decodeHtmlEntities(href), baseUrl)) : '';
+  return {
+    source: 'amazon-wishlist',
+    externalId: asin || productUrl || name,
+    name,
+    price,
+    category: inferCategory(name, rawCategory || byline),
+    url: productUrl,
+    imageUrl,
+    priority: '2',
+    notes: '',
+    publicNote: '',
+  };
+};
+
+const extractAmazonWishlistProducts = (html, finalUrl) => {
+  const products = splitAmazonWishlistItems(html)
+    .map((block) => extractAmazonWishlistProduct(block, finalUrl))
+    .filter(Boolean);
+  const seen = new Set();
+  const uniqueProducts = products.filter((product) => {
+    const key = product.externalId || product.url || product.name;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  if (!uniqueProducts.length) {
+    throw new Error('No readable products found in this Amazon wishlist');
+  }
+
+  return {
+    source: 'amazon-wishlist',
+    count: uniqueProducts.length,
+    products: uniqueProducts,
+  };
+};
+
 const readState = async () => {
   await ensureDataFile();
   const raw = await readFile(dataFile, 'utf-8');
@@ -821,8 +990,9 @@ const handleApi = async (req, res) => {
 
     auth.admin.email = nextEmail;
     if (newPassword) {
-      if (String(newPassword).length < 12) {
-        sendJson(res, 400, { error: 'The new password must be at least 12 characters long' });
+      const passwordError = validatePasswordPolicy(newPassword, { email: nextEmail });
+      if (passwordError) {
+        sendJson(res, 400, { error: passwordError });
         return true;
       }
       auth.admin.password = await hashPassword(String(newPassword));
@@ -858,6 +1028,19 @@ const handleApi = async (req, res) => {
       sendJson(res, 200, extractProductPreview(html, finalUrl));
     } catch (error) {
       sendJson(res, 400, { error: error.message || 'Unable to autofill the product from this link' });
+    }
+    return true;
+  }
+
+  if (req.url === '/api/import/amazon-wishlist' && req.method === 'POST') {
+    if (!(await requireSession(req, res))) return true;
+    const { url } = await readBody(req);
+    try {
+      const safeUrl = await validateAmazonWishlistUrl(url);
+      const { html, finalUrl } = await fetchProductHtml(safeUrl);
+      sendJson(res, 200, extractAmazonWishlistProducts(html, finalUrl));
+    } catch (error) {
+      sendJson(res, 400, { error: error.message || 'Unable to import this wishlist' });
     }
     return true;
   }

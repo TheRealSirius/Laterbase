@@ -359,63 +359,63 @@ Object.entries(productShareTranslations).forEach(([code, patch]) => {
 const formPolishTranslations = {
   it: {
     form: { productNamePlaceholder: 'Es. iPhone 15 Pro', productUrlPlaceholder: 'https://negozio.example/prodotto' },
-    accountModal: { passwordTooShort: 'La nuova password deve avere almeno 12 caratteri.' },
+    accountModal: { passwordTooShort: 'La nuova password deve avere almeno 15 caratteri.', passwordTooLong: 'La nuova password deve avere al massimo 256 caratteri.', passwordTooCommon: 'Scegli una password meno ovvia e non collegata a Laterbase o alla tua email.' },
   },
   en: {
     form: { productNamePlaceholder: 'E.g. iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: 'The new password must be at least 12 characters.' },
+    accountModal: { passwordTooShort: 'The new password must be at least 15 characters.', passwordTooLong: 'The new password must be no more than 256 characters.', passwordTooCommon: 'Choose a less obvious password that is not tied to Laterbase or your email.' },
   },
   de: {
     form: { productNamePlaceholder: 'z. B. iPhone 15 Pro', productUrlPlaceholder: 'https://shop.example/produkt' },
-    accountModal: { passwordTooShort: 'Das neue Passwort muss mindestens 12 Zeichen lang sein.' },
+    accountModal: { passwordTooShort: 'Das neue Passwort muss mindestens 15 Zeichen lang sein.', passwordTooLong: 'Das neue Passwort darf höchstens 256 Zeichen lang sein.', passwordTooCommon: 'Wähle ein weniger offensichtliches Passwort ohne Bezug zu Laterbase oder deiner E-Mail.' },
   },
   es: {
     form: { productNamePlaceholder: 'Ej. iPhone 15 Pro', productUrlPlaceholder: 'https://tienda.example/producto' },
-    accountModal: { passwordTooShort: 'La nueva contraseña debe tener al menos 12 caracteres.' },
+    accountModal: { passwordTooShort: 'La nueva contraseña debe tener al menos 15 caracteres.', passwordTooLong: 'La nueva contraseña no puede superar los 256 caracteres.', passwordTooCommon: 'Elige una contraseña menos obvia y que no esté ligada a Laterbase ni a tu email.' },
   },
   fr: {
     form: { productNamePlaceholder: 'Ex. iPhone 15 Pro', productUrlPlaceholder: 'https://boutique.example/produit' },
-    accountModal: { passwordTooShort: 'Le nouveau mot de passe doit contenir au moins 12 caractères.' },
+    accountModal: { passwordTooShort: 'Le nouveau mot de passe doit contenir au moins 15 caractères.', passwordTooLong: 'Le nouveau mot de passe doit contenir au maximum 256 caractères.', passwordTooCommon: 'Choisissez un mot de passe moins évident, sans lien avec Laterbase ni votre e-mail.' },
   },
   hu: {
     form: { productNamePlaceholder: 'Pl. iPhone 15 Pro', productUrlPlaceholder: 'https://bolt.example/termek' },
-    accountModal: { passwordTooShort: 'Az új jelszónak legalább 12 karakteresnek kell lennie.' },
+    accountModal: { passwordTooShort: 'Az új jelszónak legalább 15 karakteresnek kell lennie.', passwordTooLong: 'Az új jelszó legfeljebb 256 karakteres lehet.', passwordTooCommon: 'Válassz kevésbé nyilvánvaló jelszót, amely nem kötődik a Laterbasehez vagy az e-mail címedhez.' },
   },
   nl: {
     form: { productNamePlaceholder: 'Bijv. iPhone 15 Pro', productUrlPlaceholder: 'https://winkel.example/product' },
-    accountModal: { passwordTooShort: 'Het nieuwe wachtwoord moet minstens 12 tekens bevatten.' },
+    accountModal: { passwordTooShort: 'Het nieuwe wachtwoord moet minstens 15 tekens bevatten.', passwordTooLong: 'Het nieuwe wachtwoord mag maximaal 256 tekens bevatten.', passwordTooCommon: 'Kies een minder voor de hand liggend wachtwoord dat niet aan Laterbase of je e-mail is gekoppeld.' },
   },
   pt: {
     form: { productNamePlaceholder: 'Ex.: iPhone 15 Pro', productUrlPlaceholder: 'https://loja.example/produto' },
-    accountModal: { passwordTooShort: 'A nova senha deve ter pelo menos 12 caracteres.' },
+    accountModal: { passwordTooShort: 'A nova senha deve ter pelo menos 15 caracteres.', passwordTooLong: 'A nova senha deve ter no máximo 256 caracteres.', passwordTooCommon: 'Escolha uma senha menos óbvia e sem ligação ao Laterbase ou ao seu e-mail.' },
   },
   cs: {
     form: { productNamePlaceholder: 'Např. iPhone 15 Pro', productUrlPlaceholder: 'https://obchod.example/produkt' },
-    accountModal: { passwordTooShort: 'Nové heslo musí mít alespoň 12 znaků.' },
+    accountModal: { passwordTooShort: 'Nové heslo musí mít alespoň 15 znaků.', passwordTooLong: 'Nové heslo může mít nejvýše 256 znaků.', passwordTooCommon: 'Zvolte méně zřejmé heslo, které nesouvisí s Laterbase ani s vaším e-mailem.' },
   },
   pl: {
     form: { productNamePlaceholder: 'Np. iPhone 15 Pro', productUrlPlaceholder: 'https://sklep.example/produkt' },
-    accountModal: { passwordTooShort: 'Nowe hasło musi mieć co najmniej 12 znaków.' },
+    accountModal: { passwordTooShort: 'Nowe hasło musi mieć co najmniej 15 znaków.', passwordTooLong: 'Nowe hasło może mieć maksymalnie 256 znaków.', passwordTooCommon: 'Wybierz mniej oczywiste hasło, niezwiązane z Laterbase ani Twoim adresem e-mail.' },
   },
   ja: {
     form: { productNamePlaceholder: '例: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '新しいパスワードは12文字以上にしてください。' },
+    accountModal: { passwordTooShort: '新しいパスワードは15文字以上にしてください。', passwordTooLong: '新しいパスワードは256文字以内にしてください。', passwordTooCommon: 'Laterbase やメールに関連しない、推測されにくいパスワードを選んでください。' },
   },
   zh: {
     form: { productNamePlaceholder: '例如：iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '新密码至少需要 12 个字符。' },
+    accountModal: { passwordTooShort: '新密码至少需要 15 个字符。', passwordTooLong: '新密码最多 256 个字符。', passwordTooCommon: '请选择不明显、且不包含 Laterbase 或邮箱信息的密码。' },
   },
   ar: {
     form: { productNamePlaceholder: 'مثال: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: 'يجب أن تتكون كلمة المرور الجديدة من 12 حرفًا على الأقل.' },
+    accountModal: { passwordTooShort: 'يجب أن تتكون كلمة المرور الجديدة من 15 حرفًا على الأقل.', passwordTooLong: 'يجب ألا تتجاوز كلمة المرور الجديدة 256 حرفًا.', passwordTooCommon: 'اختر كلمة مرور أقل وضوحًا وغير مرتبطة بـ Laterbase أو بريدك الإلكتروني.' },
   },
   id: {
     form: { productNamePlaceholder: 'Mis. iPhone 15 Pro', productUrlPlaceholder: 'https://toko.example/produk' },
-    accountModal: { passwordTooShort: 'Kata sandi baru harus minimal 12 karakter.' },
+    accountModal: { passwordTooShort: 'Kata sandi baru harus minimal 15 karakter.', passwordTooLong: 'Kata sandi baru maksimal 256 karakter.', passwordTooCommon: 'Pilih kata sandi yang tidak mudah ditebak dan tidak terkait dengan Laterbase atau email Anda.' },
   },
   ko: {
     form: { productNamePlaceholder: '예: iPhone 15 Pro', productUrlPlaceholder: 'https://store.example/product' },
-    accountModal: { passwordTooShort: '새 비밀번호는 12자 이상이어야 합니다.' },
+    accountModal: { passwordTooShort: '새 비밀번호는 15자 이상이어야 합니다.', passwordTooLong: '새 비밀번호는 256자 이하여야 합니다.', passwordTooCommon: 'Laterbase나 이메일과 관련 없는 덜 뻔한 비밀번호를 선택하세요.' },
   },
 };
 
@@ -1018,6 +1018,73 @@ const trustPolishTranslations = {
 };
 
 Object.entries(trustPolishTranslations).forEach(([code, patch]) => {
+  extraUiTranslations[code] = mergeTranslationPatch(extraUiTranslations[code] || {}, patch);
+});
+
+const richQuickAddTranslations = {
+  it: {
+    accountModal: { quickAddText: 'Aggiungilo ai preferiti. Su una pagina prodotto prova a leggere nome, prezzo, immagine e categoria, poi apre Laterbase con il form già pronto.' },
+    toast: { quickAddFailed: 'Scorciatoia non riuscita: apri Laterbase e compila il prodotto a mano.' },
+  },
+  en: {
+    accountModal: { quickAddText: 'Add it to your bookmarks. On a product page it tries to read the name, price, image, and category, then opens Laterbase with the form ready.' },
+    toast: { quickAddFailed: 'Shortcut failed: open Laterbase and fill the product manually.' },
+  },
+  de: {
+    accountModal: { quickAddText: 'Füge es zu deinen Lesezeichen hinzu. Auf einer Produktseite liest es nach Möglichkeit Name, Preis, Bild und Kategorie und öffnet Laterbase mit vorbereitetem Formular.' },
+    toast: { quickAddFailed: 'Kurzbefehl fehlgeschlagen: öffne Laterbase und fülle den Artikel manuell aus.' },
+  },
+  es: {
+    accountModal: { quickAddText: 'Añádelo a tus marcadores. En una página de producto intenta leer nombre, precio, imagen y categoría, y abre Laterbase con el formulario listo.' },
+    toast: { quickAddFailed: 'El acceso falló: abre Laterbase y completa el producto manualmente.' },
+  },
+  fr: {
+    accountModal: { quickAddText: 'Ajoutez-le à vos favoris. Sur une page produit, il essaie de lire le nom, le prix, l’image et la catégorie, puis ouvre Laterbase avec le formulaire prêt.' },
+    toast: { quickAddFailed: 'Le raccourci a échoué : ouvrez Laterbase et remplissez le produit manuellement.' },
+  },
+  hu: {
+    accountModal: { quickAddText: 'Tedd a könyvjelzők közé. Termékoldalon megpróbálja beolvasni a nevet, árat, képet és kategóriát, majd megnyitja a Laterbase előkészített űrlapját.' },
+    toast: { quickAddFailed: 'A parancsikon nem sikerült: nyisd meg a Laterbase-t, és töltsd ki kézzel a terméket.' },
+  },
+  nl: {
+    accountModal: { quickAddText: 'Voeg hem toe aan je bladwijzers. Op een productpagina probeert hij naam, prijs, afbeelding en categorie te lezen en opent daarna Laterbase met een ingevuld formulier.' },
+    toast: { quickAddFailed: 'Snelkoppeling mislukt: open Laterbase en vul het product handmatig in.' },
+  },
+  pt: {
+    accountModal: { quickAddText: 'Adicione aos favoritos. Em uma página de produto, ele tenta ler nome, preço, imagem e categoria, depois abre o Laterbase com o formulário pronto.' },
+    toast: { quickAddFailed: 'O atalho falhou: abra o Laterbase e preencha o produto manualmente.' },
+  },
+  cs: {
+    accountModal: { quickAddText: 'Přidejte ho do záložek. Na stránce produktu se pokusí načíst název, cenu, obrázek a kategorii a otevře Laterbase s připraveným formulářem.' },
+    toast: { quickAddFailed: 'Zkratka selhala: otevřete Laterbase a vyplňte produkt ručně.' },
+  },
+  pl: {
+    accountModal: { quickAddText: 'Dodaj do zakładek. Na stronie produktu spróbuje odczytać nazwę, cenę, obraz i kategorię, a potem otworzy Laterbase z gotowym formularzem.' },
+    toast: { quickAddFailed: 'Skrót nie zadziałał: otwórz Laterbase i wypełnij produkt ręcznie.' },
+  },
+  ja: {
+    accountModal: { quickAddText: 'ブックマークに追加してください。商品ページで名前、価格、画像、カテゴリを読み取り、入力済みフォームで Laterbase を開きます。' },
+    toast: { quickAddFailed: 'ショートカットに失敗しました。Laterbase を開いて商品を手入力してください。' },
+  },
+  zh: {
+    accountModal: { quickAddText: '添加到书签。在产品页面点击后，它会尝试读取名称、价格、图片和分类，然后打开已填写的 Laterbase 表单。' },
+    toast: { quickAddFailed: '快捷方式失败：请打开 Laterbase 并手动填写产品。' },
+  },
+  ar: {
+    accountModal: { quickAddText: 'أضفه إلى الإشارات المرجعية. في صفحة المنتج يحاول قراءة الاسم والسعر والصورة والفئة، ثم يفتح Laterbase والنموذج جاهز.' },
+    toast: { quickAddFailed: 'فشل الاختصار: افتح Laterbase وأدخل المنتج يدوياً.' },
+  },
+  id: {
+    accountModal: { quickAddText: 'Tambahkan ke bookmark. Di halaman produk, pintasan ini mencoba membaca nama, harga, gambar, dan kategori, lalu membuka Laterbase dengan formulir siap.' },
+    toast: { quickAddFailed: 'Pintasan gagal: buka Laterbase dan isi produk secara manual.' },
+  },
+  ko: {
+    accountModal: { quickAddText: '북마크에 추가하세요. 상품 페이지에서 이름, 가격, 이미지, 카테고리를 읽어 Laterbase의 준비된 폼을 엽니다.' },
+    toast: { quickAddFailed: '바로가기가 실패했습니다. Laterbase를 열고 상품을 직접 입력하세요.' },
+  },
+};
+
+Object.entries(richQuickAddTranslations).forEach(([code, patch]) => {
   extraUiTranslations[code] = mergeTranslationPatch(extraUiTranslations[code] || {}, patch);
 });
 

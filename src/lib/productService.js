@@ -31,6 +31,11 @@ export const fetchProductPreview = (url) => request('/product-preview', {
     body: JSON.stringify({ url }),
 });
 
+export const importAmazonWishlist = (url) => request('/import/amazon-wishlist', {
+    method: 'POST',
+    body: JSON.stringify({ url }),
+});
+
 export const getCurrentUser = () => request('/auth/me');
 
 export const login = ({ email, password }) => request('/auth/login', {

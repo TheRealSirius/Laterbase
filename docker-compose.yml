@@ -8,7 +8,7 @@ services:
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@laterbase.local}
       # Set ADMIN_PASSWORD only on first run if you want to choose the first password.
-      # It must be at least 12 characters.
+      # It must be at least 15 characters.
       # If left empty, Laterbase generates a password and prints it in the logs.
       # - ADMIN_PASSWORD=change-me-now-123
       # If you serve the app behind HTTPS, enable Secure cookies.
