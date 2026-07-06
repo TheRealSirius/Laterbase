@@ -2,9 +2,9 @@
 
 All notable changes to Laterbase will be documented in this file.
 
-The format follows a simple human-readable style. This project is currently preparing its first public release.
+The format follows a simple human-readable style.
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-07-06
 
 ### Added
 

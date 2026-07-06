@@ -195,7 +195,7 @@ docker logs laterbase
 
 ## Docker Hub
 
-A Docker Hub image can be added after the first public release. Until then, the recommended path is building from source with Docker Compose.
+Laterbase currently supports source-based Docker installs with Docker Compose. An official Docker Hub image can be added as an extra distribution channel after the Docker Hub namespace is decided.
 
 When an image is available, the command will look like:
 
@@ -491,14 +491,15 @@ npm run preview
 
 ## Project Status
 
-Laterbase is preparing its first public release.
+Laterbase is ready for source-based self-hosting with Docker Compose.
 
-Before publishing a tagged release and Docker Hub image:
+Current distribution status:
 
-- add clean screenshots using demo data;
-- decide the final Docker Hub image name;
-- publish a tagged Docker image;
-- create the first GitHub release.
+- README screenshots are included.
+- Docker Compose setup is documented and supported.
+- Security, privacy, contributing, code of conduct, changelog, and license files are included.
+- A Docker Hub image can be published after the final image namespace is chosen.
+- A GitHub Release can be created from the `v1.0.0` tag after the release branch is merged.
 
 ## License
 
