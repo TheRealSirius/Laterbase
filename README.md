@@ -195,12 +195,23 @@ docker logs laterbase
 
 ## Docker Hub
 
-Laterbase currently supports source-based Docker installs with Docker Compose. An official Docker Hub image can be added as an extra distribution channel after the Docker Hub namespace is decided.
+Laterbase is published on Docker Hub as:
 
-When an image is available, the command will look like:
+```text
+therealsirius/laterbase:latest
+therealsirius/laterbase:1.0.0
+```
+
+To run the published image:
 
 ```powershell
-docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data --restart unless-stopped <dockerhub-user>/laterbase:latest
+docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data -e ADMIN_EMAIL=admin@laterbase.local --restart unless-stopped therealsirius/laterbase:latest
+```
+
+To pin the first public release:
+
+```powershell
+docker run -d --name laterbase -p 8080:8080 -v laterbase_data:/data -e ADMIN_EMAIL=admin@laterbase.local --restart unless-stopped therealsirius/laterbase:1.0.0
 ```
 
 ## Configuration
@@ -491,15 +502,15 @@ npm run preview
 
 ## Project Status
 
-Laterbase is ready for source-based self-hosting with Docker Compose.
+Laterbase is ready for public self-hosting.
 
 Current distribution status:
 
 - README screenshots are included.
 - Docker Compose setup is documented and supported.
 - Security, privacy, contributing, code of conduct, changelog, and license files are included.
-- A Docker Hub image can be published after the final image namespace is chosen.
-- A GitHub Release can be created from the `v1.0.0` tag after the release branch is merged.
+- Docker Hub image is published as `therealsirius/laterbase:latest` and `therealsirius/laterbase:1.0.0`.
+- GitHub Release `v1.0.0` is published.
 
 ## License
 
